@@ -8,4 +8,4 @@ redirect_from:
   - /about.html
 ---
 
-This page is currently under construction <p>&#128679<p>.
+This page is currently under construction 🚧.
