@@ -82,13 +82,13 @@ analytics:
 author:
   name             : "Tim Wappenhans"
   avatar           : "test-prof.png"
-  bio              : "PhD Candidate in Political Science at DYNAMICS & Humboldt-Universität zu Berlin."
+  bio              : "PhD Candidate in Political Science at DYNAMICS & Humboldt-Universität zu Berlin"
   location         : "Berlin, Germany"
   employer         : 
-  pubmed           : #"https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
-  googlescholar    :  #"http://yourfullgooglescholarurl.com"
+  pubmed           : 
+  googlescholar    : 
   email            : "tim.wappenhans@hu-berlin.de"
-  researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
+  researchgate     : 
   uri              :
   bitbucket        :
   codepen          :
@@ -96,20 +96,20 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "academicpages"
+  github           : "timwappenhans"
   google_plus      :
   keybase          :
   instagram        :
-  impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
+  impactstory      : 
   lastfm           :
   linkedin         :
   orcid            : "http://orcid.org/yourorcidurl"
   pinterest        :
   soundcloud       :
-  stackoverflow    : # http://stackoverflow.com/users/123456/username
+  stackoverflow    : 
   steam            :
   tumblr           :
-  twitter          : "replacethistwitterhandle"
+  twitter          : "TimWapps"
   vine             :
   weibo            :
   xing             :
