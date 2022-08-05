@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 
-# This page is currently under construction 🏗️
+# 🚧 This page is currently under construction 🏗️
 
 I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) and a research fellow at the [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) at Humboldt-Universität zu Berlin.
 
