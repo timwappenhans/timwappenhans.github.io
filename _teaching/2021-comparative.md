@@ -8,4 +8,4 @@ date: 2021-01-01
 location: "Berlin, Germany"
 ---
 
-Supplementary course for the introduction to comparative politics and international politics lecture given by Thomas M. Meyer and Anselm Hager, [Syllabus](/files/syllabus_comp_2021.pdf)
+Supplementary undergrad level course course to the *Introduction to Comparative Politics and International Politics* lecture given by Thomas M. Meyer and Anselm Hager, [Syllabus](/files/syllabus_comp_2021.pdf)

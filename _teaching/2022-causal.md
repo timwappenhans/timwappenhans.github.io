@@ -8,4 +8,4 @@ date: 2022-01-01
 location: "Berlin, Germany"
 ---
 
-Applied causal inference in political science, [Syllabus](/files/syllabus_causal_2022.pdf)
+Undergrad level course on applied causal inference in political science, [Syllabus](/files/syllabus_causal_2022.pdf)
