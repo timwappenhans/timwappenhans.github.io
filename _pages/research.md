@@ -10,6 +10,3 @@ author_profile: true
 
 ## Work in Progress
 - Fear and Sorting Across Party Lines. The dynamics of affective polarization.
-
-## Test
-is this still working, corni :heart:
