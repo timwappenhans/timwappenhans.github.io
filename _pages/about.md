@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 
-This page is currently under construction 🚧
+This page is currently under construction 🚧 :construction: 🏗️
 
 I am a research fellow at [Humboldt-Universität zu Berlin](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) and a PhD candidate at the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) which is jointly organized by Humboldt-Universität zu Berlin and the Hertie School.
 
