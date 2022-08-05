@@ -4,7 +4,7 @@ collection: teaching
 type: "TA"
 permalink: /teaching/2020-spring-test
 venue: "Humboldt-Universität, Chair of Empirical Social Research"
-date: 2016-2020
+date: 2016-01-01
 location: "Berlin, Germany"
 ---
 
