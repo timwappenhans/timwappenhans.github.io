@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Tim Wappenhans &#128075"
+title                    : "Tim Wappenhans"
 title_separator          : "-"
 name                     : &name "Tim Wappenhans"
 description              : &description "PhD Candidate"
