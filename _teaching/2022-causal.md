@@ -1,5 +1,5 @@
 ---
-title: "Voters and Voting in the U.S."
+title: "Applied Causal Inference in Political Science"
 collection: teaching
 type: "Lecturer"
 permalink: /teaching/2022-causal
@@ -8,4 +8,4 @@ date: 2022-01-01
 location: "Berlin, Germany"
 ---
 
-Course applied causal inference in political science, [Syllabus](/files/syllabus_causal_2022.pdf)
+Applied causal inference in political science, [Syllabus](/files/syllabus_causal_2022.pdf)
