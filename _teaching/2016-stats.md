@@ -8,4 +8,4 @@ date: 2016-01-01
 location: "Berlin, Germany"
 ---
 
-Teaching Assistant for Johannes Giesecke, introduction into basic statistical concepts, OLS, factor analysis and logistic regression | [Syllabus](/files/syllabus_stat2.pdf)
+Teaching Assistant for Johannes Giesecke, introduction into basic statistical concepts, OLS, factor analysis and logistic regression, [Syllabus](/files/syllabus_stat2.pdf)
