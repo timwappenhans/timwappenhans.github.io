@@ -9,14 +9,14 @@ redirect_from:
 ---
 
 
-I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) and a research fellow at the [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) at Humboldt-Universität zu Berlin.
+I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) and a research fellow at the [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) at Humboldt University, Berlin.
 
-My research is focused on political behavior and comparative politics. I am interested in voter behavior and responsiveness of political actors. I use both causal identification strategies for observational data and experimental data for my research.
+My research is focused on political behavior and comparative politics. I am interested in voters and responsiveness of political actors. I use both causal identification strategies for observational data and experiments for my research.
 
 In my dissertation, which is supervised by [Heike Klüver](http://www.heike-kluever.com), I analyze the causes and consequences of affective polarization in Western Europe.
 
-I completed my pre-doctoral studies at the Humboldt-Universität, spent a semester at the [Portland State University](https://www.pdx.edu/) in Portland, Oregon and have a background in ethnography. 
+I completed my pre-doctoral studies at Humboldt, spent a semester at the [Portland State University](https://www.pdx.edu/) in Portland, Oregon, and have a background in ethnography. 
 
 
 
-# 🚧 This page is currently under construction 🏗️
+# 🚧 This page is currently under construction 🚧
