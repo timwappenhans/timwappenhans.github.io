@@ -14,5 +14,11 @@ I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sow
 In my PhD projects, I use experiments and original data to understand how large scale shifts like demographic and climate change shape political polarization.
 
 
+Please hit me up if you want to talk about my reasearch
+
+🐦 @timwapps`✉️ `tim.wappenhans@hu-berlin.de`
+
+
+
 
 
