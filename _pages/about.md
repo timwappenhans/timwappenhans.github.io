@@ -16,7 +16,7 @@ In my PhD projects, I use experiments and original data to understand how large 
 
 Please hit me up if you want to talk about my reasearch
 
-🐦 @timwapps`✉️ `tim.wappenhans@hu-berlin.de`
+🐦 `@timwapps`✉️ `tim.wappenhans@hu-berlin.de`
 
 
 
