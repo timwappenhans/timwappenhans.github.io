@@ -25,15 +25,3 @@ author_profile: true
 
 [Comparative Political Science and International Relations](/files/syllabus_comp_2021.pdf), Humboldt University (Winter 2021, 2022)
 
-
-
----
-title: ""
-collection: teaching
-type: "Lecturer"
-permalink: /teaching/2020-us
-venue: "Humboldt-Universität, Chair of Empirical Social Research"
-date: 2020-01-01
-location: "Berlin, Germany"
----
-
