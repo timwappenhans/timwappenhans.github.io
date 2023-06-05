@@ -13,10 +13,5 @@ I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sow
 
 My research is focused on political behavior and comparative politics. I am interested in voters and responsiveness of political actors. I use both causal identification strategies for observational data and experiments for my research.
 
-In my dissertation, which is supervised by [Heike Klüver](http://www.heike-kluever.com), I analyze the causes and consequences of affective polarization in Western Europe.
+I hold a Masters in Social Sciences (2020) from Humboldt University.
 
-I completed my pre-doctoral studies at Humboldt, spent a semester at the [Portland State University](https://www.pdx.edu/) in Portland, Oregon, and have a background in ethnography. 
-
-
-
-# 🚧 This page is currently under construction 🚧
