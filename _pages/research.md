@@ -7,12 +7,9 @@ author_profile: true
 
 ## Working Papers
 
-- _Creating grievances. How radical right parties undermine local public goods provision_ 
-Draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
+- _Creating grievances. How radical right parties undermine local public goods provision_, draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
 
-- _Do parties respond to natural disasters?_ with  [Heike Klüver](https://www.heike-kluever.com/), [Lukas Stoetzer](https://www.lukas-stoetzer.org/), [António Valentim](https://antoniovalentim.github.io/)
-
-Draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
+- _Do parties respond to natural disasters?_ with  [Heike Klüver](https://www.heike-kluever.com/), [Lukas Stoetzer](https://www.lukas-stoetzer.org/), and [António Valentim](https://antoniovalentim.github.io/), draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
 
 
 ## Ongoing Work
