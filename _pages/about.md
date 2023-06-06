@@ -11,8 +11,7 @@ redirect_from:
 
 I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) and a research fellow at the [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) at Humboldt University, Berlin.
  
-In my PhD projects, I use experiments and original data to understand how large scale shifts like demographic and climate change shape political polarization.
-
+In my PhD projects, I use experiments and original data to understand how large scale trends in demography and climate change affect political polarization.
 
 If you want to talk about my research, hit me up on [🐦 Twitter](https://twitter.com/timwapps?lang=en) or via [✉️ Mail](mailto:tim.wappenhans@hu-berlin.de).
 
