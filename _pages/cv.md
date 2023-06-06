@@ -9,4 +9,4 @@ redirect_from:
 
 {% include base_path %}
 
-You can download my CV [here](/files/syllabus_polarization_2023.pdf)
+You can download my CV [here](/files/wappenhans_cv.pdf)
