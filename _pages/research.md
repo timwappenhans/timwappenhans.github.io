@@ -7,18 +7,13 @@ author_profile: true
 
 ## Working Papers
 
-- _Creating grievances. How radical right parties undermine local public goods provision_, draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
+- _National scandal, local accountability? The district election performance of politicians involved in scandal and their parties_, draft available upon [request](mailto:frederik.thieme@hu-berlin.de)
 
-- _Do parties respond to natural disasters?_ with  [Heike Klüver](https://www.heike-kluever.com/), [Lukas Stoetzer](https://www.lukas-stoetzer.org/), and [António Valentim](https://antoniovalentim.github.io/), draft available upon [request](mailto:tim.wappenhans@hu-berlin.de)
+- _Effects of the German Christian Conservatives’ Mask Scandal on Attitudes and Voting Intentions in the Election Year 2021_, draft available upon [request](mailto:frederik.thieme@hu-berlin.de)
 
 
 ## Ongoing Work
 
-- _Effects citizen assemblies. Evidence from a field experiment_, with [Heike Klüver](https://www.heike-kluever.com/), [Felix Hartmann](http://hartmannfelix.github.io/), and [Bernhard Clemm](https://bernhardclemm.com/) 
-
-
-- _Right-wing populist parties and the rise of hate crimes_, with  [Heike Klüver](https://www.heike-kluever.com/) Jasper Jansen
-
--  _Does protest affect bystanders?_ with  [Heike Klüver](https://www.heike-kluever.com/), [Lukas Stoetzer](https://www.lukas-stoetzer.org/), [Macartan Humphreys](https://macartan.github.io/), [Violeta Haas](https://violeta-haas.github.io/research/), [Ferdinand Geißler](https://www.sowi.hu-berlin.de/de/lehrbereiche/empisoz/a-z/geisslerferdinand), [Johannes Giesecke](https://www.google.com/search?q=johannes+giesecke&oq=johannes+giesecke&aqs=chrome..69i57j0i22i30l9.4158j0j7&sourceid=chrome&ie=UTF-8), [Felix Hartmann](http://hartmannfelix.github.io/), and [Daniel Bischof](https://www.danbischof.com/)
+- _Helping the Cause? The Effect of Female Top Candidate Nominations on Voters_, with [Heike Klüver](https://www.heike-kluever.com/) and [Jae-Jae Spoon](https://www.polisci.pitt.edu/people/jae-jae-spoon)
 
 
