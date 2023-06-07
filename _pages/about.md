@@ -8,12 +8,11 @@ redirect_from:
   - /about.html
 ---
 
+I am currently working as a research fellow at Prof. Dr. [Heike Kluever](https://www.heike-kluever.com/)’s [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/de/lehrbereiche/politischesverhalten/team/frederik-thieme) at Humboldt University Berlin, while pursuing my PhD. 
 
-I am a PhD candidate with the [DYNAMICS Research Training Group](https://www.sowi.hu-berlin.de/en/dynamics) and a research fellow at the [Chair of Comparative Behavior](https://www.sowi.hu-berlin.de/en/lehrbereiche-en/comparative-political-behavior/team/tim-wappenhans) at Humboldt University, Berlin.
- 
-In my PhD projects, I use experiments and original data to understand how large scale trends in demography and climate change affect political polarization.
+My main interest is quantitative research 📊 on the effects of events on the behavior of voters, politicians and parties. Moreover, I am interested in economic inequality 💸, its causes and consequences.
 
-If you want to talk about my research, hit me up on [🐦 Twitter](https://twitter.com/timwapps?lang=en) or via [✉️ Mail](mailto:tim.wappenhans@hu-berlin.de).
+If you want to talk about my research, hit me up on anytime via [✉️ Mail](mailto:frederik.thieme@hu-berlin.de).
 
 
 
