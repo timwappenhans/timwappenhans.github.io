@@ -12,7 +12,7 @@ I am currently working as a research fellow at Prof. Dr. [Heike Kluever](https:/
 
 My main interest is quantitative research 📊 on the effects of events on the behavior of voters, politicians and parties. Moreover, I am interested in economic inequality 💸, its causes and consequences.
 
-If you want to talk about my research, hit me up on anytime via [✉️ Mail](mailto:frederik.thieme@hu-berlin.de).
+If you want to talk about my research, hit me up anytime via [✉️ Mail](mailto:frederik.thieme@hu-berlin.de).
 
 
 
