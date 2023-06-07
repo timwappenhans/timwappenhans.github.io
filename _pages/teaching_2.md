@@ -6,6 +6,6 @@ author_profile: true
 ---
 
 
-[Political scandals, voters’ attitudes and behavior: from successful accountability to inconsequence](/files/thieme_syllabus_scandals.pdf), Humboldt University (Summer 2023)
+Seminar: [Political scandals, voters’ attitudes and behavior: from successful accountability to inconsequence](/files/thieme_syllabus_scandals.pdf), Humboldt University (Summer 2023)
 
 
