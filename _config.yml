@@ -7,13 +7,13 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Tim Wappenhans"
+title                    : "Frederik Thieme"
 title_separator          : "-"
-name                     : &name "Tim Wappenhans"
+name                     : &name "Frederik Thieme"
 description              : &description "PhD Candidate"
-url                      : https://timwappenhans.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : https://frederikthieme.net # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
-repository               : "timwappenhans/timwappenhans.github.io"
+repository               : "frederikthieme/frederikthieme.github.io"
 teaser                   : # "normal_dist-matisse.png" # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
 breadcrumbs              : false # true, false (default)
 words_per_minute         : 160
@@ -57,7 +57,7 @@ yandex_site_verification :
 
 # Social Sharing
 twitter:
-  username               : &twitter TimWapps
+  username               : &twitter frederik_thieme
 facebook:
   username               :
   app_id                 :
@@ -80,14 +80,14 @@ analytics:
 
 # Site Author
 author:
-  name             : "Tim Wappenhans"
-  avatar           : "profile.png"
-  bio              : "PhD Candidate in Political Science at DYNAMICS & Humboldt-Universität zu Berlin"
+  name             : "Frederik Thieme"
+  avatar           : "thieme_square.png"
+  bio              : "Research Fellow & PhD Student in Political Science at Humboldt-Universität zu Berlin"
   location         : "Berlin, Germany"
   employer         : 
   pubmed           : 
   googlescholar    : 
-  email            : "tim.wappenhans@hu-berlin.de"
+  email            : "frederik.thieme@hu-berlin.de"
   researchgate     : 
   uri              :
   bitbucket        :
@@ -96,25 +96,27 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "timwappenhans"
+  github           : "frederikthieme"
   google_plus      :
   keybase          :
   instagram        :
   impactstory      : 
   lastfm           :
-  linkedin         :
-  orcid            : "https://orcid.org/0000-0001-8903-5477"
+  linkedin         : "https://www.linkedin.com/in/frederik-thieme-a01140122/"
+  orcid            : 
   pinterest        :
   soundcloud       :
   stackoverflow    : 
   steam            :
   tumblr           :
-  twitter          : "TimWapps"
+  twitter          : "frederik_thieme"
   vine             :
   weibo            :
   xing             :
   youtube          :
   wikipedia        :
+  mastodon         :  "@frederikthieme@sciences.social"
+  mastodon-url     :  "https://sciences.social/@frederikthieme"
 
 
 # Reading Files
