@@ -26,5 +26,7 @@ You can download a more detailed version of my CV [here](/files/thieme_cv.pdf).
 - May 5, 2023: _Empirical Political Science in Berlin and Brandenburg_, workshop (organizers: Mark Kayser, Simon Munzert)
 
 # Additional Training
+- _Causal Inference and Experiments in the Social Sciences_ with [Ryan T. Moore](https://www.ryantmoore.org/) (Essex Summer School in Social
+Science Data Analysis 2023)
 - _Programming Methods for Data Retrieval & Management_ with [Christopher Gandrud](https://scholar.google.com/citations?user=mFOkxwEAAAAJ&hl=en) (RTG DYNAMICS Workshop)
 - _Introduction to Computational Thinking in R_ with [Christopher Gandrud](https://scholar.google.com/citations?user=mFOkxwEAAAAJ&hl=en) (RTG DYNAMICS Workshop)
