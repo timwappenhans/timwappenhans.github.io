@@ -22,6 +22,9 @@ You can download a more detailed version of my CV [here](/files/thieme_cv.pdf).
 - Freelance Marketing Strategist, self-employed, 2019 - 2022
 - Marketing Strategist, [C3 Creative Code and Content](https://www.c3.co/), 2016 - 2019
 
+# Projects
+- _MINISTERIALLOBBY_: Investigating interest group behavior in Germany with Heike Klüver, Jan Stuckatz, Felix Hartmann, Kai-Uwe Schnapp and Cornelius Erfort. 
+
 # Workshops and Presentations
 - May 5, 2023: _Empirical Political Science in Berlin and Brandenburg_, workshop (organizers: Mark Kayser, Simon Munzert)
 
