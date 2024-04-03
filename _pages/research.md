@@ -14,6 +14,7 @@ author_profile: true
 
 ## Ongoing Work
 
+- Between Growth and Green: Climate Change, Electoral Competition and the Role of Economic Status
 - _Helping the Cause? The Effect of Female Top Candidate Nominations on Voters_, with [Heike Klüver](https://www.heike-kluever.com/) and [Jae-Jae Spoon](https://www.polisci.pitt.edu/people/jae-jae-spoon)
 
 
