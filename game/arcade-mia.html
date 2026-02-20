@@ -94,20 +94,20 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const W = 800, H = 500;
 
-// ---------- PALETTE ----------
+// ---------- PALETTE (NES-muted) ----------
 const PAL = {
-  bg:        '#0f1a0f',
-  ground:    '#2a5a2a',
-  groundLt:  '#3a7a3a',
-  sky:       '#0a1a2a',
-  text:      '#c0f0c0',
-  textDim:   '#4a8a4a',
-  accent:    '#ffcc00',
-  danger:    '#ff4444',
-  white:     '#eeffee',
-  dark:      '#0a0f0a',
-  panel:     '#1a2a1a',
-  panelBord: '#3a6a3a',
+  bg:        '#101410',
+  ground:    '#3a4a3a',
+  groundLt:  '#4a5a4a',
+  sky:       '#141820',
+  text:      '#7a8a7a',
+  textDim:   '#4a5a4a',
+  accent:    '#a89860',
+  danger:    '#883333',
+  white:     '#b8b8b0',
+  dark:      '#0a0e0a',
+  panel:     '#1a221a',
+  panelBord: '#3a4a3a',
 };
 
 // ---------- GAME STATE ----------
@@ -128,8 +128,8 @@ let deathReason = '';
 const LEVELS = [
   {
     name: 'PhD Student',
-    color: '#2a5a2a',
-    bgColor: '#0a1a2a',
+    color: '#2a3a2a',
+    bgColor: '#101820',
     obstacles: ['papers', 'rejection', 'deadline', 'coffee'],
     duration: 600,
     speedMult: 1.0,
@@ -138,8 +138,8 @@ const LEVELS = [
   },
   {
     name: 'Post-Doc',
-    color: '#3a4a6a',
-    bgColor: '#0a0a2a',
+    color: '#2a3040',
+    bgColor: '#10101a',
     obstacles: ['contract', 'movingbox', 'randr', 'coffee'],
     duration: 700,
     speedMult: 1.15,
@@ -148,8 +148,8 @@ const LEVELS = [
   },
   {
     name: 'Grant Recipient',
-    color: '#5a4a2a',
-    bgColor: '#1a1a0a',
+    color: '#3a3425',
+    bgColor: '#18160e',
     obstacles: ['bureaucracy', 'ethics', 'budget', 'gdpr'],
     duration: 800,
     speedMult: 1.3,
@@ -158,8 +158,8 @@ const LEVELS = [
   },
   {
     name: 'Tenure Track',
-    color: '#5a2a2a',
-    bgColor: '#1a0a0a',
+    color: '#3a2222',
+    bgColor: '#180e0e',
     obstacles: ['evaluation', 'committee', 'service', 'hindexwall'],
     duration: 900,
     speedMult: 1.45,
@@ -168,8 +168,8 @@ const LEVELS = [
   },
   {
     name: 'TENURE',
-    color: '#4a3a6a',
-    bgColor: '#0a0a1a',
+    color: '#302838',
+    bgColor: '#100e18',
     obstacles: ['restructuring', 'adminmeeting', 'apsrreject', 'committee'],
     duration: 1000,
     speedMult: 1.6,
@@ -199,6 +199,9 @@ let collectibles = [];
 let particles = [];
 let bgElements = [];
 let stars = [];
+let finishLine = null;
+let finishReached = false;
+let celebrationTimer = 0;
 
 // Init stars
 for (let i = 0; i < 60; i++) {
@@ -241,27 +244,27 @@ function drawPixelChar(px, py, mirror) {
   ctx.fillRect(px - 2, groundY - 2, 36, 6);
 
   // Body
-  drawPixelRect(px + 8, py, 16, 24, '#4488cc'); // shirt
-  drawPixelRect(px + 8, py + 24, 16, 12, '#334455'); // pants
+  drawPixelRect(px + 8, py, 16, 24, '#556677'); // shirt (muted slate)
+  drawPixelRect(px + 8, py + 24, 16, 12, '#2e3640'); // pants
 
   // Head
-  drawPixelRect(px + 6, py - 16, 20, 16, '#ffcc99'); // face
+  drawPixelRect(px + 6, py - 16, 20, 16, '#c0a070'); // face (warm muted)
 
   // Hair
-  drawPixelRect(px + 4, py - 20, 24, 6, '#553322');
-  drawPixelRect(px + 4, py - 16, 4, 4, '#553322');
+  drawPixelRect(px + 4, py - 20, 24, 6, '#3a2818');
+  drawPixelRect(px + 4, py - 16, 4, 4, '#3a2818');
 
   // Glasses
   drawPixelRect(px + 8, py - 12, 7, 5, '#222');
   drawPixelRect(px + 17, py - 12, 7, 5, '#222');
-  drawPixelRect(px + 10, py - 11, 3, 3, '#aaddff');
-  drawPixelRect(px + 19, py - 11, 3, 3, '#aaddff');
+  drawPixelRect(px + 10, py - 11, 3, 3, '#7a9aaa');
+  drawPixelRect(px + 19, py - 11, 3, 3, '#7a9aaa');
   drawPixelRect(px + 15, py - 11, 2, 2, '#222'); // bridge
 
   // Coffee (held in front hand)
   if (player.coffeeBoost > 0) {
-    drawPixelRect(px + 26, py + 4, 8, 12, '#8B4513');
-    drawPixelRect(px + 27, py + 1, 6, 3, '#fff');
+    drawPixelRect(px + 26, py + 4, 8, 12, '#6a4020');
+    drawPixelRect(px + 27, py + 1, 6, 3, '#c8c0b0');
     // Steam
     if (frameCount % 20 < 10) {
       drawPixelRect(px + 28, py - 3, 2, 3, 'rgba(255,255,255,0.5)');
@@ -272,12 +275,12 @@ function drawPixelChar(px, py, mirror) {
   // Arms
   if (player.grounded) {
     const armSwing = f % 2 === 0 ? 0 : 3;
-    drawPixelRect(px + 4, py + 2 + armSwing, 4, 14, '#ffcc99');
-    drawPixelRect(px + 24, py + 2 - armSwing, 4, 14, '#ffcc99');
+    drawPixelRect(px + 4, py + 2 + armSwing, 4, 14, '#c0a070');
+    drawPixelRect(px + 24, py + 2 - armSwing, 4, 14, '#c0a070');
   } else {
     // Arms up when jumping
-    drawPixelRect(px + 4, py - 6, 4, 12, '#ffcc99');
-    drawPixelRect(px + 24, py - 6, 4, 12, '#ffcc99');
+    drawPixelRect(px + 4, py - 6, 4, 12, '#c0a070');
+    drawPixelRect(px + 24, py - 6, 4, 12, '#c0a070');
   }
 
   // Legs (animated)
@@ -304,195 +307,167 @@ function drawObstacle(obs) {
   ctx.save();
   switch (obs.type) {
     case 'papers':
-      // Stack of papers
       for (let i = 0; i < 3; i++) {
-        drawPixelRect(x + i * 2, y + i * 6, 28, 20, '#eee');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 4, 18, 2, '#aaa');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 8, 14, 2, '#aaa');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 12, 20, 2, '#aaa');
+        drawPixelRect(x + i * 2, y + i * 6, 28, 20, '#c8c8c0');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 4, 18, 2, '#7a7a70');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 8, 14, 2, '#7a7a70');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 12, 20, 2, '#7a7a70');
       }
       break;
 
     case 'rejection':
-      // Red envelope
-      drawPixelRect(x, y + 4, 36, 26, '#cc3333');
-      drawPixelRect(x + 2, y + 6, 32, 22, '#ff5555');
-      // Flap
-      ctx.fillStyle = '#dd4444';
+      drawPixelRect(x, y + 4, 36, 26, '#884444');
+      drawPixelRect(x + 2, y + 6, 32, 22, '#aa6666');
+      ctx.fillStyle = '#995555';
       ctx.beginPath();
       ctx.moveTo(x, y + 4);
       ctx.lineTo(x + 18, y + 18);
       ctx.lineTo(x + 36, y + 4);
       ctx.fill();
-      // X mark
-      drawPixelRect(x + 12, y + 14, 12, 3, '#fff');
-      drawPixelRect(x + 16, y + 10, 3, 12, '#fff');
+      drawPixelRect(x + 12, y + 14, 12, 3, '#c8c0b0');
+      drawPixelRect(x + 16, y + 10, 3, 12, '#c8c0b0');
       break;
 
     case 'deadline':
-      // Clock
-      drawPixelRect(x + 4, y, 28, 28, '#ffcc00');
-      drawPixelRect(x + 6, y + 2, 24, 24, '#fff');
+      drawPixelRect(x + 4, y, 28, 28, '#a89860');
+      drawPixelRect(x + 6, y + 2, 24, 24, '#c8c8c0');
       drawPixelRect(x + 16, y + 6, 3, 12, '#222');
-      drawPixelRect(x + 16, y + 10, 10, 3, '#cc0000');
-      // "!" above
+      drawPixelRect(x + 16, y + 10, 10, 3, '#884444');
       if (frameCount % 30 < 20) {
-        drawPixelRect(x + 15, y - 14, 5, 8, '#ff0000');
-        drawPixelRect(x + 15, y - 4, 5, 3, '#ff0000');
+        drawPixelRect(x + 15, y - 14, 5, 8, '#884444');
+        drawPixelRect(x + 15, y - 4, 5, 3, '#884444');
       }
       break;
 
     case 'coffee':
-      // Collectible coffee cup
-      drawPixelRect(x + 4, y + 6, 20, 24, '#8B4513');
-      drawPixelRect(x + 6, y + 8, 16, 20, '#D2691E');
-      drawPixelRect(x + 24, y + 12, 6, 12, '#8B4513');
-      // Steam
+      drawPixelRect(x + 4, y + 6, 20, 24, '#6a4020');
+      drawPixelRect(x + 6, y + 8, 16, 20, '#8a6040');
+      drawPixelRect(x + 24, y + 12, 6, 12, '#6a4020');
       if (frameCount % 16 < 8) {
-        drawPixelRect(x + 8, y - 2, 3, 6, 'rgba(255,255,255,0.6)');
-        drawPixelRect(x + 14, y - 4, 3, 6, 'rgba(255,255,255,0.4)');
+        drawPixelRect(x + 8, y - 2, 3, 6, 'rgba(200,200,190,0.5)');
+        drawPixelRect(x + 14, y - 4, 3, 6, 'rgba(200,200,190,0.3)');
       }
       break;
 
     case 'contract':
-      // Crumbling platform / short contract
-      drawPixelRect(x, y, 40, 8, '#887744');
-      drawPixelRect(x, y + 8, 40, 22, '#aa9966');
-      // Cracks
-      drawPixelRect(x + 10, y + 8, 2, 14, '#665533');
-      drawPixelRect(x + 25, y + 6, 2, 18, '#665533');
-      // "TEMP" label
-      ctx.fillStyle = '#cc0000';
+      drawPixelRect(x, y, 40, 8, '#6a5a3a');
+      drawPixelRect(x, y + 8, 40, 22, '#8a7a5a');
+      drawPixelRect(x + 10, y + 8, 2, 14, '#5a4a30');
+      drawPixelRect(x + 25, y + 6, 2, 18, '#5a4a30');
+      ctx.fillStyle = '#884444';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText('TEMP', x + 4, y + 22);
       break;
 
     case 'movingbox':
-      // Cardboard box
-      drawPixelRect(x, y, 36, 30, '#cc9944');
-      drawPixelRect(x + 2, y + 2, 32, 26, '#ddaa55');
-      drawPixelRect(x + 6, y + 12, 24, 3, '#aa7733');
-      // Tape
-      drawPixelRect(x + 14, y, 8, 30, 'rgba(200,180,100,0.5)');
+      drawPixelRect(x, y, 36, 30, '#8a7050');
+      drawPixelRect(x + 2, y + 2, 32, 26, '#9a8060');
+      drawPixelRect(x + 6, y + 12, 24, 3, '#7a6040');
+      drawPixelRect(x + 14, y, 8, 30, 'rgba(140,120,80,0.4)');
       break;
 
     case 'randr':
-      // R&R letter
-      drawPixelRect(x, y + 2, 34, 28, '#eeddcc');
-      drawPixelRect(x + 2, y + 4, 30, 24, '#fff8ee');
-      ctx.fillStyle = '#cc0000';
+      drawPixelRect(x, y + 2, 34, 28, '#b8b0a0');
+      drawPixelRect(x + 2, y + 4, 30, 24, '#c8c0b0');
+      ctx.fillStyle = '#884444';
       ctx.font = '7px "Press Start 2P"';
       ctx.fillText('R&R', x + 4, y + 18);
-      // Red stamp effect
-      drawPixelRect(x + 20, y + 18, 12, 10, 'rgba(200,0,0,0.3)');
+      drawPixelRect(x + 20, y + 18, 12, 10, 'rgba(136,68,68,0.3)');
       break;
 
     case 'bureaucracy':
-      // Stack of forms
       for (let i = 0; i < 4; i++) {
-        drawPixelRect(x + i, y + i * 5, 32, 24, i % 2 === 0 ? '#ddd' : '#eee');
+        drawPixelRect(x + i, y + i * 5, 32, 24, i % 2 === 0 ? '#b0b0a8' : '#c0c0b8');
       }
-      ctx.fillStyle = '#cc0000';
+      ctx.fillStyle = '#884444';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('FORM', x + 5, y + 14);
       ctx.fillText('27B/6', x + 3, y + 22);
       break;
 
     case 'ethics':
-      // Ethics board stamp
-      drawPixelRect(x + 2, y, 30, 30, '#2244aa');
-      drawPixelRect(x + 4, y + 2, 26, 26, '#3355cc');
-      ctx.fillStyle = '#fff';
+      drawPixelRect(x + 2, y, 30, 30, '#3a4a60');
+      drawPixelRect(x + 4, y + 2, 26, 26, '#4a5a70');
+      ctx.fillStyle = '#b8b8b0';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('IRB', x + 8, y + 14);
       ctx.fillText('DENY', x + 5, y + 22);
       break;
 
     case 'budget':
-      // Spreadsheet
-      drawPixelRect(x, y + 2, 36, 28, '#228833');
-      drawPixelRect(x + 2, y + 4, 32, 24, '#33aa44');
+      drawPixelRect(x, y + 2, 36, 28, '#4a6a4a');
+      drawPixelRect(x + 2, y + 4, 32, 24, '#5a7a5a');
       for (let i = 0; i < 3; i++) {
-        drawPixelRect(x + 2, y + 8 + i * 7, 32, 1, '#228833');
+        drawPixelRect(x + 2, y + 8 + i * 7, 32, 1, '#4a6a4a');
       }
-      drawPixelRect(x + 14, y + 4, 1, 24, '#228833');
-      // Red number
-      ctx.fillStyle = '#ff0000';
+      drawPixelRect(x + 14, y + 4, 1, 24, '#4a6a4a');
+      ctx.fillStyle = '#884444';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText('-€€', x + 4, y + 24);
       break;
 
     case 'gdpr':
-      // GDPR wall
-      drawPixelRect(x, y, 36, 34, '#2244aa');
-      drawPixelRect(x + 2, y + 2, 32, 30, '#3366cc');
-      ctx.fillStyle = '#ffcc00';
+      drawPixelRect(x, y, 36, 34, '#3a4a60');
+      drawPixelRect(x + 2, y + 2, 32, 30, '#4a5a70');
+      ctx.fillStyle = '#a89860';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText('GDPR', x + 3, y + 14);
-      // Shield icon
-      drawPixelRect(x + 10, y + 18, 16, 12, '#ffcc00');
-      drawPixelRect(x + 12, y + 20, 12, 8, '#3366cc');
+      drawPixelRect(x + 10, y + 18, 16, 12, '#a89860');
+      drawPixelRect(x + 12, y + 20, 12, 8, '#4a5a70');
       break;
 
     case 'evaluation':
-      // Teaching eval form
-      drawPixelRect(x, y + 2, 32, 28, '#fff');
-      drawPixelRect(x + 2, y + 4, 28, 24, '#ffeedd');
-      ctx.fillStyle = '#ff4444';
+      drawPixelRect(x, y + 2, 32, 28, '#c8c8c0');
+      drawPixelRect(x + 2, y + 4, 28, 24, '#c0b8a8');
+      ctx.fillStyle = '#884444';
       ctx.font = '10px "Press Start 2P"';
       ctx.fillText('D-', x + 6, y + 22);
       break;
 
     case 'committee':
-      // Meeting invite
-      drawPixelRect(x, y, 38, 30, '#554477');
-      drawPixelRect(x + 2, y + 2, 34, 26, '#7766aa');
-      ctx.fillStyle = '#fff';
+      drawPixelRect(x, y, 38, 30, '#3a3450');
+      drawPixelRect(x + 2, y + 2, 34, 26, '#4a4460');
+      ctx.fillStyle = '#b8b8b0';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('MTG', x + 6, y + 14);
       ctx.fillText('15:00', x + 4, y + 22);
       break;
 
     case 'service':
-      // Service obligation block
-      drawPixelRect(x, y, 34, 32, '#885522');
-      drawPixelRect(x + 2, y + 2, 30, 28, '#aa7744');
-      ctx.fillStyle = '#fff';
+      drawPixelRect(x, y, 34, 32, '#5a4020');
+      drawPixelRect(x + 2, y + 2, 30, 28, '#7a6040');
+      ctx.fillStyle = '#b8b8b0';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('ADMIN', x + 2, y + 16);
       ctx.fillText('DUTY', x + 4, y + 24);
       break;
 
     case 'hindexwall':
-      // h-index counter wall
-      drawPixelRect(x, y, 34, 34, '#333');
-      drawPixelRect(x + 2, y + 2, 30, 30, '#222');
-      ctx.fillStyle = '#00ff00';
+      drawPixelRect(x, y, 34, 34, '#2a2a2a');
+      drawPixelRect(x + 2, y + 2, 30, 30, '#1a1a1a');
+      ctx.fillStyle = '#668844';
       ctx.font = '8px "Press Start 2P"';
       ctx.fillText('h=' + Math.floor(Math.random() * 5 + 2), x + 4, y + 20);
       break;
 
     case 'restructuring':
-      // University restructuring notice
-      drawPixelRect(x, y, 40, 34, '#882222');
-      drawPixelRect(x + 2, y + 2, 36, 30, '#aa3333');
-      ctx.fillStyle = '#ffcc00';
+      drawPixelRect(x, y, 40, 34, '#5a2020');
+      drawPixelRect(x + 2, y + 2, 36, 30, '#7a3030');
+      ctx.fillStyle = '#a89860';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('DEPT', x + 6, y + 14);
       ctx.fillText('CUT!', x + 6, y + 22);
       break;
 
     case 'adminmeeting':
-      // Endless meeting
-      drawPixelRect(x, y, 44, 30, '#444466');
-      drawPixelRect(x + 2, y + 2, 40, 26, '#555588');
-      ctx.fillStyle = '#aaaacc';
+      drawPixelRect(x, y, 44, 30, '#303040');
+      drawPixelRect(x + 2, y + 2, 40, 26, '#404050');
+      ctx.fillStyle = '#7a7a90';
       ctx.font = '5px "Press Start 2P"';
       ctx.fillText('3HR', x + 8, y + 14);
       ctx.fillText('MEET', x + 6, y + 22);
-      // Zzzs
       if (frameCount % 40 < 25) {
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#b8b8b0';
         ctx.font = '8px "Press Start 2P"';
         ctx.fillText('Z', x + 36, y - 4);
         ctx.font = '6px "Press Start 2P"';
@@ -501,10 +476,9 @@ function drawObstacle(obs) {
       break;
 
     case 'apsrreject':
-      // APSR rejection — the big one
-      drawPixelRect(x, y - 4, 44, 38, '#880000');
-      drawPixelRect(x + 2, y - 2, 40, 34, '#bb0000');
-      ctx.fillStyle = '#fff';
+      drawPixelRect(x, y - 4, 44, 38, '#5a1010');
+      drawPixelRect(x + 2, y - 2, 40, 34, '#7a2020');
+      ctx.fillStyle = '#b8b8b0';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText('APSR', x + 6, y + 10);
       ctx.fillText('DESK', x + 6, y + 20);
@@ -522,34 +496,104 @@ function drawCollectible(col) {
   ctx.save();
   switch (col.type) {
     case 'citation':
-      // Little star/citation
-      drawPixelRect(x + 6, y + bob, 12, 12, '#ffcc00');
-      drawPixelRect(x + 4, y + 2 + bob, 16, 8, '#ffcc00');
-      drawPixelRect(x + 8, y - 2 + bob, 8, 16, '#ffcc00');
-      ctx.fillStyle = '#aa8800';
+      drawPixelRect(x + 6, y + bob, 12, 12, '#a89860');
+      drawPixelRect(x + 4, y + 2 + bob, 16, 8, '#a89860');
+      drawPixelRect(x + 8, y - 2 + bob, 8, 16, '#a89860');
+      ctx.fillStyle = '#6a5a30';
       ctx.font = '6px "Press Start 2P"';
       ctx.fillText('★', x + 5, y + 10 + bob);
       break;
 
     case 'publication':
-      // Tiny journal
-      drawPixelRect(x + 2, y + bob, 20, 16, '#3366cc');
-      drawPixelRect(x + 4, y + 2 + bob, 16, 12, '#5588ee');
-      ctx.fillStyle = '#fff';
+      drawPixelRect(x + 2, y + bob, 20, 16, '#4a5a70');
+      drawPixelRect(x + 4, y + 2 + bob, 16, 12, '#5a6a80');
+      ctx.fillStyle = '#b8b8b0';
       ctx.font = '4px "Press Start 2P"';
       ctx.fillText('PUB', x + 5, y + 10 + bob);
       break;
 
     case 'grant':
-      // Money bag
-      drawPixelRect(x + 4, y + 4 + bob, 16, 14, '#44aa44');
-      drawPixelRect(x + 6, y + 2 + bob, 12, 4, '#44aa44');
-      ctx.fillStyle = '#ffcc00';
+      drawPixelRect(x + 4, y + 4 + bob, 16, 14, '#5a7a5a');
+      drawPixelRect(x + 6, y + 2 + bob, 12, 4, '#5a7a5a');
+      ctx.fillStyle = '#a89860';
       ctx.font = '8px "Press Start 2P"';
       ctx.fillText('€', x + 7, y + 14 + bob);
       break;
   }
   ctx.restore();
+}
+
+// ---------- FINISH LINE ----------
+function initFinishLine() {
+  const level = LEVELS[levelIndex];
+  const spd = gameSpeed * level.speedMult;
+  // Place the finish line so it arrives after level.duration frames
+  finishLine = {
+    x: W + level.duration * spd,
+    w: 16,
+    reached: false,
+  };
+  finishReached = false;
+  celebrationTimer = 0;
+}
+
+function drawFinishLine() {
+  if (!finishLine || finishLine.x > W + 50) return;
+  const x = Math.floor(finishLine.x);
+  const level = LEVELS[levelIndex];
+  const nextLevel = LEVELS[levelIndex + 1];
+  const poleH = 220;
+  const poleTop = groundY - poleH;
+  const poleW = 12;
+
+  // Checkered pole (wider squares)
+  for (let i = 0; i < poleH; i += 12) {
+    const even = (Math.floor(i / 12)) % 2 === 0;
+    drawPixelRect(x, poleTop + i, poleW, 12, even ? '#b8b8b0' : '#2a2a2a');
+    drawPixelRect(x + poleW, poleTop + i, poleW, 12, even ? '#2a2a2a' : '#b8b8b0');
+  }
+
+  // Banner / flag (much larger)
+  const bannerW = 140;
+  const bannerH = 56;
+  const bannerY = poleTop - 8;
+
+  // Banner shadow
+  drawPixelRect(x + poleW * 2 + 4, bannerY + 4, bannerW, bannerH, '#1a1a1a');
+  // Banner body
+  drawPixelRect(x + poleW * 2, bannerY, bannerW, bannerH, '#2a2a2a');
+  drawPixelRect(x + poleW * 2 + 3, bannerY + 3, bannerW - 6, bannerH - 6, '#3a3a3a');
+  // Banner border accent
+  drawPixelRect(x + poleW * 2, bannerY, bannerW, 3, '#a89860');
+  drawPixelRect(x + poleW * 2, bannerY + bannerH - 3, bannerW, 3, '#a89860');
+
+  // Banner text
+  ctx.textAlign = 'center';
+  const textCenterX = x + poleW * 2 + bannerW / 2;
+  if (level.isFinal) {
+    ctx.fillStyle = '#a89860';
+    ctx.font = '14px "Press Start 2P"';
+    ctx.fillText('TENURE!', textCenterX, bannerY + 24);
+    ctx.fillStyle = '#7a8a7a';
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('FINISH LINE', textCenterX, bannerY + 42);
+  } else if (nextLevel) {
+    ctx.fillStyle = '#a89860';
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('NEXT:', textCenterX, bannerY + 20);
+    ctx.fillStyle = '#b8b8b0';
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText(nextLevel.name.toUpperCase(), textCenterX, bannerY + 40);
+  }
+  ctx.textAlign = 'left';
+
+  // Checkered ground strip at the finish (wider)
+  for (let row = 0; row < 5; row++) {
+    for (let c = 0; c < 5; c++) {
+      const even = (row + c) % 2 === 0;
+      drawPixelRect(x - 16 + c * 14, groundY + row * 12, 14, 12, even ? '#b8b8b0' : '#2a2a2a');
+    }
+  }
 }
 
 // ---------- BACKGROUND ----------
@@ -566,8 +610,8 @@ function drawBackground() {
   // Stars
   stars.forEach(s => {
     const twinkle = Math.sin(frameCount * 0.03 + s.twinkle);
-    const alpha = 0.3 + twinkle * 0.3;
-    ctx.fillStyle = `rgba(200,255,200,${alpha})`;
+    const alpha = 0.2 + twinkle * 0.2;
+    ctx.fillStyle = `rgba(180,190,170,${alpha})`;
     ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
   });
 
@@ -606,7 +650,7 @@ function drawScenery(level) {
     ctx.fillRect(bx, groundY - bh, bw, bh);
 
     // Windows
-    ctx.fillStyle = '#ffcc00';
+    ctx.fillStyle = '#8a7a50';
     for (let wy = groundY - bh + 8; wy < groundY - 8; wy += 14) {
       for (let wx = bx + 6; wx < bx + bw - 6; wx += 12) {
         if (Math.sin(wx * wy * 0.1 + frameCount * 0.01) > 0.2) {
@@ -704,6 +748,7 @@ function startGame() {
   particles = [];
   spawnTimer = 0;
   collectibleTimer = 0;
+  initFinishLine();
 }
 
 function resetToTitle() {
@@ -723,24 +768,47 @@ function update() {
 
     if (player.coffeeBoost > 0) player.coffeeBoost--;
 
-    // Check level up
-    if (levelTimer >= level.duration && levelIndex < LEVELS.length - 1) {
-      levelIndex++;
-      levelTimer = 0;
-      levelUpTimer = 120;
-      flashAlpha = 1;
-      state = 'levelup';
-      spawnParticles(W / 2, H / 2, PAL.accent, 30);
-      return;
+    // Move finish line
+    if (finishLine) {
+      finishLine.x -= spd;
+
+      // Check if player reached finish line
+      if (!finishLine.reached && finishLine.x <= player.x + player.w) {
+        finishLine.reached = true;
+        finishReached = true;
+        celebrationTimer = 150; // frames for celebration
+        flashAlpha = 0.6;
+        spawnParticles(finishLine.x + 8, groundY - 80, '#a89860', 25);
+        spawnParticles(finishLine.x + 8, groundY - 40, '#7a8a7a', 20);
+      }
     }
 
-    // Win condition
-    if (levelTimer >= level.duration && level.isFinal) {
-      state = 'gameover';
-      deathReason = 'TENURE ACHIEVED!';
-      player.alive = true;
-      if (score > hIndex) hIndex = score;
-      spawnParticles(player.x + 16, player.y + 22, '#ffcc00', 40);
+    // Celebration countdown → level transition
+    if (finishReached) {
+      celebrationTimer--;
+      if (celebrationTimer <= 0) {
+        if (LEVELS[levelIndex].isFinal) {
+          // Won the game!
+          state = 'gameover';
+          deathReason = 'TENURE ACHIEVED!';
+          player.alive = true;
+          if (score > hIndex) hIndex = score;
+          spawnParticles(player.x + 16, player.y + 22, '#a89860', 40);
+        } else {
+          // Advance to next level
+          levelIndex++;
+          levelTimer = 0;
+          state = 'playing';
+          obstacles = [];
+          collectibles = [];
+          spawnTimer = 0;
+          collectibleTimer = 0;
+          initFinishLine();
+        }
+        return;
+      }
+      // During celebration: still update particles but don't spawn obstacles
+      updateParticles();
       return;
     }
 
@@ -766,17 +834,18 @@ function update() {
       player.frameTimer = 0;
     }
 
-    // Spawn obstacles
+    // Spawn obstacles (stop when finish line is close)
+    const finishNear = finishLine && finishLine.x < W + 200;
     spawnTimer++;
     const spawnRate = Math.max(50, 100 - levelIndex * 10);
-    if (spawnTimer > spawnRate + Math.random() * 40) {
+    if (!finishNear && spawnTimer > spawnRate + Math.random() * 40) {
       spawnObstacle();
       spawnTimer = 0;
     }
 
     // Spawn collectibles
     collectibleTimer++;
-    if (collectibleTimer > 120 + Math.random() * 80) {
+    if (!finishNear && collectibleTimer > 120 + Math.random() * 80) {
       spawnCollectible();
       collectibleTimer = 0;
     }
@@ -829,7 +898,7 @@ function update() {
         } else {
           score += 100;
         }
-        spawnParticles(col.x + 12, col.y + 10, PAL.accent, 8);
+        spawnParticles(col.x + 12, col.y + 10, '#8a7a50', 8);
         collectibles.splice(i, 1);
       }
     }
@@ -843,15 +912,9 @@ function update() {
     updateParticles();
   }
 
-  if (state === 'levelup') {
-    levelUpTimer--;
-    flashAlpha *= 0.95;
-    updateParticles();
-    if (levelUpTimer <= 0) {
-      state = 'playing';
-      obstacles = [];
-      collectibles = [];
-    }
+  // Flash decay (used during celebrations)
+  if (flashAlpha > 0.01) {
+    flashAlpha *= 0.96;
   }
 }
 
@@ -885,16 +948,18 @@ function draw() {
 
   if (state === 'title') {
     drawTitleScreen();
-  } else if (state === 'playing' || state === 'levelup') {
+  } else if (state === 'playing') {
     drawBackground();
+    drawFinishLine();
     collectibles.forEach(drawCollectible);
     obstacles.forEach(drawObstacle);
     drawPixelChar(player.x, player.y);
     drawParticles();
     drawHUD();
 
-    if (state === 'levelup') {
-      drawLevelUpScreen();
+    // Celebration overlay when finish line is reached
+    if (finishReached && celebrationTimer > 0) {
+      drawCelebrationOverlay();
     }
   } else if (state === 'gameover') {
     shakeX = 0;
@@ -910,7 +975,7 @@ function draw() {
 
   // Flash overlay
   if (flashAlpha > 0.01) {
-    ctx.fillStyle = `rgba(255,255,200,${flashAlpha})`;
+    ctx.fillStyle = `rgba(200,190,160,${flashAlpha})`;
     ctx.fillRect(0, 0, W, H);
   }
 
@@ -920,15 +985,15 @@ function draw() {
 function drawTitleScreen() {
   // Background
   const grd = ctx.createLinearGradient(0, 0, 0, H);
-  grd.addColorStop(0, '#0a0a1a');
-  grd.addColorStop(1, '#1a2a1a');
+  grd.addColorStop(0, '#0e1014');
+  grd.addColorStop(1, '#181c18');
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, W, H);
 
   // Stars
   stars.forEach(s => {
     const twinkle = Math.sin(frameCount * 0.04 + s.twinkle);
-    ctx.fillStyle = `rgba(200,255,200,${0.3 + twinkle * 0.3})`;
+    ctx.fillStyle = `rgba(180,190,170,${0.2 + twinkle * 0.2})`;
     ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
   });
 
@@ -945,9 +1010,9 @@ function drawTitleScreen() {
 
   // Character preview
   const prevY = 230;
-  drawPixelRect(W / 2 - 16, prevY, 32, 44, '#4488cc');
-  drawPixelRect(W / 2 - 16 + 8, prevY - 16, 20, 16, '#ffcc99');
-  drawPixelRect(W / 2 - 16 + 4, prevY - 20, 24, 6, '#553322');
+  drawPixelRect(W / 2 - 16, prevY, 32, 44, '#556677');
+  drawPixelRect(W / 2 - 16 + 8, prevY - 16, 20, 16, '#c0a070');
+  drawPixelRect(W / 2 - 16 + 4, prevY - 20, 24, 6, '#3a2818');
   drawPixelRect(W / 2 - 16 + 8, prevY - 12, 7, 5, '#222');
   drawPixelRect(W / 2 - 16 + 17, prevY - 12, 7, 5, '#222');
 
@@ -1004,36 +1069,46 @@ function drawHUD() {
   const progressFill = Math.min(levelTimer / level.duration, 1);
   ctx.fillStyle = '#222';
   ctx.fillRect(progressX, 24, progressW, 8);
-  ctx.fillStyle = level.isFinal ? '#ffcc00' : '#44aa44';
+  ctx.fillStyle = level.isFinal ? '#a89860' : '#4a6a4a';
   ctx.fillRect(progressX, 24, progressW * progressFill, 8);
   ctx.strokeStyle = PAL.panelBord;
   ctx.strokeRect(progressX, 24, progressW, 8);
 
   // Coffee boost indicator
   if (player.coffeeBoost > 0) {
-    ctx.fillStyle = '#ffcc00';
+    ctx.fillStyle = '#a89860';
     ctx.textAlign = 'center';
     ctx.font = '7px "Press Start 2P"';
-    ctx.fillText('☕ CAFFEINE BOOST!', W / 2, 54);
+    ctx.fillText('CAFFEINE BOOST', W / 2, 54);
   }
 
   ctx.textAlign = 'left';
 }
 
-function drawLevelUpScreen() {
+function drawCelebrationOverlay() {
   const level = LEVELS[levelIndex];
-  ctx.fillStyle = `rgba(0,0,0,${0.7 * (levelUpTimer / 120)})`;
+  const nextLevel = LEVELS[levelIndex + 1];
+  const alpha = Math.min(celebrationTimer / 150, 1) * 0.65;
+  ctx.fillStyle = `rgba(0,0,0,${alpha})`;
   ctx.fillRect(0, 0, W, H);
 
   ctx.textAlign = 'center';
 
+  // Title
   ctx.fillStyle = PAL.accent;
-  ctx.font = '18px "Press Start 2P"';
-  ctx.fillText('PROMOTION!', W / 2, H / 2 - 30);
+  ctx.font = '20px "Press Start 2P"';
+  if (level.isFinal) {
+    ctx.fillText('TENURE!', W / 2, H / 2 - 30);
+  } else {
+    ctx.fillText('PROMOTION!', W / 2, H / 2 - 30);
+  }
 
-  ctx.fillStyle = PAL.white;
-  ctx.font = '12px "Press Start 2P"';
-  ctx.fillText('Now: ' + level.name.toUpperCase(), W / 2, H / 2 + 10);
+  // Next level name
+  if (nextLevel) {
+    ctx.fillStyle = PAL.white;
+    ctx.font = '11px "Press Start 2P"';
+    ctx.fillText('Now: ' + nextLevel.name.toUpperCase(), W / 2, H / 2 + 10);
+  }
 
   // Fun subtitle
   const subs = [
@@ -1058,7 +1133,7 @@ function drawGameOverScreen() {
 
   if (player.alive) {
     // WON!
-    ctx.fillStyle = '#ffcc00';
+    ctx.fillStyle = '#a89860';
     ctx.font = '24px "Press Start 2P"';
     ctx.fillText('🎓 TENURE! 🎓', W / 2, H / 2 - 60);
 
