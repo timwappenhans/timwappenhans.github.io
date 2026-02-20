@@ -1,0 +1,170 @@
+---
+title: ""
+author: ""
+format:
+  pdf:
+    documentclass: article
+    papersize: a4
+    fontsize: 10pt
+    geometry:
+      - top=2cm
+      - bottom=2cm
+      - left=2.5cm
+      - right=2.5cm
+    colorlinks: true
+    linkcolor: "black"
+    urlcolor: "blue"
+    include-in-header:
+      text: |
+        \usepackage{fontawesome5}
+        \usepackage{parskip}
+        \usepackage{enumitem}
+        \usepackage{xcolor}
+        \usepackage{fancyhdr}
+        
+        % Section formatting without titlesec (avoiding conflicts)
+        \renewcommand{\section}[1]{%
+          \vspace{1.5em}%
+          {\normalfont\scshape\large #1}%
+          \vspace{0.8em}%
+          \par
+        }
+        
+        % Compact paragraph spacing
+        \setlength{\parskip}{0.4em}
+        \setlength{\parindent}{0pt}
+        
+        % List formatting
+        \setlist[itemize]{nosep, left=0pt, label={}, itemsep=0.2em, parsep=0em, topsep=0.2em}
+        
+        % Page numbering footer
+        \pagestyle{fancy}
+        \fancyhf{}
+        \renewcommand{\headrulewidth}{0pt}
+        \fancyfoot[R]{\small\thepage}
+---
+
+\begin{center}
+{\huge\textbf{Tim Wappenhans}}\\[0.8em]
+Humboldt-Universität zu Berlin\\
+Department of Social Sciences\\
+Unter den Linden 6, 10099 Berlin, Germany 
+
+\href{mailto:tim.wappenhans@hu-berlin.de}{tim.wappenhans@hu-berlin.de}\\
+\href{https://timwappenhans.com}{timwappenhans.com}\\
+\href{https://scholar.google.com/citations?user=KDtMlLEAAAAJ&hl=en&oi=ao}{Google Scholar}\\
+
+
+\end{center}
+
+\vspace{0.5em}
+
+\section{Academic Positions}
+\hrule
+\vspace{0.5em}
+
+
+
+**Parental Leave**\
+Two kids \hfill 2021, 2024\
+\vspace{0.75em}
+
+**Humboldt Governance Lab**\
+Affiliated Researchers \hfill 2024–
+
+
+\vspace{0.75em}
+
+**Humboldt-Universität zu Berlin**\
+Research and Teaching Fellow, Chair of Comparative Political Behavior \hfill 2020–\
+
+
+
+\section{Education}
+\hrule
+\vspace{0.5em}
+
+**Humboldt-Universität zu Berlin / Hertie School** (DYNAMICS)\
+Ph.D. Candidate in Political Science. \hfill expected 2025
+
+**[University]**\
+M.A./M.Sc. in [Field]. \hfill [Year]
+
+**[University]**\
+B.A. in [Field]. \hfill [Year]
+
+
+\section{Peer-Reviewed Publications}
+
+Extreme Weather Events Do Not Increase Political Parties’ Environmental Attention, with Heike Klüver, Lukas Stoetzer, and António Valentim, Nature Climate Change (2024).
+
+\section{Working Papers}
+
+**Wappenhans, Tim**. "Creating Grievances: How Radical Right Parties Undermine Local Public Goods Provision." *Draft available upon request*.
+
+Klüver, Heike, Felix Hartmann, Bernhard Clemm, and **Tim Wappenhans**. "The Impact of Citizens' Assemblies on Democratic Resilience: Evidence from a Field Experiment." *OSF Preprint*.
+
+Klüver, Heike, Lukas Stoetzer, Macartan Humphreys, Violeta Haas, Ferdinand Geißler, Johannes Giesecke, Felix Hartmann, Daniel Bischof, and **Tim Wappenhans**. "Beyond Persuasion: Protest's Direct Behavioral Impact on Bystanders." *OSF Preprint*.
+
+
+\section{Work in Progress}
+
+**Wappenhans, Tim**, Heike Klüver, Jasper Jansen, and Fredric Lüssenheide. "Do Memorials Reduce Hate Crimes and Far Right Voting?"
+
+Klüver, Heike, **Tim Wappenhans**, and Jasper Jansen. "Right-Wing Populist Parties and the Rise of Hate Crimes."
+
+Heyna, Philipp, Hanno Hilbig, Violeta Haas, and **Tim Wappenhans**. "Electoral Responses to Local Cooperations with Radical-Right Parties."
+
+
+\section{Grants and Fellowships}
+
+**DYNAMICS Research Training Group** \hfill 2020–\
+Doctoral Fellowship, Humboldt-Universität zu Berlin / Hertie School.
+
+[Add other grants/fellowships]
+
+
+\section{Teaching}
+
+**Humboldt-Universität zu Berlin**
+
+Understanding the Rise of the Radical Right. \hfill Summer 2024, 2025
+
+Causal Inference (with Frederik Thieme). \hfill Winter 2023, 2024, 2025
+
+R for Political Science. \hfill Winter 2022, Summer 2025
+
+Political Polarization. \hfill Summer 2023
+
+Applied Causal Inference in Political Science. \hfill Summer 2022
+
+Causes and Consequences of Affective Polarization. \hfill Summer 2022
+
+Comparative Political Science and International Relations. \hfill Winter 2021, 2022
+
+Understanding the 2020 US Elections. \hfill Winter 2020
+
+
+\section{Presentations}
+
+[Add conference presentations]
+
+
+\section{Skills and Languages}
+
+**Methods:** Regression discontinuity design, difference-in-differences, survey experiments, panel data analysis, field experiments.
+
+**Programming:** R, Stata, LaTeX, Python.
+
+**Languages:** German (native), English (fluent).
+
+
+\section{Service}
+
+**Reviewer:** [Journal names]
+
+
+\vfill
+\begin{flushright}
+\small\textit{Updated: January 2026}
+\end{flushright}

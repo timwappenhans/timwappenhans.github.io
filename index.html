@@ -58,7 +58,13 @@
     <a href="https://orcid.org/0000-0001-8903-5477" style="font-size: 10pt;">
       ✅️ ORCID
     </a>
-    
+
+    <p style="font-size: 10pt; margin-top: 10px; margin-bottom: 0;">
+      <span style="color: #555;">Software Skills:</span>
+      R ·
+      LaTeX ·
+      <a href="game/arcade-mia.html" class="shimmer-link">Prompting</a>
+    </p>
 
 
 
@@ -178,6 +184,448 @@
   <p style="margin-bottom:4cm;"></p>
   <p><small> This website uses the <a href="https://github.com/orderedlist/minimal">minimal theme</a> and is inspired by Shiro Kuriwaki's <a href="https://www.shirokuriwaki.com/">website</a>, Sascha Riaz's <a href="https://saschariaz.com/">website</a>, and Hanno Hilbig's <a href="https://www.hannohilbig.com/">website</a>.</small></p>
 
+
+  <!-- Glitch transition overlay -->
+  <div id="glitch-overlay" style="display:none;">
+    <div class="glitch-text" id="glitch-text"></div>
+  </div>
+
+  <style>
+    #glitch-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 99999;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    #glitch-overlay.active {
+      pointer-events: all;
+    }
+
+    /* Scanline bars that sweep across */
+    #glitch-overlay::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.03) 2px,
+        rgba(0, 255, 65, 0.03) 4px
+      );
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    #glitch-overlay.active::before {
+      opacity: 1;
+    }
+
+    /* Falling matrix-style characters */
+    .glitch-text {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #00ff41;
+      line-height: 1;
+      white-space: pre;
+      overflow: hidden;
+    }
+
+    .matrix-col {
+      position: absolute;
+      top: -100%;
+      animation: matrix-fall linear forwards;
+      opacity: 0.8;
+      text-shadow: 0 0 8px #00ff41;
+    }
+
+    @keyframes matrix-fall {
+      0%   { top: -20%; opacity: 0.9; }
+      100% { top: 100%; opacity: 0.2; }
+    }
+
+    /* Glitch slices on the page content */
+    .glitch-slice {
+      position: fixed !important;
+      z-index: 99998;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* Page distortion during glitch - applied to wrapper only */
+    .wrapper.glitching {
+      animation: page-glitch 0.15s steps(2) infinite;
+      filter: hue-rotate(0deg);
+    }
+
+    .wrapper.glitch-intense {
+      animation: page-glitch-intense 0.08s steps(2) infinite;
+    }
+
+    @keyframes page-glitch {
+      0%   { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg); }
+      25%  { transform: translate(-3px, 1px) skewX(-0.5deg); filter: hue-rotate(90deg); }
+      50%  { transform: translate(2px, -1px) skewX(0.3deg); filter: hue-rotate(180deg); }
+      75%  { transform: translate(-1px, 2px) skewX(-0.2deg); filter: hue-rotate(270deg); }
+      100% { transform: translate(1px, -1px) skewX(0.4deg); filter: hue-rotate(360deg); }
+    }
+
+    @keyframes page-glitch-intense {
+      0%   { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg) saturate(3) brightness(1.5); }
+      25%  { transform: translate(-8px, 3px) skewX(-2deg); filter: hue-rotate(120deg) saturate(2); }
+      50%  { transform: translate(5px, -4px) skewX(1.5deg); filter: hue-rotate(240deg) saturate(4) brightness(0.6); }
+      75%  { transform: translate(-4px, 6px) skewX(-1deg); filter: hue-rotate(60deg) saturate(2) brightness(1.8); }
+      100% { transform: translate(6px, -2px) skewX(2deg); filter: hue-rotate(300deg) saturate(3); }
+    }
+
+    /* Final blackout */
+    .glitch-blackout {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: #0a0a0a;
+      z-index: 100000;
+      opacity: 0;
+      transition: opacity 0.4s ease-in;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glitch-blackout.active {
+      opacity: 1;
+    }
+
+    /* Terminal window */
+    .terminal-window {
+      width: 560px;
+      max-width: 90vw;
+      background: #0c0c0c;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(0, 255, 65, 0.15), 0 20px 60px rgba(0,0,0,0.8);
+      overflow: hidden;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .terminal-window.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Title bar */
+    .terminal-titlebar {
+      background: #1a1a1a;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .terminal-dot.red { background: #ff5f56; }
+    .terminal-dot.yellow { background: #ffbd2e; }
+    .terminal-dot.green { background: #27c93f; }
+
+    .terminal-title {
+      color: #666;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    /* Terminal body */
+    .terminal-body {
+      padding: 16px 20px;
+      min-height: 120px;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.015) 2px,
+        rgba(0, 255, 65, 0.015) 4px
+      );
+    }
+
+    .terminal-body .boot-text {
+      color: #00ff41;
+      font-family: 'Courier New', monospace;
+      font-size: 15px;
+      text-align: left;
+      text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+      white-space: pre;
+      line-height: 1.8;
+    }
+
+    .boot-cursor {
+      display: inline-block;
+      width: 9px;
+      height: 16px;
+      background: #00ff41;
+      vertical-align: text-bottom;
+      animation: blink-cursor 0.6s steps(1) infinite;
+      box-shadow: 0 0 6px #00ff41;
+      margin-left: 1px;
+    }
+
+    @keyframes blink-cursor {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+
+  <script>
+  (function() {
+    var link = document.querySelector('.shimmer-link');
+    if (!link) return;
+
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var targetUrl = this.href;
+      var wrapper = document.querySelector('.wrapper');
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*{}[]<>/\\|~^`;:!?';
+      var easterEggs = ['PUBLISH OR PERISH', 'REVISE & RESUBMIT', 'p < 0.05', 'DESK REJECTED', 'TENURE DENIED', 'n.s.'];
+
+      // Collect all text nodes from the page
+      var textNodes = [];
+      var tw = document.createTreeWalker(wrapper, NodeFilter.SHOW_TEXT, null, false);
+      while (tw.nextNode()) {
+        if (tw.currentNode.textContent.trim().length > 2) {
+          textNodes.push({ node: tw.currentNode, original: tw.currentNode.textContent });
+        }
+      }
+
+      function scrambleText(corruption) {
+        textNodes.forEach(function(item) {
+          var out = '';
+          // Occasionally replace entire text with an easter egg
+          if (corruption > 0.7 && item.original.trim().length > 10 && Math.random() < 0.15) {
+            var egg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
+            // Pad or trim to roughly match original length
+            var padded = egg;
+            while (padded.length < item.original.trim().length) padded += ' ' + egg;
+            item.node.textContent = padded.substring(0, item.original.length);
+            return;
+          }
+          for (var k = 0; k < item.original.length; k++) {
+            var c = item.original[k];
+            if (c === ' ' || c === '\n' || c === '\t') {
+              out += c;
+            } else if (Math.random() < corruption) {
+              out += chars[Math.floor(Math.random() * chars.length)];
+            } else {
+              out += c;
+            }
+          }
+          item.node.textContent = out;
+        });
+      }
+
+      // ── PHASE 1: Escalating scramble rounds ──
+      // Each round corrupts more text and shakes harder
+      var rounds = [
+        { delay: 0,    corruption: 0.15, duration: 500 },
+        { delay: 500,  corruption: 0.35, duration: 300 },
+        { delay: 800,  corruption: 0.55, duration: 200 },
+        { delay: 1000, corruption: 0.75, duration: 120 },
+        { delay: 1120, corruption: 0.90, duration: 80  },
+        { delay: 1200, corruption: 1.0,  duration: 60  },
+        { delay: 1260, corruption: 1.0,  duration: 40  },
+        { delay: 1300, corruption: 1.0,  duration: 40  },
+      ];
+
+      // Start mild page shake
+      wrapper.classList.add('glitching');
+
+      // Show matrix overlay
+      var overlay = document.getElementById('glitch-overlay');
+      overlay.style.display = 'block';
+      setTimeout(function() { overlay.classList.add('active'); }, 50);
+
+      // Spawn matrix rain columns
+      var textContainer = document.getElementById('glitch-text');
+      var colCount = Math.floor(window.innerWidth / 16);
+      for (var i = 0; i < colCount; i++) {
+        (function(index) {
+          setTimeout(function() {
+            var col = document.createElement('div');
+            col.className = 'matrix-col';
+            col.style.left = (index * 16) + 'px';
+            col.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
+            col.style.animationDelay = (Math.random() * 0.5) + 's';
+            col.style.fontSize = (10 + Math.floor(Math.random() * 8)) + 'px';
+            var text = '';
+            var len = 15 + Math.floor(Math.random() * 30);
+            for (var j = 0; j < len; j++) {
+              text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+            }
+            col.textContent = text;
+            textContainer.appendChild(col);
+          }, Math.random() * 1200);
+        })(i);
+      }
+
+      // Execute each scramble round
+      rounds.forEach(function(round) {
+        setTimeout(function() {
+          scrambleText(round.corruption);
+        }, round.delay);
+      });
+
+      // Intensify shake halfway through
+      setTimeout(function() {
+        wrapper.classList.add('glitch-intense');
+      }, 800);
+
+      // ── PHASE 2: Blackout + Terminal ──
+      setTimeout(function() {
+        // Build everything with inline styles so page CSS can't interfere
+        var blackout = document.createElement('div');
+        blackout.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
+          'background:#0a0a0a;z-index:100000;display:flex;align-items:center;' +
+          'justify-content:center;opacity:0;transition:opacity 0.4s ease-in;' +
+          'margin:0;padding:0;float:none;';
+
+        var terminal = document.createElement('div');
+        terminal.style.cssText = 'width:560px;max-width:90vw;background:#0c0c0c;' +
+          'border:1px solid #333;border-radius:8px;overflow:hidden;' +
+          'box-shadow:0 0 40px rgba(0,255,65,0.15),0 20px 60px rgba(0,0,0,0.8);' +
+          'opacity:0;transform:scale(0.95);transition:opacity 0.3s ease,transform 0.3s ease;' +
+          'margin:0;padding:0;float:none;position:relative;';
+
+        // Title bar with traffic light dots
+        var titlebar = document.createElement('div');
+        titlebar.style.cssText = 'background:#1a1a1a;padding:10px 14px;display:flex;' +
+          'align-items:center;border-bottom:1px solid #2a2a2a;margin:0;float:none;';
+
+        var colors = ['#ff5f56', '#ffbd2e', '#27c93f'];
+        for (var d = 0; d < 3; d++) {
+          var dot = document.createElement('span');
+          dot.style.cssText = 'width:12px;height:12px;border-radius:50%;display:inline-block;' +
+            'background:' + colors[d] + ';margin-right:8px;float:none;';
+          titlebar.appendChild(dot);
+        }
+        var title = document.createElement('span');
+        title.style.cssText = 'color:#666;font-family:"Courier New",monospace;font-size:12px;' +
+          'margin-left:6px;float:none;font-weight:normal;';
+        title.textContent = 'arcade-mia \u2014 bash';
+        titlebar.appendChild(title);
+        terminal.appendChild(titlebar);
+
+        // Terminal body with scanlines
+        var tbody = document.createElement('div');
+        tbody.style.cssText = 'padding:18px 22px;min-height:140px;margin:0;float:none;' +
+          'background:repeating-linear-gradient(0deg,transparent,transparent 2px,' +
+          'rgba(0,255,65,0.015) 2px,rgba(0,255,65,0.015) 4px);';
+
+        var bootText = document.createElement('div');
+        bootText.style.cssText = 'color:#00ff41;font-family:"Courier New",monospace;' +
+          'font-size:15px;text-align:left;text-shadow:0 0 6px rgba(0,255,65,0.5);' +
+          'white-space:pre;line-height:1.8;margin:0;padding:0;float:none;font-weight:normal;';
+        tbody.appendChild(bootText);
+        terminal.appendChild(tbody);
+
+        blackout.appendChild(terminal);
+        document.body.appendChild(blackout);
+
+        // Cursor blink keyframes (inject once)
+        if (!document.getElementById('cursor-keyframes')) {
+          var styleEl = document.createElement('style');
+          styleEl.id = 'cursor-keyframes';
+          styleEl.textContent = '@keyframes blinkcur{0%,50%{opacity:1}51%,100%{opacity:0}}';
+          document.head.appendChild(styleEl);
+        }
+
+        // Fade in blackout
+        setTimeout(function() { blackout.style.opacity = '1'; }, 30);
+        // Pop in terminal
+        setTimeout(function() {
+          terminal.style.opacity = '1';
+          terminal.style.transform = 'scale(1)';
+        }, 450);
+
+        // ── PHASE 3: Terminal typing ──
+        var lines = [
+          '$ kill -9 ACADEMIC_FACADE.exe',
+          '  Process terminated.',
+          '$ ./arcade-mia --mode=easter-egg',
+          '  Loading assets........... OK',
+          '  Initializing canvas...... OK',
+          '  READY. Launching game.'
+        ];
+
+        var lineIndex = 0;
+        var charIndex = 0;
+        var currentText = '';
+        var typeSpeed = 30;
+        var lineDelay = 250;
+        var cursorHtml = '<span style="display:inline-block;width:9px;height:16px;' +
+          'background:#00ff41;vertical-align:text-bottom;margin-left:1px;' +
+          'box-shadow:0 0 6px #00ff41;animation:blinkcur 0.6s steps(1) infinite;"></span>';
+
+        function updateDisplay() {
+          bootText.innerHTML = currentText + cursorHtml;
+        }
+
+        function typeLine() {
+          if (lineIndex >= lines.length) {
+            setTimeout(function() {
+              window.location.href = targetUrl;
+            }, 500);
+            return;
+          }
+
+          var line = lines[lineIndex];
+          // Output lines (indented) appear instantly
+          if (line.indexOf('  ') === 0) {
+            currentText += line + '\n';
+            lineIndex++;
+            charIndex = 0;
+            updateDisplay();
+            setTimeout(typeLine, lineDelay);
+            return;
+          }
+
+          if (charIndex < line.length) {
+            currentText += line[charIndex];
+            charIndex++;
+            updateDisplay();
+            setTimeout(typeLine, typeSpeed + Math.floor(Math.random() * 25));
+          } else {
+            currentText += '\n';
+            lineIndex++;
+            charIndex = 0;
+            updateDisplay();
+            setTimeout(typeLine, lineDelay);
+          }
+        }
+
+        // Start typing after terminal pops in
+        setTimeout(function() {
+          updateDisplay();
+          typeLine();
+        }, 700);
+
+      }, 1400);
+    });
+  })();
+  </script>
 
   </body>
 </html>

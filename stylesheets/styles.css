@@ -291,3 +291,41 @@ a i {
   margin-top: 10px;
   color: #3498db;
 }
+
+/* Shimmer effect for the Prompting easter egg link */
+.shimmer-link {
+  background: linear-gradient(
+    90deg,
+    #3498db 0%,
+    #3498db 40%,
+    #a855f7 50%,
+    #3498db 60%,
+    #3498db 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.shimmer-link:hover {
+  background: linear-gradient(
+    90deg,
+    #a855f7 0%,
+    #ec4899 50%,
+    #a855f7 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 1s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}

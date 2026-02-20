@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARCADE-MIA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+
+  #game-wrapper {
+    position: relative;
+    width: 800px;
+    max-width: 100vw;
+  }
+
+  #scanlines {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  #crt-glow {
+    position: absolute;
+    top: -20px; left: -20px; right: -20px; bottom: -20px;
+    background: radial-gradient(ellipse at center, rgba(40,80,40,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 11;
+  }
+
+  canvas {
+    display: block;
+    width: 800px;
+    height: 500px;
+    max-width: 100vw;
+    border: 3px solid #333;
+    border-radius: 2px;
+    box-shadow:
+      0 0 20px rgba(0,255,100,0.1),
+      inset 0 0 60px rgba(0,0,0,0.3);
+  }
+
+  #mobile-hint {
+    display: none;
+    color: #555;
+    font-size: 8px;
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 820px) {
+    canvas { width: 100vw; height: auto; }
+    #mobile-hint { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <canvas id="game" width="800" height="500"></canvas>
+  <div id="scanlines"></div>
+  <div id="crt-glow"></div>
+  <div id="mobile-hint">TAP TO JUMP</div>
+</div>
+
+<script>
+// ============================================================
+//  ARCADE-MIA — The Academic Career Runner
+//  An easter egg by Tim Wappenhans
+// ============================================================
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = 800, H = 500;
+
+// ---------- PALETTE ----------
+const PAL = {
+  bg:        '#0f1a0f',
+  ground:    '#2a5a2a',
+  groundLt:  '#3a7a3a',
+  sky:       '#0a1a2a',
+  text:      '#c0f0c0',
+  textDim:   '#4a8a4a',
+  accent:    '#ffcc00',
+  danger:    '#ff4444',
+  white:     '#eeffee',
+  dark:      '#0a0f0a',
+  panel:     '#1a2a1a',
+  panelBord: '#3a6a3a',
+};
+
+// ---------- GAME STATE ----------
+let state = 'title'; // title | playing | levelup | gameover
+let score = 0;
+let hIndex = 0; // high score
+let levelIndex = 0;
+let levelTimer = 0;
+let gameSpeed = 4;
+let frameCount = 0;
+let groundY = H - 70;
+let shakeX = 0, shakeY = 0;
+let flashAlpha = 0;
+let levelUpTimer = 0;
+let deathReason = '';
+
+// ---------- LEVELS ----------
+const LEVELS = [
+  {
+    name: 'PhD Student',
+    color: '#2a5a2a',
+    bgColor: '#0a1a2a',
+    obstacles: ['papers', 'rejection', 'deadline', 'coffee'],
+    duration: 600,
+    speedMult: 1.0,
+    collectible: 'citation',
+    ground: 'seminar',
+  },
+  {
+    name: 'Post-Doc',
+    color: '#3a4a6a',
+    bgColor: '#0a0a2a',
+    obstacles: ['contract', 'movingbox', 'randr', 'coffee'],
+    duration: 700,
+    speedMult: 1.15,
+    collectible: 'publication',
+    ground: 'office',
+  },
+  {
+    name: 'Grant Recipient',
+    color: '#5a4a2a',
+    bgColor: '#1a1a0a',
+    obstacles: ['bureaucracy', 'ethics', 'budget', 'gdpr'],
+    duration: 800,
+    speedMult: 1.3,
+    collectible: 'grant',
+    ground: 'conference',
+  },
+  {
+    name: 'Tenure Track',
+    color: '#5a2a2a',
+    bgColor: '#1a0a0a',
+    obstacles: ['evaluation', 'committee', 'service', 'hindexwall'],
+    duration: 900,
+    speedMult: 1.45,
+    collectible: 'citation',
+    ground: 'faculty',
+  },
+  {
+    name: 'TENURE',
+    color: '#4a3a6a',
+    bgColor: '#0a0a1a',
+    obstacles: ['restructuring', 'adminmeeting', 'apsrreject', 'committee'],
+    duration: 1000,
+    speedMult: 1.6,
+    collectible: 'publication',
+    ground: 'office',
+    isFinal: true,
+  },
+];
+
+// ---------- PLAYER ----------
+const player = {
+  x: 100,
+  y: 0,
+  w: 32,
+  h: 44,
+  vy: 0,
+  grounded: true,
+  frame: 0,
+  frameTimer: 0,
+  alive: true,
+  coffeeBoost: 0,
+};
+
+// ---------- OBSTACLES & COLLECTIBLES ----------
+let obstacles = [];
+let collectibles = [];
+let particles = [];
+let bgElements = [];
+let stars = [];
+
+// Init stars
+for (let i = 0; i < 60; i++) {
+  stars.push({ x: Math.random() * W, y: Math.random() * (groundY - 40), size: Math.random() * 2 + 0.5, twinkle: Math.random() * Math.PI * 2 });
+}
+
+// ---------- INPUT ----------
+let keys = {};
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && state === 'title') startGame();
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && state === 'gameover') resetToTitle();
+  if (e.code === 'Space' || e.code === 'ArrowUp') e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  keys['Space'] = true;
+  if (state === 'title') startGame();
+  if (state === 'gameover') resetToTitle();
+});
+canvas.addEventListener('touchend', e => { keys['Space'] = false; });
+canvas.addEventListener('click', () => {
+  if (state === 'title') startGame();
+  if (state === 'gameover') resetToTitle();
+});
+
+// ---------- PIXEL ART HELPERS ----------
+function drawPixelRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+}
+
+function drawPixelChar(px, py, mirror) {
+  const f = player.frame;
+  const s = 2; // pixel scale
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(px - 2, groundY - 2, 36, 6);
+
+  // Body
+  drawPixelRect(px + 8, py, 16, 24, '#4488cc'); // shirt
+  drawPixelRect(px + 8, py + 24, 16, 12, '#334455'); // pants
+
+  // Head
+  drawPixelRect(px + 6, py - 16, 20, 16, '#ffcc99'); // face
+
+  // Hair
+  drawPixelRect(px + 4, py - 20, 24, 6, '#553322');
+  drawPixelRect(px + 4, py - 16, 4, 4, '#553322');
+
+  // Glasses
+  drawPixelRect(px + 8, py - 12, 7, 5, '#222');
+  drawPixelRect(px + 17, py - 12, 7, 5, '#222');
+  drawPixelRect(px + 10, py - 11, 3, 3, '#aaddff');
+  drawPixelRect(px + 19, py - 11, 3, 3, '#aaddff');
+  drawPixelRect(px + 15, py - 11, 2, 2, '#222'); // bridge
+
+  // Coffee (held in front hand)
+  if (player.coffeeBoost > 0) {
+    drawPixelRect(px + 26, py + 4, 8, 12, '#8B4513');
+    drawPixelRect(px + 27, py + 1, 6, 3, '#fff');
+    // Steam
+    if (frameCount % 20 < 10) {
+      drawPixelRect(px + 28, py - 3, 2, 3, 'rgba(255,255,255,0.5)');
+      drawPixelRect(px + 31, py - 5, 2, 3, 'rgba(255,255,255,0.3)');
+    }
+  }
+
+  // Arms
+  if (player.grounded) {
+    const armSwing = f % 2 === 0 ? 0 : 3;
+    drawPixelRect(px + 4, py + 2 + armSwing, 4, 14, '#ffcc99');
+    drawPixelRect(px + 24, py + 2 - armSwing, 4, 14, '#ffcc99');
+  } else {
+    // Arms up when jumping
+    drawPixelRect(px + 4, py - 6, 4, 12, '#ffcc99');
+    drawPixelRect(px + 24, py - 6, 4, 12, '#ffcc99');
+  }
+
+  // Legs (animated)
+  if (player.grounded) {
+    if (f % 4 < 2) {
+      drawPixelRect(px + 8, py + 36, 6, 8, '#222');
+      drawPixelRect(px + 18, py + 32, 6, 12, '#222');
+    } else {
+      drawPixelRect(px + 8, py + 32, 6, 12, '#222');
+      drawPixelRect(px + 18, py + 36, 6, 8, '#222');
+    }
+  } else {
+    // Tucked legs when jumping
+    drawPixelRect(px + 8, py + 32, 6, 6, '#222');
+    drawPixelRect(px + 18, py + 32, 6, 6, '#222');
+  }
+}
+
+// ---------- OBSTACLE DRAWING ----------
+function drawObstacle(obs) {
+  const x = Math.floor(obs.x);
+  const y = Math.floor(obs.y);
+
+  ctx.save();
+  switch (obs.type) {
+    case 'papers':
+      // Stack of papers
+      for (let i = 0; i < 3; i++) {
+        drawPixelRect(x + i * 2, y + i * 6, 28, 20, '#eee');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 4, 18, 2, '#aaa');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 8, 14, 2, '#aaa');
+        drawPixelRect(x + i * 2 + 3, y + i * 6 + 12, 20, 2, '#aaa');
+      }
+      break;
+
+    case 'rejection':
+      // Red envelope
+      drawPixelRect(x, y + 4, 36, 26, '#cc3333');
+      drawPixelRect(x + 2, y + 6, 32, 22, '#ff5555');
+      // Flap
+      ctx.fillStyle = '#dd4444';
+      ctx.beginPath();
+      ctx.moveTo(x, y + 4);
+      ctx.lineTo(x + 18, y + 18);
+      ctx.lineTo(x + 36, y + 4);
+      ctx.fill();
+      // X mark
+      drawPixelRect(x + 12, y + 14, 12, 3, '#fff');
+      drawPixelRect(x + 16, y + 10, 3, 12, '#fff');
+      break;
+
+    case 'deadline':
+      // Clock
+      drawPixelRect(x + 4, y, 28, 28, '#ffcc00');
+      drawPixelRect(x + 6, y + 2, 24, 24, '#fff');
+      drawPixelRect(x + 16, y + 6, 3, 12, '#222');
+      drawPixelRect(x + 16, y + 10, 10, 3, '#cc0000');
+      // "!" above
+      if (frameCount % 30 < 20) {
+        drawPixelRect(x + 15, y - 14, 5, 8, '#ff0000');
+        drawPixelRect(x + 15, y - 4, 5, 3, '#ff0000');
+      }
+      break;
+
+    case 'coffee':
+      // Collectible coffee cup
+      drawPixelRect(x + 4, y + 6, 20, 24, '#8B4513');
+      drawPixelRect(x + 6, y + 8, 16, 20, '#D2691E');
+      drawPixelRect(x + 24, y + 12, 6, 12, '#8B4513');
+      // Steam
+      if (frameCount % 16 < 8) {
+        drawPixelRect(x + 8, y - 2, 3, 6, 'rgba(255,255,255,0.6)');
+        drawPixelRect(x + 14, y - 4, 3, 6, 'rgba(255,255,255,0.4)');
+      }
+      break;
+
+    case 'contract':
+      // Crumbling platform / short contract
+      drawPixelRect(x, y, 40, 8, '#887744');
+      drawPixelRect(x, y + 8, 40, 22, '#aa9966');
+      // Cracks
+      drawPixelRect(x + 10, y + 8, 2, 14, '#665533');
+      drawPixelRect(x + 25, y + 6, 2, 18, '#665533');
+      // "TEMP" label
+      ctx.fillStyle = '#cc0000';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText('TEMP', x + 4, y + 22);
+      break;
+
+    case 'movingbox':
+      // Cardboard box
+      drawPixelRect(x, y, 36, 30, '#cc9944');
+      drawPixelRect(x + 2, y + 2, 32, 26, '#ddaa55');
+      drawPixelRect(x + 6, y + 12, 24, 3, '#aa7733');
+      // Tape
+      drawPixelRect(x + 14, y, 8, 30, 'rgba(200,180,100,0.5)');
+      break;
+
+    case 'randr':
+      // R&R letter
+      drawPixelRect(x, y + 2, 34, 28, '#eeddcc');
+      drawPixelRect(x + 2, y + 4, 30, 24, '#fff8ee');
+      ctx.fillStyle = '#cc0000';
+      ctx.font = '7px "Press Start 2P"';
+      ctx.fillText('R&R', x + 4, y + 18);
+      // Red stamp effect
+      drawPixelRect(x + 20, y + 18, 12, 10, 'rgba(200,0,0,0.3)');
+      break;
+
+    case 'bureaucracy':
+      // Stack of forms
+      for (let i = 0; i < 4; i++) {
+        drawPixelRect(x + i, y + i * 5, 32, 24, i % 2 === 0 ? '#ddd' : '#eee');
+      }
+      ctx.fillStyle = '#cc0000';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('FORM', x + 5, y + 14);
+      ctx.fillText('27B/6', x + 3, y + 22);
+      break;
+
+    case 'ethics':
+      // Ethics board stamp
+      drawPixelRect(x + 2, y, 30, 30, '#2244aa');
+      drawPixelRect(x + 4, y + 2, 26, 26, '#3355cc');
+      ctx.fillStyle = '#fff';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('IRB', x + 8, y + 14);
+      ctx.fillText('DENY', x + 5, y + 22);
+      break;
+
+    case 'budget':
+      // Spreadsheet
+      drawPixelRect(x, y + 2, 36, 28, '#228833');
+      drawPixelRect(x + 2, y + 4, 32, 24, '#33aa44');
+      for (let i = 0; i < 3; i++) {
+        drawPixelRect(x + 2, y + 8 + i * 7, 32, 1, '#228833');
+      }
+      drawPixelRect(x + 14, y + 4, 1, 24, '#228833');
+      // Red number
+      ctx.fillStyle = '#ff0000';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText('-€€', x + 4, y + 24);
+      break;
+
+    case 'gdpr':
+      // GDPR wall
+      drawPixelRect(x, y, 36, 34, '#2244aa');
+      drawPixelRect(x + 2, y + 2, 32, 30, '#3366cc');
+      ctx.fillStyle = '#ffcc00';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText('GDPR', x + 3, y + 14);
+      // Shield icon
+      drawPixelRect(x + 10, y + 18, 16, 12, '#ffcc00');
+      drawPixelRect(x + 12, y + 20, 12, 8, '#3366cc');
+      break;
+
+    case 'evaluation':
+      // Teaching eval form
+      drawPixelRect(x, y + 2, 32, 28, '#fff');
+      drawPixelRect(x + 2, y + 4, 28, 24, '#ffeedd');
+      ctx.fillStyle = '#ff4444';
+      ctx.font = '10px "Press Start 2P"';
+      ctx.fillText('D-', x + 6, y + 22);
+      break;
+
+    case 'committee':
+      // Meeting invite
+      drawPixelRect(x, y, 38, 30, '#554477');
+      drawPixelRect(x + 2, y + 2, 34, 26, '#7766aa');
+      ctx.fillStyle = '#fff';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('MTG', x + 6, y + 14);
+      ctx.fillText('15:00', x + 4, y + 22);
+      break;
+
+    case 'service':
+      // Service obligation block
+      drawPixelRect(x, y, 34, 32, '#885522');
+      drawPixelRect(x + 2, y + 2, 30, 28, '#aa7744');
+      ctx.fillStyle = '#fff';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('ADMIN', x + 2, y + 16);
+      ctx.fillText('DUTY', x + 4, y + 24);
+      break;
+
+    case 'hindexwall':
+      // h-index counter wall
+      drawPixelRect(x, y, 34, 34, '#333');
+      drawPixelRect(x + 2, y + 2, 30, 30, '#222');
+      ctx.fillStyle = '#00ff00';
+      ctx.font = '8px "Press Start 2P"';
+      ctx.fillText('h=' + Math.floor(Math.random() * 5 + 2), x + 4, y + 20);
+      break;
+
+    case 'restructuring':
+      // University restructuring notice
+      drawPixelRect(x, y, 40, 34, '#882222');
+      drawPixelRect(x + 2, y + 2, 36, 30, '#aa3333');
+      ctx.fillStyle = '#ffcc00';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('DEPT', x + 6, y + 14);
+      ctx.fillText('CUT!', x + 6, y + 22);
+      break;
+
+    case 'adminmeeting':
+      // Endless meeting
+      drawPixelRect(x, y, 44, 30, '#444466');
+      drawPixelRect(x + 2, y + 2, 40, 26, '#555588');
+      ctx.fillStyle = '#aaaacc';
+      ctx.font = '5px "Press Start 2P"';
+      ctx.fillText('3HR', x + 8, y + 14);
+      ctx.fillText('MEET', x + 6, y + 22);
+      // Zzzs
+      if (frameCount % 40 < 25) {
+        ctx.fillStyle = '#fff';
+        ctx.font = '8px "Press Start 2P"';
+        ctx.fillText('Z', x + 36, y - 4);
+        ctx.font = '6px "Press Start 2P"';
+        ctx.fillText('z', x + 40, y - 10);
+      }
+      break;
+
+    case 'apsrreject':
+      // APSR rejection — the big one
+      drawPixelRect(x, y - 4, 44, 38, '#880000');
+      drawPixelRect(x + 2, y - 2, 40, 34, '#bb0000');
+      ctx.fillStyle = '#fff';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText('APSR', x + 6, y + 10);
+      ctx.fillText('DESK', x + 6, y + 20);
+      ctx.fillText('REJ.', x + 8, y + 30);
+      break;
+  }
+  ctx.restore();
+}
+
+function drawCollectible(col) {
+  const x = Math.floor(col.x);
+  const y = Math.floor(col.y);
+  const bob = 0;
+
+  ctx.save();
+  switch (col.type) {
+    case 'citation':
+      // Little star/citation
+      drawPixelRect(x + 6, y + bob, 12, 12, '#ffcc00');
+      drawPixelRect(x + 4, y + 2 + bob, 16, 8, '#ffcc00');
+      drawPixelRect(x + 8, y - 2 + bob, 8, 16, '#ffcc00');
+      ctx.fillStyle = '#aa8800';
+      ctx.font = '6px "Press Start 2P"';
+      ctx.fillText('★', x + 5, y + 10 + bob);
+      break;
+
+    case 'publication':
+      // Tiny journal
+      drawPixelRect(x + 2, y + bob, 20, 16, '#3366cc');
+      drawPixelRect(x + 4, y + 2 + bob, 16, 12, '#5588ee');
+      ctx.fillStyle = '#fff';
+      ctx.font = '4px "Press Start 2P"';
+      ctx.fillText('PUB', x + 5, y + 10 + bob);
+      break;
+
+    case 'grant':
+      // Money bag
+      drawPixelRect(x + 4, y + 4 + bob, 16, 14, '#44aa44');
+      drawPixelRect(x + 6, y + 2 + bob, 12, 4, '#44aa44');
+      ctx.fillStyle = '#ffcc00';
+      ctx.font = '8px "Press Start 2P"';
+      ctx.fillText('€', x + 7, y + 14 + bob);
+      break;
+  }
+  ctx.restore();
+}
+
+// ---------- BACKGROUND ----------
+function drawBackground() {
+  const level = LEVELS[levelIndex] || LEVELS[0];
+
+  // Sky gradient
+  const grd = ctx.createLinearGradient(0, 0, 0, groundY);
+  grd.addColorStop(0, level.bgColor);
+  grd.addColorStop(1, level.color);
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, groundY);
+
+  // Stars
+  stars.forEach(s => {
+    const twinkle = Math.sin(frameCount * 0.03 + s.twinkle);
+    const alpha = 0.3 + twinkle * 0.3;
+    ctx.fillStyle = `rgba(200,255,200,${alpha})`;
+    ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
+  });
+
+  // Background buildings/scenery
+  drawScenery(level);
+
+  // Ground
+  ctx.fillStyle = level.color;
+  ctx.fillRect(0, groundY, W, H - groundY);
+
+  // Ground detail line
+  ctx.fillStyle = '#fff';
+  ctx.globalAlpha = 0.15;
+  ctx.fillRect(0, groundY, W, 2);
+  ctx.globalAlpha = 1;
+
+  // Ground texture
+  for (let i = 0; i < W; i += 16) {
+    const offset = (frameCount * gameSpeed * 0.5 + i) % W;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect((W - offset) % W, groundY + 8, 8, 2);
+    ctx.fillRect((W - offset + 4) % W, groundY + 20, 6, 2);
+  }
+}
+
+function drawScenery(level) {
+  // Parallax buildings
+  const scroll = frameCount * gameSpeed * 0.3;
+  ctx.globalAlpha = 0.15;
+
+  for (let i = 0; i < 8; i++) {
+    const bx = ((i * 130 - scroll * 0.3) % (W + 200)) - 100;
+    const bh = 60 + (i * 37 % 80);
+    const bw = 40 + (i * 23 % 40);
+    ctx.fillStyle = level.color;
+    ctx.fillRect(bx, groundY - bh, bw, bh);
+
+    // Windows
+    ctx.fillStyle = '#ffcc00';
+    for (let wy = groundY - bh + 8; wy < groundY - 8; wy += 14) {
+      for (let wx = bx + 6; wx < bx + bw - 6; wx += 12) {
+        if (Math.sin(wx * wy * 0.1 + frameCount * 0.01) > 0.2) {
+          ctx.fillRect(wx, wy, 4, 6);
+        }
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- PARTICLES ----------
+function spawnParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 6,
+      vy: (Math.random() - 1) * 5,
+      life: 30 + Math.random() * 20,
+      color,
+      size: 2 + Math.random() * 3,
+    });
+  }
+}
+
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.15;
+    p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life / 50;
+    drawPixelRect(p.x, p.y, p.size, p.size, p.color);
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ---------- SPAWN LOGIC ----------
+let spawnTimer = 0;
+let collectibleTimer = 0;
+
+function spawnObstacle() {
+  const level = LEVELS[levelIndex];
+  const types = level.obstacles.filter(t => t !== 'coffee');
+  const type = types[Math.floor(Math.random() * types.length)];
+
+  const obs = {
+    type,
+    x: W + 20,
+    y: groundY - 34,
+    w: type === 'apsrreject' || type === 'adminmeeting' ? 44 : type === 'restructuring' ? 40 : 36,
+    h: type === 'apsrreject' ? 38 : 32,
+    scored: false,
+  };
+  obstacles.push(obs);
+}
+
+function spawnCollectible() {
+  const level = LEVELS[levelIndex];
+  // 30% chance for coffee, rest is level collectible
+  const isCoffee = Math.random() < 0.3;
+  const type = isCoffee ? 'coffee' : level.collectible;
+
+  collectibles.push({
+    type: isCoffee ? 'coffee' : type,
+    x: W + 20,
+    y: groundY - 60 - Math.random() * 40,
+    w: 24,
+    h: 20,
+    isCoffee,
+  });
+}
+
+// ---------- GAME LOGIC ----------
+function startGame() {
+  state = 'playing';
+  score = 0;
+  levelIndex = 0;
+  levelTimer = 0;
+  gameSpeed = 4;
+  player.y = groundY - player.h;
+  player.vy = 0;
+  player.grounded = true;
+  player.alive = true;
+  player.coffeeBoost = 0;
+  obstacles = [];
+  collectibles = [];
+  particles = [];
+  spawnTimer = 0;
+  collectibleTimer = 0;
+}
+
+function resetToTitle() {
+  state = 'title';
+}
+
+function update() {
+  frameCount++;
+
+  if (state === 'playing') {
+    const level = LEVELS[levelIndex];
+    const spd = gameSpeed * level.speedMult * (player.coffeeBoost > 0 ? 1.2 : 1);
+
+    // Level timer
+    levelTimer++;
+    score += Math.floor(spd * 0.5);
+
+    if (player.coffeeBoost > 0) player.coffeeBoost--;
+
+    // Check level up
+    if (levelTimer >= level.duration && levelIndex < LEVELS.length - 1) {
+      levelIndex++;
+      levelTimer = 0;
+      levelUpTimer = 120;
+      flashAlpha = 1;
+      state = 'levelup';
+      spawnParticles(W / 2, H / 2, PAL.accent, 30);
+      return;
+    }
+
+    // Win condition
+    if (levelTimer >= level.duration && level.isFinal) {
+      state = 'gameover';
+      deathReason = 'TENURE ACHIEVED!';
+      player.alive = true;
+      if (score > hIndex) hIndex = score;
+      spawnParticles(player.x + 16, player.y + 22, '#ffcc00', 40);
+      return;
+    }
+
+    // Jump
+    if ((keys['Space'] || keys['ArrowUp']) && player.grounded) {
+      player.vy = -11;
+      player.grounded = false;
+    }
+
+    // Physics
+    player.vy += 0.55;
+    player.y += player.vy;
+    if (player.y >= groundY - player.h) {
+      player.y = groundY - player.h;
+      player.vy = 0;
+      player.grounded = true;
+    }
+
+    // Animation
+    player.frameTimer++;
+    if (player.frameTimer > 6) {
+      player.frame++;
+      player.frameTimer = 0;
+    }
+
+    // Spawn obstacles
+    spawnTimer++;
+    const spawnRate = Math.max(50, 100 - levelIndex * 10);
+    if (spawnTimer > spawnRate + Math.random() * 40) {
+      spawnObstacle();
+      spawnTimer = 0;
+    }
+
+    // Spawn collectibles
+    collectibleTimer++;
+    if (collectibleTimer > 120 + Math.random() * 80) {
+      spawnCollectible();
+      collectibleTimer = 0;
+    }
+
+    // Move obstacles
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      obstacles[i].x -= spd;
+      if (obstacles[i].x < -60) obstacles.splice(i, 1);
+    }
+
+    // Move collectibles
+    for (let i = collectibles.length - 1; i >= 0; i--) {
+      collectibles[i].x -= spd;
+      if (collectibles[i].x < -40) collectibles.splice(i, 1);
+    }
+
+    // Collision detection — obstacles
+    const px = player.x + 6;
+    const py = player.y + 4;
+    const pw = player.w - 12;
+    const ph = player.h - 8;
+
+    for (const obs of obstacles) {
+      if (px < obs.x + obs.w - 4 && px + pw > obs.x + 4 && py < obs.y + obs.h - 4 && py + ph > obs.y + 4) {
+        // Hit!
+        state = 'gameover';
+        player.alive = false;
+        deathReason = getDeathReason(obs.type);
+        shakeX = 8;
+        shakeY = 4;
+        if (score > hIndex) hIndex = score;
+        spawnParticles(player.x + 16, player.y + 22, PAL.danger, 20);
+        break;
+      }
+
+      // Score for passing
+      if (!obs.scored && obs.x + obs.w < player.x) {
+        obs.scored = true;
+        score += 50;
+      }
+    }
+
+    // Collision detection — collectibles
+    for (let i = collectibles.length - 1; i >= 0; i--) {
+      const col = collectibles[i];
+      if (px < col.x + col.w && px + pw > col.x && py < col.y + col.h + 10 && py + ph > col.y) {
+        if (col.type === 'coffee') {
+          player.coffeeBoost = 180; // 3 seconds of boost
+          score += 25;
+        } else {
+          score += 100;
+        }
+        spawnParticles(col.x + 12, col.y + 10, PAL.accent, 8);
+        collectibles.splice(i, 1);
+      }
+    }
+
+    // Screen shake decay
+    shakeX *= 0.85;
+    shakeY *= 0.85;
+    if (Math.abs(shakeX) < 0.5) shakeX = 0;
+    if (Math.abs(shakeY) < 0.5) shakeY = 0;
+
+    updateParticles();
+  }
+
+  if (state === 'levelup') {
+    levelUpTimer--;
+    flashAlpha *= 0.95;
+    updateParticles();
+    if (levelUpTimer <= 0) {
+      state = 'playing';
+      obstacles = [];
+      collectibles = [];
+    }
+  }
+}
+
+function getDeathReason(type) {
+  const reasons = {
+    papers: 'BURIED IN UNREAD PAPERS',
+    rejection: 'DESK REJECTED!',
+    deadline: 'MISSED THE DEADLINE',
+    contract: 'CONTRACT EXPIRED',
+    movingbox: 'CRUSHED BY RELOCATION',
+    randr: 'REVISE & RESUBMIT... AGAIN',
+    bureaucracy: 'LOST IN BUREAUCRACY',
+    ethics: 'IRB DENIED YOUR STUDY',
+    budget: 'BUDGET OVERRUN',
+    gdpr: 'GDPR VIOLATION!',
+    evaluation: 'DEVASTATING EVAL',
+    committee: 'MEETING OVERLOAD',
+    service: 'DROWNED IN SERVICE',
+    hindexwall: 'h-INDEX TOO LOW',
+    restructuring: 'DEPARTMENT RESTRUCTURED',
+    adminmeeting: 'ETERNAL MEETING',
+    apsrreject: 'APSR DESK REJECTION',
+  };
+  return reasons[type] || 'PUBLISH OR PERISH';
+}
+
+// ---------- DRAW ----------
+function draw() {
+  ctx.save();
+  ctx.translate(Math.floor((Math.random() - 0.5) * shakeX), Math.floor((Math.random() - 0.5) * shakeY));
+
+  if (state === 'title') {
+    drawTitleScreen();
+  } else if (state === 'playing' || state === 'levelup') {
+    drawBackground();
+    collectibles.forEach(drawCollectible);
+    obstacles.forEach(drawObstacle);
+    drawPixelChar(player.x, player.y);
+    drawParticles();
+    drawHUD();
+
+    if (state === 'levelup') {
+      drawLevelUpScreen();
+    }
+  } else if (state === 'gameover') {
+    shakeX = 0;
+    shakeY = 0;
+    drawBackground();
+    collectibles.forEach(drawCollectible);
+    obstacles.forEach(drawObstacle);
+    drawPixelChar(player.x, player.y);
+    drawParticles();
+    drawHUD();
+    drawGameOverScreen();
+  }
+
+  // Flash overlay
+  if (flashAlpha > 0.01) {
+    ctx.fillStyle = `rgba(255,255,200,${flashAlpha})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  ctx.restore();
+}
+
+function drawTitleScreen() {
+  // Background
+  const grd = ctx.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, '#0a0a1a');
+  grd.addColorStop(1, '#1a2a1a');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  stars.forEach(s => {
+    const twinkle = Math.sin(frameCount * 0.04 + s.twinkle);
+    ctx.fillStyle = `rgba(200,255,200,${0.3 + twinkle * 0.3})`;
+    ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
+  });
+
+  // Title
+  ctx.fillStyle = PAL.accent;
+  ctx.font = '32px "Press Start 2P"';
+  ctx.textAlign = 'center';
+  ctx.fillText('ARCADE-MIA', W / 2, 140);
+
+  // Subtitle
+  ctx.fillStyle = PAL.text;
+  ctx.font = '10px "Press Start 2P"';
+  ctx.fillText('THE ACADEMIC CAREER RUNNER', W / 2, 175);
+
+  // Character preview
+  const prevY = 230;
+  drawPixelRect(W / 2 - 16, prevY, 32, 44, '#4488cc');
+  drawPixelRect(W / 2 - 16 + 8, prevY - 16, 20, 16, '#ffcc99');
+  drawPixelRect(W / 2 - 16 + 4, prevY - 20, 24, 6, '#553322');
+  drawPixelRect(W / 2 - 16 + 8, prevY - 12, 7, 5, '#222');
+  drawPixelRect(W / 2 - 16 + 17, prevY - 12, 7, 5, '#222');
+
+  // Level names preview
+  ctx.font = '7px "Press Start 2P"';
+  const levelNames = LEVELS.map(l => l.name);
+  for (let i = 0; i < levelNames.length; i++) {
+    ctx.fillStyle = i === 0 ? PAL.accent : PAL.textDim;
+    ctx.fillText(levelNames[i], W / 2, 310 + i * 18);
+  }
+
+  // Start prompt
+  if (frameCount % 60 < 40) {
+    ctx.fillStyle = PAL.white;
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('PRESS SPACE OR TAP TO START', W / 2, 430);
+  }
+
+  // Credit
+  ctx.fillStyle = PAL.textDim;
+  ctx.font = '6px "Press Start 2P"';
+  ctx.fillText('Created by Tim Wappenhans & Claude', W / 2, 470);
+
+  ctx.textAlign = 'left';
+}
+
+function drawHUD() {
+  const level = LEVELS[levelIndex];
+
+  // Score panel
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 0, W, 36);
+  ctx.fillStyle = PAL.panelBord;
+  ctx.fillRect(0, 36, W, 2);
+
+  ctx.fillStyle = PAL.text;
+  ctx.font = '9px "Press Start 2P"';
+  ctx.textAlign = 'left';
+  ctx.fillText('SCORE: ' + score.toString().padStart(7, '0'), 12, 16);
+
+  // h-index
+  ctx.fillStyle = PAL.textDim;
+  ctx.fillText('h-INDEX: ' + hIndex.toString().padStart(7, '0'), 12, 30);
+
+  // Level name
+  ctx.fillStyle = PAL.accent;
+  ctx.textAlign = 'right';
+  ctx.font = '10px "Press Start 2P"';
+  ctx.fillText(level.name.toUpperCase(), W - 12, 16);
+
+  // Level progress bar
+  const progressW = 180;
+  const progressX = W - progressW - 12;
+  const progressFill = Math.min(levelTimer / level.duration, 1);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(progressX, 24, progressW, 8);
+  ctx.fillStyle = level.isFinal ? '#ffcc00' : '#44aa44';
+  ctx.fillRect(progressX, 24, progressW * progressFill, 8);
+  ctx.strokeStyle = PAL.panelBord;
+  ctx.strokeRect(progressX, 24, progressW, 8);
+
+  // Coffee boost indicator
+  if (player.coffeeBoost > 0) {
+    ctx.fillStyle = '#ffcc00';
+    ctx.textAlign = 'center';
+    ctx.font = '7px "Press Start 2P"';
+    ctx.fillText('☕ CAFFEINE BOOST!', W / 2, 54);
+  }
+
+  ctx.textAlign = 'left';
+}
+
+function drawLevelUpScreen() {
+  const level = LEVELS[levelIndex];
+  ctx.fillStyle = `rgba(0,0,0,${0.7 * (levelUpTimer / 120)})`;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = PAL.accent;
+  ctx.font = '18px "Press Start 2P"';
+  ctx.fillText('PROMOTION!', W / 2, H / 2 - 30);
+
+  ctx.fillStyle = PAL.white;
+  ctx.font = '12px "Press Start 2P"';
+  ctx.fillText('Now: ' + level.name.toUpperCase(), W / 2, H / 2 + 10);
+
+  // Fun subtitle
+  const subs = [
+    'Same salary, more stress!',
+    'You survived... barely.',
+    'Time to update your CV!',
+    'More committees await!',
+    'The grind continues...',
+  ];
+  ctx.fillStyle = PAL.textDim;
+  ctx.font = '8px "Press Start 2P"';
+  ctx.fillText(subs[levelIndex % subs.length], W / 2, H / 2 + 40);
+
+  ctx.textAlign = 'left';
+}
+
+function drawGameOverScreen() {
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.textAlign = 'center';
+
+  if (player.alive) {
+    // WON!
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = '24px "Press Start 2P"';
+    ctx.fillText('🎓 TENURE! 🎓', W / 2, H / 2 - 60);
+
+    ctx.fillStyle = PAL.white;
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText('YOU MADE IT THROUGH ACADEMIA!', W / 2, H / 2 - 20);
+
+    ctx.fillStyle = PAL.text;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('FINAL SCORE: ' + score, W / 2, H / 2 + 20);
+    ctx.fillText('You now have a nameplate and', W / 2, H / 2 + 50);
+    ctx.fillText('an office with a window.', W / 2, H / 2 + 65);
+
+  } else {
+    // LOST
+    ctx.fillStyle = PAL.danger;
+    ctx.font = '18px "Press Start 2P"';
+    ctx.fillText('PUBLISH OR PERISH', W / 2, H / 2 - 60);
+
+    ctx.fillStyle = PAL.white;
+    ctx.font = '10px "Press Start 2P"';
+    ctx.fillText(deathReason, W / 2, H / 2 - 20);
+
+    ctx.fillStyle = PAL.text;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('SCORE: ' + score, W / 2, H / 2 + 15);
+    ctx.fillText('h-INDEX: ' + hIndex, W / 2, H / 2 + 35);
+
+    ctx.fillStyle = PAL.textDim;
+    ctx.font = '7px "Press Start 2P"';
+    ctx.fillText('Level: ' + LEVELS[levelIndex].name, W / 2, H / 2 + 60);
+  }
+
+  if (frameCount % 60 < 40) {
+    ctx.fillStyle = PAL.textDim;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.fillText('PRESS SPACE OR TAP TO CONTINUE', W / 2, H / 2 + 100);
+  }
+
+  ctx.textAlign = 'left';
+}
+
+// ---------- GAME LOOP ----------
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
