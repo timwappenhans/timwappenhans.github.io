@@ -1092,22 +1092,66 @@ function drawCelebrationOverlay() {
   ctx.fillStyle = `rgba(0,0,0,${alpha})`;
   ctx.fillRect(0, 0, W, H);
 
+  // Box dimensions
+  const boxW = 440;
+  const boxH = 140;
+  const boxX = (W - boxW) / 2;
+  const boxY = (H - boxH) / 2 - 10;
+
+  // Box shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(boxX + 4, boxY + 4, boxW, boxH);
+
+  // Box background
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(boxX, boxY, boxW, boxH);
+
+  // Box border
+  ctx.strokeStyle = '#a89860';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(boxX, boxY, boxW, boxH);
+
+  // Inner border line
+  ctx.strokeStyle = '#3a3a3a';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(boxX + 6, boxY + 6, boxW - 12, boxH - 12);
+
+  // Gold accent corners
+  const cornerSize = 8;
+  ctx.fillStyle = '#a89860';
+  // Top-left
+  ctx.fillRect(boxX, boxY, cornerSize, 3);
+  ctx.fillRect(boxX, boxY, 3, cornerSize);
+  // Top-right
+  ctx.fillRect(boxX + boxW - cornerSize, boxY, cornerSize, 3);
+  ctx.fillRect(boxX + boxW - 3, boxY, 3, cornerSize);
+  // Bottom-left
+  ctx.fillRect(boxX, boxY + boxH - 3, cornerSize, 3);
+  ctx.fillRect(boxX, boxY + boxH - cornerSize, 3, cornerSize);
+  // Bottom-right
+  ctx.fillRect(boxX + boxW - cornerSize, boxY + boxH - 3, cornerSize, 3);
+  ctx.fillRect(boxX + boxW - 3, boxY + boxH - cornerSize, 3, cornerSize);
+
   ctx.textAlign = 'center';
 
   // Title
   ctx.fillStyle = PAL.accent;
   ctx.font = '20px "Press Start 2P"';
   if (level.isFinal) {
-    ctx.fillText('TENURE!', W / 2, H / 2 - 30);
+    ctx.fillText('TENURE!', W / 2, boxY + 42);
   } else {
-    ctx.fillText('PROMOTION!', W / 2, H / 2 - 30);
+    ctx.fillText('PROMOTION!', W / 2, boxY + 42);
   }
+
+  // Divider line
+  ctx.fillStyle = '#3a3a3a';
+  ctx.fillRect(boxX + 30, boxY + 55, boxW - 60, 1);
 
   // Next level name
   if (nextLevel) {
     ctx.fillStyle = PAL.white;
     ctx.font = '11px "Press Start 2P"';
-    ctx.fillText('Now: ' + nextLevel.name.toUpperCase(), W / 2, H / 2 + 10);
+    ctx.fillText('Now: ' + nextLevel.name.toUpperCase(), W / 2, boxY + 80);
   }
 
   // Fun subtitle
@@ -1120,7 +1164,7 @@ function drawCelebrationOverlay() {
   ];
   ctx.fillStyle = PAL.textDim;
   ctx.font = '8px "Press Start 2P"';
-  ctx.fillText(subs[levelIndex % subs.length], W / 2, H / 2 + 40);
+  ctx.fillText(subs[levelIndex % subs.length], W / 2, boxY + 110);
 
   ctx.textAlign = 'left';
 }
