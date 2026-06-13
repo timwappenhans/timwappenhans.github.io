@@ -24,6 +24,7 @@
     <script src="https://kit.fontawesome.com/9745af1226.js"></script>
     <link rel="stylesheet" href="stylesheets/academicons.min.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -103,7 +104,7 @@
   
   <p>If you want to talk about my research, hit me up on <a href="https://bsky.app/profile/did:plc:5jluoctzx3i2jtm3khj6tf5t">Bluesky</a> or via <a href="mailto:tim.wappenhans@hu-berlin.de">mail</a>.</p>
   
-  <p>You can find my CV <a href="https://www.dropbox.com/s/3lpjtjy5al117pw/wappenhans_cv.pdf?dl=0">here</a>.</p>
+  <p>You can find my CV <a href="cv/wappenhans_cv.pdf">here</a>.</p>
 </div>
   <div align="left"><h3>Publications</h3>
   <ul>
@@ -150,35 +151,35 @@
     
       
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_rrp_rise_2024.html">Understanding the Rise of the Radical Right</a>, Humboldt (Summer 2024, Summer 2025)
+        <a href="syllabi/syllabus_rrp_rise_2024.html">Understanding the Rise of the Radical Right</a>, Humboldt (Summer 2024, Summer 2025)
       </li>
       
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_causal_winter2023.html">Causal Inference</a>, with <a href="https://frederikthieme.net/">Frederik Thieme</a>, Humboldt (Winter 2023, Winter 2024, Winter 2025)
+        <a href="syllabi/syllabus_causal_winter2023.html">Causal Inference</a>, with <a href="https://frederikthieme.net/">Frederik Thieme</a>, Humboldt (Winter 2023, Winter 2024, Winter 2025)
       </li>
       
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_r4ps_2025.html">R for Political Science</a>, Humboldt (Winter 2022, Summer 2025)
+        <a href="syllabi/syllabus_r4ps_2025.html">R for Political Science</a>, Humboldt (Winter 2022, Summer 2025)
       </li>
         
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_polarization_2023.pdf">Political Polarization</a>, Humboldt (Summer 2023)
+        <a href="syllabi/syllabus_polarization_2023.pdf">Political Polarization</a>, Humboldt (Summer 2023)
       </li>
       
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_causal_2022.pdf">Applied Causal Inference in Political Science</a>, Humboldt (Summer 2022)
+        <a href="syllabi/syllabus_causal_winter2023.html">Applied Causal Inference in Political Science</a>, Humboldt (Summer 2022)
       </li>
         
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_ap_2022.pdf">Causes and Consequences of Affective Polarization</a>, Humboldt (Summer 2022)
+        <a href="syllabi/syllabus_ap_2022.pdf">Causes and Consequences of Affective Polarization</a>, Humboldt (Summer 2022)
       </li>
       
       <li>
-        <a href="https://www.dropbox.com/s/b0n5w72ui8quxq1/syllabus_comp_2021.pdf?dl=0">Comparative Political Science and International Relations</a>, Humboldt (Winter 2021, 2022)
+        <a href="syllabi/syllabus_comp_2021.pdf">Comparative Political Science and International Relations</a>, Humboldt (Winter 2021, 2022)
       </li>
       
       <li>
-        <a href="https://timwappenhans.com/syllabi/syllabus_us2020.pdf">Understanding the 2020 US Elections</a>, Humboldt (Winter 2020)
+        <a href="syllabi/syllabus_us2020.pdf">Understanding the 2020 US Elections</a>, Humboldt (Winter 2020)
       </li>
       
     </ul>  
@@ -190,9 +191,7 @@
 
 
   <!-- Glitch transition overlay -->
-  <div id="glitch-overlay" style="display:none;">
-    <div class="glitch-text" id="glitch-text"></div>
-  </div>
+  <div id="glitch-overlay" style="display:none;"></div>
 
   <style>
     #glitch-overlay {
@@ -227,32 +226,6 @@
 
     #glitch-overlay.active::before {
       opacity: 1;
-    }
-
-    /* Falling matrix-style characters */
-    .glitch-text {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      color: #00ff41;
-      line-height: 1;
-      white-space: pre;
-      overflow: hidden;
-    }
-
-    .matrix-col {
-      position: absolute;
-      top: -100%;
-      animation: matrix-fall linear forwards;
-      opacity: 0.8;
-      text-shadow: 0 0 8px #00ff41;
-    }
-
-    @keyframes matrix-fall {
-      0%   { top: -20%; opacity: 0.9; }
-      100% { top: 100%; opacity: 0.2; }
     }
 
     /* Glitch slices on the page content */
@@ -457,33 +430,10 @@
       // Start mild page shake
       wrapper.classList.add('glitching');
 
-      // Show matrix overlay
+      // Show scanline overlay
       var overlay = document.getElementById('glitch-overlay');
       overlay.style.display = 'block';
       setTimeout(function() { overlay.classList.add('active'); }, 50);
-
-      // Spawn matrix rain columns
-      var textContainer = document.getElementById('glitch-text');
-      var colCount = Math.floor(window.innerWidth / 16);
-      for (var i = 0; i < colCount; i++) {
-        (function(index) {
-          setTimeout(function() {
-            var col = document.createElement('div');
-            col.className = 'matrix-col';
-            col.style.left = (index * 16) + 'px';
-            col.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
-            col.style.animationDelay = (Math.random() * 0.5) + 's';
-            col.style.fontSize = (10 + Math.floor(Math.random() * 8)) + 'px';
-            var text = '';
-            var len = 15 + Math.floor(Math.random() * 30);
-            for (var j = 0; j < len; j++) {
-              text += chars[Math.floor(Math.random() * chars.length)] + '\n';
-            }
-            col.textContent = text;
-            textContainer.appendChild(col);
-          }, Math.random() * 1200);
-        })(i);
-      }
 
       // Execute each scramble round
       rounds.forEach(function(round) {
@@ -507,18 +457,18 @@
           'margin:0;padding:0;float:none;';
 
         var terminal = document.createElement('div');
-        terminal.style.cssText = 'width:560px;max-width:90vw;background:#0c0c0c;' +
-          'border:1px solid #333;border-radius:8px;overflow:hidden;' +
-          'box-shadow:0 0 40px rgba(0,255,65,0.15),0 20px 60px rgba(0,0,0,0.8);' +
+        terminal.style.cssText = 'width:560px;max-width:90vw;background:#2e3440;' +
+          'border:1px solid #3b4252;border-radius:10px;overflow:hidden;' +
+          'box-shadow:0 18px 60px rgba(0,0,0,0.6);' +
           'opacity:0;transform:scale(0.95);transition:opacity 0.3s ease,transform 0.3s ease;' +
           'margin:0;padding:0;float:none;position:relative;';
 
         // Title bar with traffic light dots
         var titlebar = document.createElement('div');
-        titlebar.style.cssText = 'background:#1a1a1a;padding:10px 14px;display:flex;' +
-          'align-items:center;border-bottom:1px solid #2a2a2a;margin:0;float:none;';
+        titlebar.style.cssText = 'background:#272c36;padding:10px 14px;display:flex;' +
+          'align-items:center;border-bottom:1px solid #3b4252;margin:0;float:none;';
 
-        var colors = ['#ff5f56', '#ffbd2e', '#27c93f'];
+        var colors = ['#ff5f57', '#febc2e', '#28c840'];
         for (var d = 0; d < 3; d++) {
           var dot = document.createElement('span');
           dot.style.cssText = 'width:12px;height:12px;border-radius:50%;display:inline-block;' +
@@ -526,22 +476,21 @@
           titlebar.appendChild(dot);
         }
         var title = document.createElement('span');
-        title.style.cssText = 'color:#666;font-family:"Courier New",monospace;font-size:12px;' +
-          'margin-left:6px;float:none;font-weight:normal;';
-        title.textContent = 'arcade-mia \u2014 bash';
+        title.style.cssText = 'color:#616e88;font-family:"JetBrains Mono","SF Mono",Menlo,monospace;' +
+          'font-size:12px;margin-left:8px;float:none;font-weight:normal;letter-spacing:0.3px;';
+        title.textContent = 'arcade-mia \u2014 zsh';
         titlebar.appendChild(title);
         terminal.appendChild(titlebar);
 
         // Terminal body with scanlines
         var tbody = document.createElement('div');
         tbody.style.cssText = 'padding:18px 22px;min-height:140px;margin:0;float:none;' +
-          'background:repeating-linear-gradient(0deg,transparent,transparent 2px,' +
-          'rgba(0,255,65,0.015) 2px,rgba(0,255,65,0.015) 4px);';
+          'background:#2e3440;';
 
         var bootText = document.createElement('div');
-        bootText.style.cssText = 'color:#00ff41;font-family:"Courier New",monospace;' +
-          'font-size:15px;text-align:left;text-shadow:0 0 6px rgba(0,255,65,0.5);' +
-          'white-space:pre;line-height:1.8;margin:0;padding:0;float:none;font-weight:normal;';
+        bootText.style.cssText = 'color:#d8dee9;font-family:"JetBrains Mono","SF Mono",Menlo,monospace;' +
+          'font-size:14px;font-weight:500;text-align:left;' +
+          'white-space:pre;line-height:1.85;margin:0;padding:0;float:none;';
         tbody.appendChild(bootText);
         terminal.appendChild(tbody);
 
@@ -579,19 +528,55 @@
         var currentText = '';
         var typeSpeed = 30;
         var lineDelay = 250;
-        var cursorHtml = '<span style="display:inline-block;width:9px;height:16px;' +
-          'background:#00ff41;vertical-align:text-bottom;margin-left:1px;' +
-          'box-shadow:0 0 6px #00ff41;animation:blinkcur 0.6s steps(1) infinite;"></span>';
+        var cursorHtml = '<span style="display:inline-block;width:8px;height:15px;' +
+          'background:#88c0d0;vertical-align:text-bottom;margin-left:2px;' +
+          'animation:blinkcur 0.6s steps(1) infinite;"></span>';
+
+        // Nord syntax tinting for the boot lines
+        var NORD = { prompt:'#a3be8c', command:'#88c0d0', flag:'#b48ead', text:'#d8dee9', output:'#616e88', ok:'#a3be8c' };
+        function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+        function colorizeLine(line) {
+          if (!line.length) return '';
+          if (line.indexOf('  ') === 0) { // indented output line
+            return line.split(/(\bOK\b)/).map(function(p) {
+              return p === 'OK'
+                ? '<span style="color:' + NORD.ok + '">OK</span>'
+                : '<span style="color:' + NORD.output + '">' + escHtml(p) + '</span>';
+            }).join('');
+          }
+          var tokens = line.match(/\s+|\S+/g) || [];
+          var seenCmd = false, out = '';
+          for (var i = 0; i < tokens.length; i++) {
+            var tk = tokens[i];
+            if (/^\s+$/.test(tk)) { out += tk; continue; }
+            var col = NORD.text;
+            if (tk === '$') col = NORD.prompt;
+            else if (!seenCmd) { col = NORD.command; seenCmd = true; }
+            else if (tk.charAt(0) === '-') col = NORD.flag;
+            out += '<span style="color:' + col + '">' + escHtml(tk) + '</span>';
+          }
+          return out;
+        }
+        function colorize(buf) { return buf.split('\n').map(colorizeLine).join('\n'); }
 
         function updateDisplay() {
-          bootText.innerHTML = currentText + cursorHtml;
+          bootText.innerHTML = colorize(currentText) + cursorHtml;
         }
 
         function typeLine() {
           if (lineIndex >= lines.length) {
+            // Let "READY." sit a beat, then resolve the dark terminal into a clean
+            // light field that matches the game — so the (light) game fades up out of
+            // white instead of snapping from dark, and the page-load blink is hidden.
             setTimeout(function() {
-              window.location.href = targetUrl;
-            }, 500);
+              var resolve = document.createElement('div');
+              resolve.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
+                'background:#f7f7f7;z-index:100001;opacity:0;margin:0;padding:0;float:none;' +
+                'transition:opacity 0.45s ease;';
+              document.body.appendChild(resolve);
+              requestAnimationFrame(function() { resolve.style.opacity = '1'; });
+              setTimeout(function() { window.location.href = targetUrl; }, 520);
+            }, 450);
             return;
           }
 

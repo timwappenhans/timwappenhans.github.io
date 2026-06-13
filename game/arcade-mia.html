@@ -10,7 +10,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #0a0a0a;
+    background: #e9e9e3;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,43 +26,19 @@
     max-width: 100vw;
   }
 
-  #scanlines {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  #crt-glow {
-    position: absolute;
-    top: -20px; left: -20px; right: -20px; bottom: -20px;
-    background: radial-gradient(ellipse at center, rgba(40,80,40,0.15) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 11;
-  }
-
   canvas {
     display: block;
     width: 800px;
-    height: 500px;
+    height: 300px;
     max-width: 100vw;
-    border: 3px solid #333;
+    background: #f7f7f7;
+    border: 2px solid #cfcfc9;
     border-radius: 2px;
-    box-shadow:
-      0 0 20px rgba(0,255,100,0.1),
-      inset 0 0 60px rgba(0,0,0,0.3);
   }
 
   #mobile-hint {
     display: none;
-    color: #555;
+    color: #acacac;
     font-size: 8px;
     text-align: center;
     margin-top: 10px;
@@ -73,1160 +49,767 @@
     canvas { width: 100vw; height: auto; }
     #mobile-hint { display: block; }
   }
+
+  /* Fade up out of the launch sequence's light resolve — no dark snap, no load blink */
+  #boot-fade {
+    position: fixed; inset: 0; background: #f7f7f7;
+    z-index: 9999; pointer-events: none;
+    animation: boot-fade-out 0.5s ease forwards;
+  }
+  @keyframes boot-fade-out { from { opacity: 1; } to { opacity: 0; } }
 </style>
 </head>
 <body>
 
+<div id="boot-fade"></div>
+
 <div id="game-wrapper">
-  <canvas id="game" width="800" height="500"></canvas>
-  <div id="scanlines"></div>
-  <div id="crt-glow"></div>
-  <div id="mobile-hint">TAP TO JUMP</div>
+  <canvas id="game" width="800" height="300"></canvas>
+  <div id="mobile-hint">TAP UPPER = JUMP &nbsp;·&nbsp; TAP LOWER = DUCK</div>
 </div>
 
 <script>
 // ============================================================
-//  ARCADE-MIA — The Academic Career Runner
+//  ARCADE-MIA — The Academic Career Runner (Dino edition)
 //  An easter egg by Tim Wappenhans
+//  Style: toned-down Chrome-Dino — mono, light, minimal.
+//  Mechanics: jump + duck, power-ups (coffee / shield / slow-mo).
 // ============================================================
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const W = 800, H = 500;
+const W = 800, H = 300;
+const groundY = H - 50;
 
-// ---------- PALETTE (NES-muted) ----------
+// ---------- PALETTE (mono, light) ----------
 const PAL = {
-  bg:        '#101410',
-  ground:    '#3a4a3a',
-  groundLt:  '#4a5a4a',
-  sky:       '#141820',
-  text:      '#7a8a7a',
-  textDim:   '#4a5a4a',
-  accent:    '#a89860',
-  danger:    '#883333',
-  white:     '#b8b8b0',
-  dark:      '#0a0e0a',
-  panel:     '#1a221a',
-  panelBord: '#3a4a3a',
+  field: '#f7f7f7',
+  ink:   '#535353',
+  inkSoft: '#7a7a7a',
+  dim:   '#acacac',
+  faint: '#dcdcd6',
 };
 
 // ---------- GAME STATE ----------
-let state = 'title'; // title | playing | levelup | gameover
+let state = 'title'; // title | playing | gameover
 let score = 0;
-let hIndex = 0; // high score
+let hIndex = 0; // high score ("h-index")
 let levelIndex = 0;
 let levelTimer = 0;
-let gameSpeed = 4;
+let gameSpeed = 5;
 let frameCount = 0;
-let groundY = H - 70;
 let shakeX = 0, shakeY = 0;
 let flashAlpha = 0;
-let levelUpTimer = 0;
 let deathReason = '';
 
 // ---------- LEVELS ----------
+// Each level: a few ground obstacles (JUMP) + at least one high banner (DUCK).
 const LEVELS = [
-  {
-    name: 'PhD Student',
-    color: '#2a3a2a',
-    bgColor: '#101820',
-    obstacles: ['papers', 'rejection', 'deadline', 'coffee'],
-    duration: 600,
-    speedMult: 1.0,
-    collectible: 'citation',
-    ground: 'seminar',
-  },
-  {
-    name: 'Post-Doc',
-    color: '#2a3040',
-    bgColor: '#10101a',
-    obstacles: ['contract', 'movingbox', 'randr', 'coffee'],
-    duration: 700,
-    speedMult: 1.15,
-    collectible: 'publication',
-    ground: 'office',
-  },
-  {
-    name: 'Grant Recipient',
-    color: '#3a3425',
-    bgColor: '#18160e',
-    obstacles: ['bureaucracy', 'ethics', 'budget', 'gdpr'],
-    duration: 800,
-    speedMult: 1.3,
-    collectible: 'grant',
-    ground: 'conference',
-  },
-  {
-    name: 'Tenure Track',
-    color: '#3a2222',
-    bgColor: '#180e0e',
-    obstacles: ['evaluation', 'committee', 'service', 'hindexwall'],
-    duration: 900,
-    speedMult: 1.45,
-    collectible: 'citation',
-    ground: 'faculty',
-  },
-  {
-    name: 'TENURE',
-    color: '#302838',
-    bgColor: '#100e18',
-    obstacles: ['restructuring', 'adminmeeting', 'apsrreject', 'committee'],
-    duration: 1000,
-    speedMult: 1.6,
-    collectible: 'publication',
-    ground: 'office',
-    isFinal: true,
-  },
+  { name: 'PhD Student',     duration: 620, speedMult: 1.00, ground: ['papers', 'deadline'],     high: ['committee'],    collectible: 'citation' },
+  { name: 'Post-Doc',        duration: 700, speedMult: 1.12, ground: ['randr', 'deadline'],       high: ['adminmeeting'], collectible: 'publication' },
+  { name: 'Grant Recipient', duration: 780, speedMult: 1.24, ground: ['budget', 'papers'],        high: ['bureaucracy'],  collectible: 'grant' },
+  { name: 'Tenure Track',    duration: 860, speedMult: 1.36, ground: ['rejection', 'randr'],       high: ['evaluation'],   collectible: 'citation' },
+  { name: 'TENURE',          duration: 940, speedMult: 1.50, ground: ['restructuring', 'deadline'], high: ['apsrreject'],  collectible: 'publication', isFinal: true },
 ];
 
+// ---------- OBSTACLE DEFINITIONS ----------
+// kind 'ground' -> jump over.  kind 'high' -> duck under (hanging banner).
+const OB = {
+  papers:        { kind: 'ground', w: 30, h: 24 },
+  deadline:      { kind: 'ground', w: 30, h: 30 },
+  rejection:     { kind: 'ground', w: 34, h: 26 },
+  randr:         { kind: 'ground', w: 32, h: 28, label: 'R&R' },
+  budget:        { kind: 'ground', w: 34, h: 28, label: '-€' },
+  restructuring: { kind: 'ground', w: 38, h: 30, label: 'CUT' },
+  committee:     { kind: 'high',   w: 40 },   // wall clock — "another meeting"
+  adminmeeting:  { kind: 'high',   w: 46 },   // ZZZ bubble — endless admin meeting
+  bureaucracy:   { kind: 'high',   w: 34 },   // clipboard — red tape
+  evaluation:    { kind: 'high',   w: 38 },   // report card — "D-"
+  apsrreject:    { kind: 'high',   w: 48 },   // paper airplane — manuscript returned
+};
+const HIGH_TOP = 40;                 // string anchored up here
+const SIGN_TOP = groundY - 82;       // the dangling object hangs at head height...
+const SIGN_BOT = groundY - 38;       // ...with a gap beneath to slide under
+
 // ---------- PLAYER ----------
+const STAND_H = 54, STAND_W = 24;
+const DUCK_H = 24, DUCK_W = 34;
 const player = {
-  x: 100,
-  y: 0,
-  w: 32,
-  h: 44,
+  x: 90,
+  feetY: groundY,
   vy: 0,
   grounded: true,
+  ducking: false,
   frame: 0,
   frameTimer: 0,
-  alive: true,
   coffeeBoost: 0,
+  slowmo: 0,
+  shield: false,
+  invuln: 0,
 };
 
-// ---------- OBSTACLES & COLLECTIBLES ----------
+// ---------- COLLECTIONS ----------
 let obstacles = [];
 let collectibles = [];
 let particles = [];
-let bgElements = [];
-let stars = [];
 let finishLine = null;
 let finishReached = false;
 let celebrationTimer = 0;
 
-// Init stars
-for (let i = 0; i < 60; i++) {
-  stars.push({ x: Math.random() * W, y: Math.random() * (groundY - 40), size: Math.random() * 2 + 0.5, twinkle: Math.random() * Math.PI * 2 });
-}
-
 // ---------- INPUT ----------
-let keys = {};
+let duckHeld = false;
+function pressJump() {
+  if (state === 'title') { startGame(); return; }
+  if (state === 'gameover') { resetToTitle(); return; }
+  if (state === 'playing' && player.grounded && !finishReached) {
+    player.vy = -12;
+    player.grounded = false;
+    player.ducking = false;
+  }
+}
 document.addEventListener('keydown', e => {
-  keys[e.code] = true;
-  if ((e.code === 'Space' || e.code === 'ArrowUp') && state === 'title') startGame();
-  if ((e.code === 'Space' || e.code === 'ArrowUp') && state === 'gameover') resetToTitle();
-  if (e.code === 'Space' || e.code === 'ArrowUp') e.preventDefault();
+  if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); pressJump(); }
+  if (e.code === 'ArrowDown') { e.preventDefault(); duckHeld = true; }
 });
-document.addEventListener('keyup', e => { keys[e.code] = false; });
+document.addEventListener('keyup', e => {
+  if (e.code === 'ArrowDown') duckHeld = false;
+});
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
-  keys['Space'] = true;
-  if (state === 'title') startGame();
-  if (state === 'gameover') resetToTitle();
-});
-canvas.addEventListener('touchend', e => { keys['Space'] = false; });
-canvas.addEventListener('click', () => {
-  if (state === 'title') startGame();
-  if (state === 'gameover') resetToTitle();
-});
+  const rect = canvas.getBoundingClientRect();
+  const ty = e.touches[0].clientY - rect.top;
+  const lower = ty > rect.height * 0.55;
+  if (state !== 'playing') { pressJump(); return; }
+  if (lower) duckHeld = true; else pressJump();
+}, { passive: false });
+canvas.addEventListener('touchend', e => { e.preventDefault(); duckHeld = false; }, { passive: false });
+canvas.addEventListener('click', () => { if (state !== 'playing') pressJump(); });
 
-// ---------- PIXEL ART HELPERS ----------
-function drawPixelRect(x, y, w, h, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
+// ---------- DRAW HELPERS ----------
+function px(x, y, w, h, c) { ctx.fillStyle = c || PAL.ink; ctx.fillRect(x | 0, y | 0, w, h); }
+function knockText(txt, x, y, size) {
+  ctx.fillStyle = PAL.field;
+  ctx.font = size + 'px "Press Start 2P"';
+  ctx.fillText(txt, x, y);
+}
+function roundRect(x, y, w, h, r, c) {
+  ctx.fillStyle = c || PAL.ink;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+  ctx.fill();
 }
 
-function drawPixelChar(px, py, mirror) {
-  const f = player.frame;
-  const s = 2; // pixel scale
+// ---------- CHARACTER: classic scholar (Variant A) ----------
+function drawScholar(L, F, mode) {
+  // shadow
+  px(L + 2, groundY - 2, mode === 'duck' ? 34 : 22, 4, 'rgba(0,0,0,0.10)');
 
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.fillRect(px - 2, groundY - 2, 36, 6);
+  ctx.fillStyle = PAL.ink;
 
-  // Body
-  drawPixelRect(px + 8, py, 16, 24, '#556677'); // shirt (muted slate)
-  drawPixelRect(px + 8, py + 24, 16, 12, '#2e3640'); // pants
-
-  // Head
-  drawPixelRect(px + 6, py - 16, 20, 16, '#c0a070'); // face (warm muted)
-
-  // Hair
-  drawPixelRect(px + 4, py - 20, 24, 6, '#3a2818');
-  drawPixelRect(px + 4, py - 16, 4, 4, '#3a2818');
-
-  // Glasses
-  drawPixelRect(px + 8, py - 12, 7, 5, '#222');
-  drawPixelRect(px + 17, py - 12, 7, 5, '#222');
-  drawPixelRect(px + 10, py - 11, 3, 3, '#7a9aaa');
-  drawPixelRect(px + 19, py - 11, 3, 3, '#7a9aaa');
-  drawPixelRect(px + 15, py - 11, 2, 2, '#222'); // bridge
-
-  // Coffee (held in front hand)
-  if (player.coffeeBoost > 0) {
-    drawPixelRect(px + 26, py + 4, 8, 12, '#6a4020');
-    drawPixelRect(px + 27, py + 1, 6, 3, '#c8c0b0');
-    // Steam
-    if (frameCount % 20 < 10) {
-      drawPixelRect(px + 28, py - 3, 2, 3, 'rgba(255,255,255,0.5)');
-      drawPixelRect(px + 31, py - 5, 2, 3, 'rgba(255,255,255,0.3)');
-    }
+  if (mode === 'duck') {
+    // crouched, leaning forward
+    px(L + 2, F - 18, 22, 12);          // torso (horizontal)
+    px(L + 20, F - 22, 14, 12);         // head forward
+    px(L + 20, F - 24, 14, 3);          // hair
+    // glasses knockout
+    px(L + 23, F - 18, 4, 4, PAL.field);
+    px(L + 28, F - 18, 4, 4, PAL.field);
+    px(L + 27, F - 18, 1, 4, PAL.ink);
+    // legs scrambling
+    const f = Math.floor(frameCount / 5) % 2;
+    px(L + 4, F - 6, 5, 6, PAL.ink);
+    px(L + 12, F - 6, 5, 6, PAL.ink);
+    px(f ? L - 2 : L + 18, F - 4, 7, 4, PAL.ink); // trailing foot
+    return;
   }
 
-  // Arms
-  if (player.grounded) {
-    const armSwing = f % 2 === 0 ? 0 : 3;
-    drawPixelRect(px + 4, py + 2 + armSwing, 4, 14, '#c0a070');
-    drawPixelRect(px + 24, py + 2 - armSwing, 4, 14, '#c0a070');
+  const jumping = (mode === 'jump');
+  // torso + head + hair
+  px(L + 4, F - 36, 16, 24);            // torso
+  px(L + 2, F - 52, 20, 16);            // head
+  px(L,     F - 56, 24, 6);             // hair top
+  px(L,     F - 52, 4, 5);              // sideburn
+  // glasses (knocked out of silhouette)
+  px(L + 4, F - 46, 7, 5, PAL.field);
+  px(L + 13, F - 46, 7, 5, PAL.field);
+  px(L + 11, F - 46, 2, 2, PAL.ink);    // bridge
+
+  if (jumping) {
+    // arms up, legs tucked
+    px(L,      F - 42, 4, 12, PAL.ink);
+    px(L + 20, F - 42, 4, 12, PAL.ink);
+    px(L + 4,  F - 12, 5, 8, PAL.ink);
+    px(L + 13, F - 12, 5, 8, PAL.ink);
   } else {
-    // Arms up when jumping
-    drawPixelRect(px + 4, py - 6, 4, 12, '#c0a070');
-    drawPixelRect(px + 24, py - 6, 4, 12, '#c0a070');
-  }
-
-  // Legs (animated)
-  if (player.grounded) {
+    // running
+    const f = Math.floor(frameCount / 5) % 4;
+    const swing = f % 2 === 0 ? 0 : 2;
+    px(L,      F - 34 + swing, 4, 12, PAL.ink);   // back arm
+    px(L + 20, F - 34 - swing, 4, 12, PAL.ink);   // front arm
     if (f % 4 < 2) {
-      drawPixelRect(px + 8, py + 36, 6, 8, '#222');
-      drawPixelRect(px + 18, py + 32, 6, 12, '#222');
+      px(L + 4,  F - 12, 5, 12, PAL.ink);
+      px(L + 13, F - 8,  5, 8,  PAL.ink);
     } else {
-      drawPixelRect(px + 8, py + 32, 6, 12, '#222');
-      drawPixelRect(px + 18, py + 36, 6, 8, '#222');
+      px(L + 4,  F - 8,  5, 8,  PAL.ink);
+      px(L + 13, F - 12, 5, 12, PAL.ink);
     }
-  } else {
-    // Tucked legs when jumping
-    drawPixelRect(px + 8, py + 32, 6, 6, '#222');
-    drawPixelRect(px + 18, py + 32, 6, 6, '#222');
+  }
+
+  // shield ring
+  if (player.shield) {
+    ctx.strokeStyle = PAL.inkSoft;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(L - 5, F - 60, 34, 64);
+    ctx.setLineDash([]);
+  }
+  // coffee in hand
+  if (player.coffeeBoost > 0) {
+    px(L + 22, F - 30, 6, 8, PAL.ink);
+    if (frameCount % 20 < 10) px(L + 24, F - 36, 2, 3, PAL.dim);
   }
 }
 
-// ---------- OBSTACLE DRAWING ----------
-function drawObstacle(obs) {
-  const x = Math.floor(obs.x);
-  const y = Math.floor(obs.y);
+// ---------- HIGH (DUCK) OBSTACLES — funny dangling objects ----------
+function drawHighSign(obs) {
+  const def = OB[obs.type], w = def.w, x = Math.floor(obs.x);
+  const bob = Math.sin(frameCount * 0.1 + obs.x * 0.05) * 2;
+  const top = SIGN_TOP + bob, bot = SIGN_BOT + bob;
+  const cx = x + w / 2, midY = (top + bot) / 2, h = bot - top;
 
-  ctx.save();
+  // hanging string
+  px(cx - 1, HIGH_TOP, 2, top - HIGH_TOP, PAL.dim);
+  ctx.fillStyle = PAL.ink;
+
+  switch (obs.type) {
+    case 'committee': { // wall clock = "another meeting"
+      const r = w / 2;
+      px(cx - 2, top - 4, 4, 4, PAL.ink);                    // top knob
+      ctx.beginPath(); ctx.arc(cx, midY, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = PAL.field; ctx.beginPath(); ctx.arc(cx, midY, r - 3, 0, Math.PI * 2); ctx.fill();
+      px(cx - 1, midY - 9, 2, 10, PAL.ink);                  // hour hand
+      px(cx - 1, midY - 1, 9, 2, PAL.ink);                   // minute hand
+      break;
+    }
+    case 'adminmeeting': { // speech bubble "ZZZ" = endless meeting
+      roundRect(x, top, w, h - 7, 7, PAL.ink);
+      ctx.beginPath(); ctx.moveTo(cx - 5, bot - 9); ctx.lineTo(cx + 6, bot - 9); ctx.lineTo(cx - 2, bot); ctx.closePath(); ctx.fill();
+      ctx.textAlign = 'center'; knockText('ZZZ', cx, midY - 1, 9); ctx.textAlign = 'left';
+      break;
+    }
+    case 'bureaucracy': { // clipboard = red tape
+      px(x, top + 2, w, h - 2, PAL.ink);
+      px(cx - 5, top - 2, 10, 6, PAL.ink);                   // clip
+      for (let i = 0; i < 3; i++) px(x + 5, top + 12 + i * 9, w - 10, 2, PAL.field);
+      break;
+    }
+    case 'evaluation': { // report card = "D-"
+      px(x, top, w, h, PAL.ink);
+      px(x + 3, top + 3, w - 6, 5, PAL.field);               // header strip
+      ctx.textAlign = 'center'; knockText('D-', cx, midY + 9, 13); ctx.textAlign = 'left';
+      break;
+    }
+    case 'apsrreject': { // paper airplane = manuscript returned
+      ctx.beginPath();
+      ctx.moveTo(x, midY);
+      ctx.lineTo(x + w, top + 3);
+      ctx.lineTo(x + w - 12, midY + 3);
+      ctx.lineTo(x + w, bot - 3);
+      ctx.closePath(); ctx.fill();
+      px(x + w - 12, midY - 7, 2, 14, PAL.field);            // center fold
+      break;
+    }
+  }
+}
+
+// ---------- OBSTACLES ----------
+function drawObstacle(obs) {
+  const def = OB[obs.type];
+  const x = Math.floor(obs.x);
+  ctx.fillStyle = PAL.ink;
+
+  if (def.kind === 'high') { drawHighSign(obs); return; }
+
+  // ground obstacles — sit on the line, jump over
+  const y = groundY - def.h;
   switch (obs.type) {
     case 'papers':
       for (let i = 0; i < 3; i++) {
-        drawPixelRect(x + i * 2, y + i * 6, 28, 20, '#c8c8c0');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 4, 18, 2, '#7a7a70');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 8, 14, 2, '#7a7a70');
-        drawPixelRect(x + i * 2 + 3, y + i * 6 + 12, 20, 2, '#7a7a70');
+        px(x + i * 2, y + i * 6, 26, 16, PAL.ink);
+        px(x + i * 2 + 3, y + i * 6 + 4, 16, 1, PAL.field);
+        px(x + i * 2 + 3, y + i * 6 + 8, 12, 1, PAL.field);
       }
       break;
-
-    case 'rejection':
-      drawPixelRect(x, y + 4, 36, 26, '#884444');
-      drawPixelRect(x + 2, y + 6, 32, 22, '#aa6666');
-      ctx.fillStyle = '#995555';
-      ctx.beginPath();
-      ctx.moveTo(x, y + 4);
-      ctx.lineTo(x + 18, y + 18);
-      ctx.lineTo(x + 36, y + 4);
-      ctx.fill();
-      drawPixelRect(x + 12, y + 14, 12, 3, '#c8c0b0');
-      drawPixelRect(x + 16, y + 10, 3, 12, '#c8c0b0');
+    case 'deadline': // clock
+      px(x + 2, y, 26, 26, PAL.ink);
+      px(x + 13, y + 5, 2, 9, PAL.field);   // hand
+      px(x + 13, y + 12, 8, 2, PAL.field);  // hand
+      px(x + 11, y - 5, 3, 4, PAL.ink);     // bell stem
       break;
-
-    case 'deadline':
-      drawPixelRect(x + 4, y, 28, 28, '#a89860');
-      drawPixelRect(x + 6, y + 2, 24, 24, '#c8c8c0');
-      drawPixelRect(x + 16, y + 6, 3, 12, '#222');
-      drawPixelRect(x + 16, y + 10, 10, 3, '#884444');
-      if (frameCount % 30 < 20) {
-        drawPixelRect(x + 15, y - 14, 5, 8, '#884444');
-        drawPixelRect(x + 15, y - 4, 5, 3, '#884444');
-      }
+    case 'rejection': // envelope
+      px(x, y + 2, 34, 24, PAL.ink);
+      px(x + 2, y + 4, 30, 12, PAL.field);  // flap area
+      px(x + 14, y + 9, 6, 6, PAL.ink);     // X-ish stamp
+      ctx.textAlign = 'center';
+      knockText('NO', x + 17, y + 22, 7);
+      ctx.textAlign = 'left';
       break;
-
-    case 'coffee':
-      drawPixelRect(x + 4, y + 6, 20, 24, '#6a4020');
-      drawPixelRect(x + 6, y + 8, 16, 20, '#8a6040');
-      drawPixelRect(x + 24, y + 12, 6, 12, '#6a4020');
-      if (frameCount % 16 < 8) {
-        drawPixelRect(x + 8, y - 2, 3, 6, 'rgba(200,200,190,0.5)');
-        drawPixelRect(x + 14, y - 4, 3, 6, 'rgba(200,200,190,0.3)');
-      }
-      break;
-
-    case 'contract':
-      drawPixelRect(x, y, 40, 8, '#6a5a3a');
-      drawPixelRect(x, y + 8, 40, 22, '#8a7a5a');
-      drawPixelRect(x + 10, y + 8, 2, 14, '#5a4a30');
-      drawPixelRect(x + 25, y + 6, 2, 18, '#5a4a30');
-      ctx.fillStyle = '#884444';
-      ctx.font = '6px "Press Start 2P"';
-      ctx.fillText('TEMP', x + 4, y + 22);
-      break;
-
-    case 'movingbox':
-      drawPixelRect(x, y, 36, 30, '#8a7050');
-      drawPixelRect(x + 2, y + 2, 32, 26, '#9a8060');
-      drawPixelRect(x + 6, y + 12, 24, 3, '#7a6040');
-      drawPixelRect(x + 14, y, 8, 30, 'rgba(140,120,80,0.4)');
-      break;
-
-    case 'randr':
-      drawPixelRect(x, y + 2, 34, 28, '#b8b0a0');
-      drawPixelRect(x + 2, y + 4, 30, 24, '#c8c0b0');
-      ctx.fillStyle = '#884444';
-      ctx.font = '7px "Press Start 2P"';
-      ctx.fillText('R&R', x + 4, y + 18);
-      drawPixelRect(x + 20, y + 18, 12, 10, 'rgba(136,68,68,0.3)');
-      break;
-
-    case 'bureaucracy':
-      for (let i = 0; i < 4; i++) {
-        drawPixelRect(x + i, y + i * 5, 32, 24, i % 2 === 0 ? '#b0b0a8' : '#c0c0b8');
-      }
-      ctx.fillStyle = '#884444';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('FORM', x + 5, y + 14);
-      ctx.fillText('27B/6', x + 3, y + 22);
-      break;
-
-    case 'ethics':
-      drawPixelRect(x + 2, y, 30, 30, '#3a4a60');
-      drawPixelRect(x + 4, y + 2, 26, 26, '#4a5a70');
-      ctx.fillStyle = '#b8b8b0';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('IRB', x + 8, y + 14);
-      ctx.fillText('DENY', x + 5, y + 22);
-      break;
-
-    case 'budget':
-      drawPixelRect(x, y + 2, 36, 28, '#4a6a4a');
-      drawPixelRect(x + 2, y + 4, 32, 24, '#5a7a5a');
-      for (let i = 0; i < 3; i++) {
-        drawPixelRect(x + 2, y + 8 + i * 7, 32, 1, '#4a6a4a');
-      }
-      drawPixelRect(x + 14, y + 4, 1, 24, '#4a6a4a');
-      ctx.fillStyle = '#884444';
-      ctx.font = '6px "Press Start 2P"';
-      ctx.fillText('-€€', x + 4, y + 24);
-      break;
-
-    case 'gdpr':
-      drawPixelRect(x, y, 36, 34, '#3a4a60');
-      drawPixelRect(x + 2, y + 2, 32, 30, '#4a5a70');
-      ctx.fillStyle = '#a89860';
-      ctx.font = '6px "Press Start 2P"';
-      ctx.fillText('GDPR', x + 3, y + 14);
-      drawPixelRect(x + 10, y + 18, 16, 12, '#a89860');
-      drawPixelRect(x + 12, y + 20, 12, 8, '#4a5a70');
-      break;
-
-    case 'evaluation':
-      drawPixelRect(x, y + 2, 32, 28, '#c8c8c0');
-      drawPixelRect(x + 2, y + 4, 28, 24, '#c0b8a8');
-      ctx.fillStyle = '#884444';
-      ctx.font = '10px "Press Start 2P"';
-      ctx.fillText('D-', x + 6, y + 22);
-      break;
-
-    case 'committee':
-      drawPixelRect(x, y, 38, 30, '#3a3450');
-      drawPixelRect(x + 2, y + 2, 34, 26, '#4a4460');
-      ctx.fillStyle = '#b8b8b0';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('MTG', x + 6, y + 14);
-      ctx.fillText('15:00', x + 4, y + 22);
-      break;
-
-    case 'service':
-      drawPixelRect(x, y, 34, 32, '#5a4020');
-      drawPixelRect(x + 2, y + 2, 30, 28, '#7a6040');
-      ctx.fillStyle = '#b8b8b0';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('ADMIN', x + 2, y + 16);
-      ctx.fillText('DUTY', x + 4, y + 24);
-      break;
-
-    case 'hindexwall':
-      drawPixelRect(x, y, 34, 34, '#2a2a2a');
-      drawPixelRect(x + 2, y + 2, 30, 30, '#1a1a1a');
-      ctx.fillStyle = '#668844';
-      ctx.font = '8px "Press Start 2P"';
-      ctx.fillText('h=' + Math.floor(Math.random() * 5 + 2), x + 4, y + 20);
-      break;
-
-    case 'restructuring':
-      drawPixelRect(x, y, 40, 34, '#5a2020');
-      drawPixelRect(x + 2, y + 2, 36, 30, '#7a3030');
-      ctx.fillStyle = '#a89860';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('DEPT', x + 6, y + 14);
-      ctx.fillText('CUT!', x + 6, y + 22);
-      break;
-
-    case 'adminmeeting':
-      drawPixelRect(x, y, 44, 30, '#303040');
-      drawPixelRect(x + 2, y + 2, 40, 26, '#404050');
-      ctx.fillStyle = '#7a7a90';
-      ctx.font = '5px "Press Start 2P"';
-      ctx.fillText('3HR', x + 8, y + 14);
-      ctx.fillText('MEET', x + 6, y + 22);
-      if (frameCount % 40 < 25) {
-        ctx.fillStyle = '#b8b8b0';
-        ctx.font = '8px "Press Start 2P"';
-        ctx.fillText('Z', x + 36, y - 4);
-        ctx.font = '6px "Press Start 2P"';
-        ctx.fillText('z', x + 40, y - 10);
-      }
-      break;
-
-    case 'apsrreject':
-      drawPixelRect(x, y - 4, 44, 38, '#5a1010');
-      drawPixelRect(x + 2, y - 2, 40, 34, '#7a2020');
-      ctx.fillStyle = '#b8b8b0';
-      ctx.font = '6px "Press Start 2P"';
-      ctx.fillText('APSR', x + 6, y + 10);
-      ctx.fillText('DESK', x + 6, y + 20);
-      ctx.fillText('REJ.', x + 8, y + 30);
-      break;
+    default: // labelled block (randr, budget, restructuring)
+      px(x, y, def.w, def.h, PAL.ink);
+      px(x + 6, y, 1, def.h, PAL.field);    // spine line
+      ctx.textAlign = 'center';
+      knockText(def.label, x + def.w / 2 + 2, y + def.h / 2 + 4, def.label.length > 2 ? 6 : 8);
+      ctx.textAlign = 'left';
   }
-  ctx.restore();
 }
 
+// ---------- COLLECTIBLES & POWER-UPS ----------
 function drawCollectible(col) {
-  const x = Math.floor(col.x);
-  const y = Math.floor(col.y);
-  const bob = 0;
-
-  ctx.save();
+  const x = Math.floor(col.x), y = Math.floor(col.y);
+  ctx.fillStyle = PAL.ink;
   switch (col.type) {
+    case 'coffee':
+      px(x + 2, y + 4, 16, 14, PAL.ink);
+      px(x + 18, y + 7, 5, 8, PAL.ink);     // handle
+      px(x + 5, y + 7, 10, 6, PAL.field);   // knockout
+      if (frameCount % 16 < 8) px(x + 6, y - 1, 2, 4, PAL.dim);
+      break;
+    case 'shield':
+      px(x + 4, y, 16, 6, PAL.ink);
+      px(x + 2, y + 4, 20, 8, PAL.ink);
+      px(x + 5, y + 11, 14, 6, PAL.ink);
+      px(x + 9, y + 16, 6, 4, PAL.ink);
+      px(x + 9, y + 5, 4, 6, PAL.field);    // knockout cross
+      px(x + 7, y + 7, 8, 2, PAL.field);
+      break;
+    case 'slowmo': // hourglass
+      px(x + 2, y, 18, 3, PAL.ink);
+      px(x + 2, y + 18, 18, 3, PAL.ink);
+      for (let i = 0; i < 7; i++) px(x + 4 + i, y + 3 + i, 12 - i * 2, 2, PAL.ink);
+      for (let i = 0; i < 7; i++) px(x + 10 - i, y + 17 - i, i * 2 + 2, 2, PAL.ink);
+      break;
     case 'citation':
-      drawPixelRect(x + 6, y + bob, 12, 12, '#a89860');
-      drawPixelRect(x + 4, y + 2 + bob, 16, 8, '#a89860');
-      drawPixelRect(x + 8, y - 2 + bob, 8, 16, '#a89860');
-      ctx.fillStyle = '#6a5a30';
-      ctx.font = '6px "Press Start 2P"';
-      ctx.fillText('★', x + 5, y + 10 + bob);
+      px(x + 6, y, 10, 10, PAL.ink);
+      px(x + 3, y + 3, 16, 4, PAL.ink);
+      px(x + 8, y - 3, 6, 16, PAL.ink);
+      px(x + 8, y + 4, 4, 2, PAL.field);
       break;
-
     case 'publication':
-      drawPixelRect(x + 2, y + bob, 20, 16, '#4a5a70');
-      drawPixelRect(x + 4, y + 2 + bob, 16, 12, '#5a6a80');
-      ctx.fillStyle = '#b8b8b0';
-      ctx.font = '4px "Press Start 2P"';
-      ctx.fillText('PUB', x + 5, y + 10 + bob);
+      px(x, y, 22, 16, PAL.ink);
+      px(x + 11, y, 1, 16, PAL.field);
+      ctx.textAlign = 'center';
+      knockText('PUB', x + 11, y + 11, 5);
+      ctx.textAlign = 'left';
       break;
-
     case 'grant':
-      drawPixelRect(x + 4, y + 4 + bob, 16, 14, '#5a7a5a');
-      drawPixelRect(x + 6, y + 2 + bob, 12, 4, '#5a7a5a');
-      ctx.fillStyle = '#a89860';
-      ctx.font = '8px "Press Start 2P"';
-      ctx.fillText('€', x + 7, y + 14 + bob);
+      px(x + 2, y, 18, 16, PAL.ink);
+      ctx.textAlign = 'center';
+      knockText('€', x + 11, y + 13, 9);
+      ctx.textAlign = 'left';
       break;
   }
-  ctx.restore();
 }
 
 // ---------- FINISH LINE ----------
 function initFinishLine() {
   const level = LEVELS[levelIndex];
   const spd = gameSpeed * level.speedMult;
-  // Place the finish line so it arrives after level.duration frames
-  finishLine = {
-    x: W + level.duration * spd,
-    w: 16,
-    reached: false,
-  };
+  finishLine = { x: W + level.duration * spd, reached: false };
   finishReached = false;
   celebrationTimer = 0;
 }
-
 function drawFinishLine() {
-  if (!finishLine || finishLine.x > W + 50) return;
+  if (!finishLine || finishLine.x > W + 60) return;
   const x = Math.floor(finishLine.x);
-  const level = LEVELS[levelIndex];
-  const nextLevel = LEVELS[levelIndex + 1];
-  const poleH = 220;
-  const poleTop = groundY - poleH;
-  const poleW = 12;
-
-  // Checkered pole (wider squares)
-  for (let i = 0; i < poleH; i += 12) {
-    const even = (Math.floor(i / 12)) % 2 === 0;
-    drawPixelRect(x, poleTop + i, poleW, 12, even ? '#b8b8b0' : '#2a2a2a');
-    drawPixelRect(x + poleW, poleTop + i, poleW, 12, even ? '#2a2a2a' : '#b8b8b0');
+  const poleTop = groundY - 150;
+  // checkered pole
+  for (let i = 0; i < 150; i += 12) {
+    const even = Math.floor(i / 12) % 2 === 0;
+    px(x, poleTop + i, 8, 12, even ? PAL.ink : PAL.field);
+    px(x + 8, poleTop + i, 8, 12, even ? PAL.field : PAL.ink);
   }
-
-  // Banner / flag (much larger)
-  const bannerW = 140;
-  const bannerH = 56;
-  const bannerY = poleTop - 8;
-
-  // Banner shadow
-  drawPixelRect(x + poleW * 2 + 4, bannerY + 4, bannerW, bannerH, '#1a1a1a');
-  // Banner body
-  drawPixelRect(x + poleW * 2, bannerY, bannerW, bannerH, '#2a2a2a');
-  drawPixelRect(x + poleW * 2 + 3, bannerY + 3, bannerW - 6, bannerH - 6, '#3a3a3a');
-  // Banner border accent
-  drawPixelRect(x + poleW * 2, bannerY, bannerW, 3, '#a89860');
-  drawPixelRect(x + poleW * 2, bannerY + bannerH - 3, bannerW, 3, '#a89860');
-
-  // Banner text
+  // flag
+  const level = LEVELS[levelIndex], next = LEVELS[levelIndex + 1];
+  px(x + 16, poleTop, 96, 40, PAL.ink);
   ctx.textAlign = 'center';
-  const textCenterX = x + poleW * 2 + bannerW / 2;
   if (level.isFinal) {
-    ctx.fillStyle = '#a89860';
-    ctx.font = '14px "Press Start 2P"';
-    ctx.fillText('TENURE!', textCenterX, bannerY + 24);
-    ctx.fillStyle = '#7a8a7a';
-    ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('FINISH LINE', textCenterX, bannerY + 42);
-  } else if (nextLevel) {
-    ctx.fillStyle = '#a89860';
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('NEXT:', textCenterX, bannerY + 20);
-    ctx.fillStyle = '#b8b8b0';
-    ctx.font = '9px "Press Start 2P"';
-    ctx.fillText(nextLevel.name.toUpperCase(), textCenterX, bannerY + 40);
+    knockText('TENURE!', x + 64, poleTop + 18, 9);
+    knockText('FINISH', x + 64, poleTop + 32, 7);
+  } else if (next) {
+    knockText('NEXT', x + 64, poleTop + 16, 8);
+    knockText(next.name.toUpperCase().slice(0, 9), x + 64, poleTop + 31, 6);
   }
   ctx.textAlign = 'left';
-
-  // Checkered ground strip at the finish (wider)
-  for (let row = 0; row < 5; row++) {
-    for (let c = 0; c < 5; c++) {
-      const even = (row + c) % 2 === 0;
-      drawPixelRect(x - 16 + c * 14, groundY + row * 12, 14, 12, even ? '#b8b8b0' : '#2a2a2a');
-    }
-  }
-}
-
-// ---------- BACKGROUND ----------
-function drawBackground() {
-  const level = LEVELS[levelIndex] || LEVELS[0];
-
-  // Sky gradient
-  const grd = ctx.createLinearGradient(0, 0, 0, groundY);
-  grd.addColorStop(0, level.bgColor);
-  grd.addColorStop(1, level.color);
-  ctx.fillStyle = grd;
-  ctx.fillRect(0, 0, W, groundY);
-
-  // Stars
-  stars.forEach(s => {
-    const twinkle = Math.sin(frameCount * 0.03 + s.twinkle);
-    const alpha = 0.2 + twinkle * 0.2;
-    ctx.fillStyle = `rgba(180,190,170,${alpha})`;
-    ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
-  });
-
-  // Background buildings/scenery
-  drawScenery(level);
-
-  // Ground
-  ctx.fillStyle = level.color;
-  ctx.fillRect(0, groundY, W, H - groundY);
-
-  // Ground detail line
-  ctx.fillStyle = '#fff';
-  ctx.globalAlpha = 0.15;
-  ctx.fillRect(0, groundY, W, 2);
-  ctx.globalAlpha = 1;
-
-  // Ground texture
-  for (let i = 0; i < W; i += 16) {
-    const offset = (frameCount * gameSpeed * 0.5 + i) % W;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect((W - offset) % W, groundY + 8, 8, 2);
-    ctx.fillRect((W - offset + 4) % W, groundY + 20, 6, 2);
-  }
-}
-
-function drawScenery(level) {
-  // Parallax buildings
-  const scroll = frameCount * gameSpeed * 0.3;
-  ctx.globalAlpha = 0.15;
-
-  for (let i = 0; i < 8; i++) {
-    const bx = ((i * 130 - scroll * 0.3) % (W + 200)) - 100;
-    const bh = 60 + (i * 37 % 80);
-    const bw = 40 + (i * 23 % 40);
-    ctx.fillStyle = level.color;
-    ctx.fillRect(bx, groundY - bh, bw, bh);
-
-    // Windows
-    ctx.fillStyle = '#8a7a50';
-    for (let wy = groundY - bh + 8; wy < groundY - 8; wy += 14) {
-      for (let wx = bx + 6; wx < bx + bw - 6; wx += 12) {
-        if (Math.sin(wx * wy * 0.1 + frameCount * 0.01) > 0.2) {
-          ctx.fillRect(wx, wy, 4, 6);
-        }
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
+  // checkered ground strip
+  for (let r = 0; r < 3; r++)
+    for (let c = 0; c < 4; c++)
+      if ((r + c) % 2 === 0) px(x - 8 + c * 12, groundY + 2 + r * 8, 12, 8, PAL.ink);
 }
 
 // ---------- PARTICLES ----------
-function spawnParticles(x, y, color, count) {
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x, y,
-      vx: (Math.random() - 0.5) * 6,
-      vy: (Math.random() - 1) * 5,
-      life: 30 + Math.random() * 20,
-      color,
-      size: 2 + Math.random() * 3,
-    });
-  }
+let floatTexts = [];
+function spawnParticles(x, y, count, color) {
+  // small, short-lived dust puffs — Dino keeps it minimal
+  for (let i = 0; i < count; i++)
+    particles.push({ x, y, vx: (Math.random() - 0.5) * 3, vy: -1 - Math.random() * 1.5,
+      life: 10 + Math.random() * 8, size: 2, color: color || PAL.dim });
 }
-
+function spawnFloat(x, y, txt) { floatTexts.push({ x, y, txt, life: 46 }); }
 function updateParticles() {
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.15;
-    p.life--;
+    p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.life--;
     if (p.life <= 0) particles.splice(i, 1);
   }
+  for (let i = floatTexts.length - 1; i >= 0; i--) {
+    floatTexts[i].y -= 0.6; floatTexts[i].life--;
+    if (floatTexts[i].life <= 0) floatTexts.splice(i, 1);
+  }
 }
-
 function drawParticles() {
-  particles.forEach(p => {
-    ctx.globalAlpha = p.life / 50;
-    drawPixelRect(p.x, p.y, p.size, p.size, p.color);
-  });
+  particles.forEach(p => { ctx.globalAlpha = Math.min(1, p.life / 12); px(p.x, p.y, p.size, p.size, p.color); });
   ctx.globalAlpha = 1;
+  ctx.textAlign = 'center'; ctx.font = '7px "Press Start 2P"';
+  floatTexts.forEach(ft => {
+    ctx.globalAlpha = Math.min(1, ft.life / 30); ctx.fillStyle = PAL.ink;
+    ctx.fillText(ft.txt, ft.x, ft.y);
+  });
+  ctx.globalAlpha = 1; ctx.textAlign = 'left';
 }
 
-// ---------- SPAWN LOGIC ----------
-let spawnTimer = 0;
-let collectibleTimer = 0;
+// ---------- BACKGROUND ----------
+let pebbles = [];
+for (let i = 0; i < 14; i++) pebbles.push({ x: Math.random() * W, y: groundY + 8 + Math.random() * 24, w: 2 + Math.random() * 3 });
+let clouds = [];
+for (let i = 0; i < 4; i++) clouds.push({ x: Math.random() * W, y: 50 + Math.random() * 90, s: 0.5 + Math.random() * 0.5 });
 
+function drawBackground(scrollSpd) {
+  // clouds (slow parallax)
+  clouds.forEach(c => {
+    c.x -= scrollSpd * 0.15 * c.s;
+    if (c.x < -60) { c.x = W + 40; c.y = 50 + Math.random() * 90; }
+    ctx.fillStyle = PAL.faint;
+    const cx = c.x | 0, cy = c.y | 0;
+    px(cx, cy, 26, 8, PAL.faint); px(cx + 6, cy - 5, 16, 6, PAL.faint); px(cx + 14, cy - 8, 12, 6, PAL.faint);
+  });
+  // ground line
+  px(0, groundY, W, 2, PAL.ink);
+  // pebbles
+  pebbles.forEach(p => {
+    p.x -= scrollSpd;
+    if (p.x < -6) { p.x = W + Math.random() * 60; p.y = groundY + 8 + Math.random() * 24; }
+    px(p.x, p.y, p.w, 2, PAL.dim);
+  });
+}
+
+// ---------- SPAWNING ----------
+let spawnTimer = 0, collectibleTimer = 0;
 function spawnObstacle() {
   const level = LEVELS[levelIndex];
-  const types = level.obstacles.filter(t => t !== 'coffee');
-  const type = types[Math.floor(Math.random() * types.length)];
-
-  const obs = {
-    type,
-    x: W + 20,
-    y: groundY - 34,
-    w: type === 'apsrreject' || type === 'adminmeeting' ? 44 : type === 'restructuring' ? 40 : 36,
-    h: type === 'apsrreject' ? 38 : 32,
-    scored: false,
-  };
-  obstacles.push(obs);
+  // mostly ground, ~1 in 3 is a duck banner
+  const useHigh = Math.random() < 0.34 && level.high.length;
+  const pool = useHigh ? level.high : level.ground;
+  const type = pool[Math.floor(Math.random() * pool.length)];
+  obstacles.push({ type, x: W + 30, scored: false });
 }
-
 function spawnCollectible() {
   const level = LEVELS[levelIndex];
-  // 30% chance for coffee, rest is level collectible
-  const isCoffee = Math.random() < 0.3;
-  const type = isCoffee ? 'coffee' : level.collectible;
-
-  collectibles.push({
-    type: isCoffee ? 'coffee' : type,
-    x: W + 20,
-    y: groundY - 60 - Math.random() * 40,
-    w: 24,
-    h: 20,
-    isCoffee,
-  });
+  const r = Math.random();
+  let type;
+  if (r < 0.18) type = 'coffee';
+  else if (r < 0.30) type = 'shield';
+  else if (r < 0.40) type = 'slowmo';
+  else type = level.collectible;
+  collectibles.push({ type, x: W + 30, y: groundY - 64 - Math.random() * 46, w: 22, h: 20 });
 }
 
-// ---------- GAME LOGIC ----------
+// ---------- LIFECYCLE ----------
 function startGame() {
   state = 'playing';
-  score = 0;
-  levelIndex = 0;
-  levelTimer = 0;
-  gameSpeed = 4;
-  player.y = groundY - player.h;
-  player.vy = 0;
-  player.grounded = true;
-  player.alive = true;
-  player.coffeeBoost = 0;
-  obstacles = [];
-  collectibles = [];
-  particles = [];
-  spawnTimer = 0;
-  collectibleTimer = 0;
+  score = 0; levelIndex = 0; levelTimer = 0; gameSpeed = 5;
+  player.feetY = groundY; player.vy = 0; player.grounded = true; player.ducking = false;
+  player.coffeeBoost = 0; player.slowmo = 0; player.shield = false; player.invuln = 0;
+  player.won = false;
+  obstacles = []; collectibles = []; particles = []; floatTexts = [];
+  spawnTimer = 0; collectibleTimer = 0;
+  duckHeld = false;
   initFinishLine();
 }
+function resetToTitle() { state = 'title'; }
 
-function resetToTitle() {
-  state = 'title';
+function currentSpeed() {
+  const level = LEVELS[levelIndex];
+  let spd = gameSpeed * level.speedMult;
+  if (player.coffeeBoost > 0) spd *= 1.25;
+  if (player.slowmo > 0) spd *= 0.55;
+  return spd;
 }
 
+function hitPlayer(reason) {
+  if (player.shield) {
+    player.shield = false;
+    player.invuln = 40;
+    flashAlpha = 0.28;
+    spawnFloat(player.x + 12, player.feetY - 56, 'BLOCKED!');
+    spawnParticles(player.x + 12, player.feetY - 28, 5, PAL.inkSoft);
+    return;
+  }
+  state = 'gameover';
+  deathReason = reason;
+  shakeX = 8; shakeY = 4;
+  if (score > hIndex) hIndex = score;
+  spawnParticles(player.x + 12, player.feetY - 28, 8, PAL.inkSoft);
+}
+
+// ---------- UPDATE ----------
 function update() {
   frameCount++;
+  if (flashAlpha > 0.01) flashAlpha *= 0.9;
+  shakeX *= 0.85; shakeY *= 0.85;
 
-  if (state === 'playing') {
-    const level = LEVELS[levelIndex];
-    const spd = gameSpeed * level.speedMult * (player.coffeeBoost > 0 ? 1.2 : 1);
+  if (state !== 'playing') { updateParticles(); return; }
 
-    // Level timer
-    levelTimer++;
-    score += Math.floor(spd * 0.5);
+  const level = LEVELS[levelIndex];
+  const spd = currentSpeed();
+  levelTimer++;
+  score += Math.max(1, Math.floor(spd * 0.4));
 
-    if (player.coffeeBoost > 0) player.coffeeBoost--;
+  if (player.coffeeBoost > 0) player.coffeeBoost--;
+  if (player.slowmo > 0) player.slowmo--;
+  if (player.invuln > 0) player.invuln--;
 
-    // Move finish line
-    if (finishLine) {
-      finishLine.x -= spd;
-
-      // Check if player reached finish line
-      if (!finishLine.reached && finishLine.x <= player.x + player.w) {
-        finishLine.reached = true;
-        finishReached = true;
-        celebrationTimer = 150; // frames for celebration
-        flashAlpha = 0.6;
-        spawnParticles(finishLine.x + 8, groundY - 80, '#a89860', 25);
-        spawnParticles(finishLine.x + 8, groundY - 40, '#7a8a7a', 20);
-      }
+  // ----- finish line -----
+  if (finishLine) {
+    finishLine.x -= spd;
+    if (!finishLine.reached && finishLine.x <= player.x + STAND_W) {
+      finishLine.reached = true; finishReached = true; celebrationTimer = 140;
+      flashAlpha = 0.32;
+      spawnParticles(player.x + 12, groundY - 40, 5, PAL.inkSoft);
     }
-
-    // Celebration countdown → level transition
-    if (finishReached) {
-      celebrationTimer--;
-      if (celebrationTimer <= 0) {
-        if (LEVELS[levelIndex].isFinal) {
-          // Won the game!
-          state = 'gameover';
-          deathReason = 'TENURE ACHIEVED!';
-          player.alive = true;
-          if (score > hIndex) hIndex = score;
-          spawnParticles(player.x + 16, player.y + 22, '#a89860', 40);
-        } else {
-          // Advance to next level
-          levelIndex++;
-          levelTimer = 0;
-          state = 'playing';
-          obstacles = [];
-          collectibles = [];
-          spawnTimer = 0;
-          collectibleTimer = 0;
-          initFinishLine();
-        }
-        return;
-      }
-      // During celebration: still update particles but don't spawn obstacles
-      updateParticles();
-      return;
-    }
-
-    // Jump
-    if ((keys['Space'] || keys['ArrowUp']) && player.grounded) {
-      player.vy = -11;
-      player.grounded = false;
-    }
-
-    // Physics
-    player.vy += 0.55;
-    player.y += player.vy;
-    if (player.y >= groundY - player.h) {
-      player.y = groundY - player.h;
-      player.vy = 0;
-      player.grounded = true;
-    }
-
-    // Animation
-    player.frameTimer++;
-    if (player.frameTimer > 6) {
-      player.frame++;
-      player.frameTimer = 0;
-    }
-
-    // Spawn obstacles (stop when finish line is close)
-    const finishNear = finishLine && finishLine.x < W + 200;
-    spawnTimer++;
-    const spawnRate = Math.max(50, 100 - levelIndex * 10);
-    if (!finishNear && spawnTimer > spawnRate + Math.random() * 40) {
-      spawnObstacle();
-      spawnTimer = 0;
-    }
-
-    // Spawn collectibles
-    collectibleTimer++;
-    if (!finishNear && collectibleTimer > 120 + Math.random() * 80) {
-      spawnCollectible();
-      collectibleTimer = 0;
-    }
-
-    // Move obstacles
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-      obstacles[i].x -= spd;
-      if (obstacles[i].x < -60) obstacles.splice(i, 1);
-    }
-
-    // Move collectibles
-    for (let i = collectibles.length - 1; i >= 0; i--) {
-      collectibles[i].x -= spd;
-      if (collectibles[i].x < -40) collectibles.splice(i, 1);
-    }
-
-    // Collision detection — obstacles
-    const px = player.x + 6;
-    const py = player.y + 4;
-    const pw = player.w - 12;
-    const ph = player.h - 8;
-
-    for (const obs of obstacles) {
-      if (px < obs.x + obs.w - 4 && px + pw > obs.x + 4 && py < obs.y + obs.h - 4 && py + ph > obs.y + 4) {
-        // Hit!
-        state = 'gameover';
-        player.alive = false;
-        deathReason = getDeathReason(obs.type);
-        shakeX = 8;
-        shakeY = 4;
-        if (score > hIndex) hIndex = score;
-        spawnParticles(player.x + 16, player.y + 22, PAL.danger, 20);
-        break;
-      }
-
-      // Score for passing
-      if (!obs.scored && obs.x + obs.w < player.x) {
-        obs.scored = true;
-        score += 50;
-      }
-    }
-
-    // Collision detection — collectibles
-    for (let i = collectibles.length - 1; i >= 0; i--) {
-      const col = collectibles[i];
-      if (px < col.x + col.w && px + pw > col.x && py < col.y + col.h + 10 && py + ph > col.y) {
-        if (col.type === 'coffee') {
-          player.coffeeBoost = 180; // 3 seconds of boost
-          score += 25;
-        } else {
-          score += 100;
-        }
-        spawnParticles(col.x + 12, col.y + 10, '#8a7a50', 8);
-        collectibles.splice(i, 1);
-      }
-    }
-
-    // Screen shake decay
-    shakeX *= 0.85;
-    shakeY *= 0.85;
-    if (Math.abs(shakeX) < 0.5) shakeX = 0;
-    if (Math.abs(shakeY) < 0.5) shakeY = 0;
-
+  }
+  if (finishReached) {
+    celebrationTimer--;
+    // keep running animation but freeze hazards
+    physics();
     updateParticles();
+    if (celebrationTimer <= 0) {
+      if (level.isFinal) {
+        state = 'gameover'; deathReason = 'TENURE ACHIEVED!';
+        player.won = true;
+        if (score > hIndex) hIndex = score;
+      } else {
+        levelIndex++; levelTimer = 0;
+        obstacles = []; collectibles = []; spawnTimer = 0; collectibleTimer = 0;
+        initFinishLine();
+      }
+    }
+    return;
   }
 
-  // Flash decay (used during celebrations)
-  if (flashAlpha > 0.01) {
-    flashAlpha *= 0.96;
+  physics();
+
+  // ----- spawning (pause as finish approaches) -----
+  const finishNear = finishLine && finishLine.x < W + 220;
+  spawnTimer++;
+  const spawnRate = Math.max(46, 92 - levelIndex * 8);
+  if (!finishNear && spawnTimer > spawnRate + Math.random() * 40) { spawnObstacle(); spawnTimer = 0; }
+  collectibleTimer++;
+  if (!finishNear && collectibleTimer > 110 + Math.random() * 80) { spawnCollectible(); collectibleTimer = 0; }
+
+  // ----- move & cull -----
+  for (let i = obstacles.length - 1; i >= 0; i--) { obstacles[i].x -= spd; if (obstacles[i].x < -70) obstacles.splice(i, 1); }
+  for (let i = collectibles.length - 1; i >= 0; i--) { collectibles[i].x -= spd; if (collectibles[i].x < -40) collectibles.splice(i, 1); }
+
+  // ----- collisions -----
+  const pb = playerBox();
+  for (const obs of obstacles) {
+    const ob = obstacleBox(obs);
+    if (player.invuln <= 0 && intersects(pb, ob)) { hitPlayer(getDeathReason(obs.type)); break; }
+    if (!obs.scored && obs.x + (OB[obs.type].w || 40) < player.x) { obs.scored = true; score += 40; }
+  }
+  for (let i = collectibles.length - 1; i >= 0; i--) {
+    const col = collectibles[i];
+    const cb = { x: col.x, y: col.y, w: col.w, h: col.h };
+    if (intersects(pb, cb)) {
+      const label = applyCollectible(col.type);
+      spawnFloat(col.x + 10, col.y - 2, label);
+      spawnParticles(col.x + 10, col.y + 8, 3, PAL.dim);
+      collectibles.splice(i, 1);
+    }
+  }
+
+  updateParticles();
+}
+
+function physics() {
+  // duck only while grounded
+  player.ducking = duckHeld && player.grounded;
+  player.vy += 0.6;
+  player.feetY += player.vy;
+  if (player.feetY >= groundY) { player.feetY = groundY; player.vy = 0; player.grounded = true; }
+}
+
+function applyCollectible(type) {
+  switch (type) {
+    case 'coffee':  player.coffeeBoost = 280; score += 20; return 'CAFFEINE';
+    case 'shield':  player.shield = true;     score += 20; return 'SHIELD';
+    case 'slowmo':  player.slowmo = 220;      score += 20; return 'SLOW-MO';
+    default:        score += 100; return '+100'; // citation / publication / grant
   }
 }
 
+// ---------- HITBOXES ----------
+function playerBox() {
+  if (player.ducking) return { x: player.x + 2, y: player.feetY - DUCK_H, w: DUCK_W, h: DUCK_H };
+  return { x: player.x + 3, y: player.feetY - STAND_H, w: STAND_W - 6, h: STAND_H };
+}
+function obstacleBox(obs) {
+  const def = OB[obs.type];
+  if (def.kind === 'high') return { x: obs.x + 3, y: SIGN_TOP + 3, w: def.w - 6, h: (SIGN_BOT - SIGN_TOP) - 6 };
+  return { x: obs.x + 2, y: groundY - def.h, w: def.w - 4, h: def.h };
+}
+function intersects(a, b) { return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
+
+// ---------- DEATH REASONS ----------
 function getDeathReason(type) {
-  const reasons = {
-    papers: 'BURIED IN UNREAD PAPERS',
-    rejection: 'DESK REJECTED!',
-    deadline: 'MISSED THE DEADLINE',
-    contract: 'CONTRACT EXPIRED',
-    movingbox: 'CRUSHED BY RELOCATION',
-    randr: 'REVISE & RESUBMIT... AGAIN',
-    bureaucracy: 'LOST IN BUREAUCRACY',
-    ethics: 'IRB DENIED YOUR STUDY',
-    budget: 'BUDGET OVERRUN',
-    gdpr: 'GDPR VIOLATION!',
-    evaluation: 'DEVASTATING EVAL',
-    committee: 'MEETING OVERLOAD',
-    service: 'DROWNED IN SERVICE',
-    hindexwall: 'h-INDEX TOO LOW',
-    restructuring: 'DEPARTMENT RESTRUCTURED',
-    adminmeeting: 'ETERNAL MEETING',
+  return ({
+    papers: 'BURIED IN UNREAD PAPERS', deadline: 'MISSED THE DEADLINE',
+    rejection: 'DESK REJECTED!', randr: 'REVISE & RESUBMIT... AGAIN',
+    budget: 'BUDGET OVERRUN', restructuring: 'DEPARTMENT RESTRUCTURED',
+    committee: 'MEETING OVERLOAD', adminmeeting: 'ETERNAL ADMIN MEETING',
+    bureaucracy: 'LOST IN BUREAUCRACY', evaluation: 'DEVASTATING EVAL',
     apsrreject: 'APSR DESK REJECTION',
-  };
-  return reasons[type] || 'PUBLISH OR PERISH';
+  })[type] || 'PUBLISH OR PERISH';
 }
 
 // ---------- DRAW ----------
 function draw() {
   ctx.save();
-  ctx.translate(Math.floor((Math.random() - 0.5) * shakeX), Math.floor((Math.random() - 0.5) * shakeY));
+  ctx.translate(((Math.random() - 0.5) * shakeX) | 0, ((Math.random() - 0.5) * shakeY) | 0);
+
+  ctx.fillStyle = PAL.field; ctx.fillRect(-10, -10, W + 20, H + 20);
 
   if (state === 'title') {
-    drawTitleScreen();
-  } else if (state === 'playing') {
-    drawBackground();
+    drawBackground(2);
+    drawTitle();
+  } else {
+    drawBackground(state === 'playing' ? currentSpeed() : 0);
     drawFinishLine();
     collectibles.forEach(drawCollectible);
     obstacles.forEach(drawObstacle);
-    drawPixelChar(player.x, player.y);
-    drawParticles();
-    drawHUD();
-
-    // Celebration overlay when finish line is reached
-    if (finishReached && celebrationTimer > 0) {
-      drawCelebrationOverlay();
+    // flicker while invulnerable
+    if (!(player.invuln > 0 && frameCount % 6 < 3)) {
+      drawScholar(player.x, player.feetY, player.grounded ? (player.ducking ? 'duck' : 'run') : 'jump');
     }
-  } else if (state === 'gameover') {
-    shakeX = 0;
-    shakeY = 0;
-    drawBackground();
-    collectibles.forEach(drawCollectible);
-    obstacles.forEach(drawObstacle);
-    drawPixelChar(player.x, player.y);
     drawParticles();
     drawHUD();
-    drawGameOverScreen();
+    if (state === 'gameover') drawGameOver();
   }
 
-  // Flash overlay
-  if (flashAlpha > 0.01) {
-    ctx.fillStyle = `rgba(200,190,160,${flashAlpha})`;
-    ctx.fillRect(0, 0, W, H);
-  }
-
+  if (flashAlpha > 0.01) { ctx.fillStyle = `rgba(0,0,0,${flashAlpha})`; ctx.fillRect(0, 0, W, H); }
   ctx.restore();
 }
 
-function drawTitleScreen() {
-  // Background
-  const grd = ctx.createLinearGradient(0, 0, 0, H);
-  grd.addColorStop(0, '#0e1014');
-  grd.addColorStop(1, '#181c18');
-  ctx.fillStyle = grd;
-  ctx.fillRect(0, 0, W, H);
-
-  // Stars
-  stars.forEach(s => {
-    const twinkle = Math.sin(frameCount * 0.04 + s.twinkle);
-    ctx.fillStyle = `rgba(180,190,170,${0.2 + twinkle * 0.2})`;
-    ctx.fillRect(Math.floor(s.x), Math.floor(s.y), Math.ceil(s.size), Math.ceil(s.size));
-  });
-
-  // Title
-  ctx.fillStyle = PAL.accent;
-  ctx.font = '32px "Press Start 2P"';
+function drawTitle() {
   ctx.textAlign = 'center';
-  ctx.fillText('ARCADE-MIA', W / 2, 140);
+  ctx.fillStyle = PAL.ink;
+  ctx.font = '34px "Press Start 2P"';
+  ctx.fillText('A(r)CADE-MIA', W / 2, 86);
+  ctx.fillStyle = PAL.inkSoft;
+  ctx.font = '9px "Press Start 2P"';
+  ctx.fillText('THE ACADEMIC CAREER RUNNER', W / 2, 112);
 
-  // Subtitle
-  ctx.fillStyle = PAL.text;
-  ctx.font = '10px "Press Start 2P"';
-  ctx.fillText('THE ACADEMIC CAREER RUNNER', W / 2, 175);
+  // running scholar preview
+  drawScholar(W / 2 - 12, groundY, Math.floor(frameCount / 30) % 4 === 0 ? 'duck' : 'run');
 
-  // Character preview
-  const prevY = 230;
-  drawPixelRect(W / 2 - 16, prevY, 32, 44, '#556677');
-  drawPixelRect(W / 2 - 16 + 8, prevY - 16, 20, 16, '#c0a070');
-  drawPixelRect(W / 2 - 16 + 4, prevY - 20, 24, 6, '#3a2818');
-  drawPixelRect(W / 2 - 16 + 8, prevY - 12, 7, 5, '#222');
-  drawPixelRect(W / 2 - 16 + 17, prevY - 12, 7, 5, '#222');
+  // controls
+  ctx.fillStyle = PAL.inkSoft;
+  ctx.font = '8px "Press Start 2P"';
+  ctx.fillText('SPACE / UP  =  JUMP        DOWN  =  DUCK', W / 2, groundY + 26);
 
-  // Level names preview
-  ctx.font = '7px "Press Start 2P"';
-  const levelNames = LEVELS.map(l => l.name);
-  for (let i = 0; i < levelNames.length; i++) {
-    ctx.fillStyle = i === 0 ? PAL.accent : PAL.textDim;
-    ctx.fillText(levelNames[i], W / 2, 310 + i * 18);
-  }
-
-  // Start prompt
   if (frameCount % 60 < 40) {
-    ctx.fillStyle = PAL.white;
+    ctx.fillStyle = PAL.ink;
     ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('PRESS SPACE OR TAP TO START', W / 2, 430);
+    ctx.fillText('PRESS SPACE OR TAP TO START', W / 2, 160);
   }
-
-  // Credit
-  ctx.fillStyle = PAL.textDim;
+  ctx.fillStyle = PAL.dim;
   ctx.font = '6px "Press Start 2P"';
-  ctx.fillText('Created by Tim Wappenhans & Claude', W / 2, 470);
-
+  ctx.fillText('Tim Wappenhans & Claude', W / 2, H - 12);
   ctx.textAlign = 'left';
 }
 
 function drawHUD() {
   const level = LEVELS[levelIndex];
-
-  // Score panel
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
-  ctx.fillRect(0, 0, W, 36);
-  ctx.fillStyle = PAL.panelBord;
-  ctx.fillRect(0, 36, W, 2);
-
-  ctx.fillStyle = PAL.text;
+  // level name (left)
+  ctx.fillStyle = PAL.ink;
   ctx.font = '9px "Press Start 2P"';
   ctx.textAlign = 'left';
-  ctx.fillText('SCORE: ' + score.toString().padStart(7, '0'), 12, 16);
+  ctx.fillText(level.name.toUpperCase(), 14, 22);
 
-  // h-index
-  ctx.fillStyle = PAL.textDim;
-  ctx.fillText('h-INDEX: ' + hIndex.toString().padStart(7, '0'), 12, 30);
-
-  // Level name
-  ctx.fillStyle = PAL.accent;
+  // score + hi (right, dotted)
   ctx.textAlign = 'right';
-  ctx.font = '10px "Press Start 2P"';
-  ctx.fillText(level.name.toUpperCase(), W - 12, 16);
+  ctx.fillStyle = PAL.dim;
+  ctx.fillText('HI ' + hIndex.toString().padStart(6, '0'), W - 14, 22);
+  ctx.fillStyle = PAL.ink;
+  ctx.fillText(score.toString().padStart(6, '0'), W - 120, 22);
 
-  // Level progress bar
-  const progressW = 180;
-  const progressX = W - progressW - 12;
-  const progressFill = Math.min(levelTimer / level.duration, 1);
-  ctx.fillStyle = '#222';
-  ctx.fillRect(progressX, 24, progressW, 8);
-  ctx.fillStyle = level.isFinal ? '#a89860' : '#4a6a4a';
-  ctx.fillRect(progressX, 24, progressW * progressFill, 8);
-  ctx.strokeStyle = PAL.panelBord;
-  ctx.strokeRect(progressX, 24, progressW, 8);
+  // progress bar (under level name)
+  const pw = 150, pf = Math.min(levelTimer / level.duration, 1);
+  px(14, 28, pw, 5, PAL.faint);
+  px(14, 28, pw * pf, 5, level.isFinal ? PAL.ink : PAL.inkSoft);
 
-  // Coffee boost indicator
-  if (player.coffeeBoost > 0) {
-    ctx.fillStyle = '#a89860';
-    ctx.textAlign = 'center';
-    ctx.font = '7px "Press Start 2P"';
-    ctx.fillText('CAFFEINE BOOST', W / 2, 54);
-  }
-
+  // active power-ups
+  let ax = 14, ay = 48;
+  ctx.textAlign = 'left';
+  ctx.font = '7px "Press Start 2P"';
+  if (player.coffeeBoost > 0) { ctx.fillStyle = PAL.inkSoft; ctx.fillText('CAFFEINE ' + Math.ceil(player.coffeeBoost / 60) + 's', ax, ay); ay += 12; }
+  if (player.slowmo > 0)      { ctx.fillStyle = PAL.inkSoft; ctx.fillText('SLOW-MO ' + Math.ceil(player.slowmo / 60) + 's', ax, ay); ay += 12; }
+  if (player.shield)          { ctx.fillStyle = PAL.inkSoft; ctx.fillText('SHIELD READY', ax, ay); }
   ctx.textAlign = 'left';
 }
 
-function drawCelebrationOverlay() {
-  const level = LEVELS[levelIndex];
-  const nextLevel = LEVELS[levelIndex + 1];
-  const alpha = Math.min(celebrationTimer / 150, 1) * 0.65;
-  ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+function drawGameOver() {
+  ctx.fillStyle = 'rgba(247,247,247,0.82)';
   ctx.fillRect(0, 0, W, H);
-
-  // Box dimensions
-  const boxW = 440;
-  const boxH = 140;
-  const boxX = (W - boxW) / 2;
-  const boxY = (H - boxH) / 2 - 10;
-
-  // Box shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(boxX + 4, boxY + 4, boxW, boxH);
-
-  // Box background
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(boxX, boxY, boxW, boxH);
-
-  // Box border
-  ctx.strokeStyle = '#a89860';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(boxX, boxY, boxW, boxH);
-
-  // Inner border line
-  ctx.strokeStyle = '#3a3a3a';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(boxX + 6, boxY + 6, boxW - 12, boxH - 12);
-
-  // Gold accent corners
-  const cornerSize = 8;
-  ctx.fillStyle = '#a89860';
-  // Top-left
-  ctx.fillRect(boxX, boxY, cornerSize, 3);
-  ctx.fillRect(boxX, boxY, 3, cornerSize);
-  // Top-right
-  ctx.fillRect(boxX + boxW - cornerSize, boxY, cornerSize, 3);
-  ctx.fillRect(boxX + boxW - 3, boxY, 3, cornerSize);
-  // Bottom-left
-  ctx.fillRect(boxX, boxY + boxH - 3, cornerSize, 3);
-  ctx.fillRect(boxX, boxY + boxH - cornerSize, 3, cornerSize);
-  // Bottom-right
-  ctx.fillRect(boxX + boxW - cornerSize, boxY + boxH - 3, cornerSize, 3);
-  ctx.fillRect(boxX + boxW - 3, boxY + boxH - cornerSize, 3, cornerSize);
-
   ctx.textAlign = 'center';
 
-  // Title
-  ctx.fillStyle = PAL.accent;
-  ctx.font = '20px "Press Start 2P"';
-  if (level.isFinal) {
-    ctx.fillText('TENURE!', W / 2, boxY + 42);
-  } else {
-    ctx.fillText('PROMOTION!', W / 2, boxY + 42);
-  }
-
-  // Divider line
-  ctx.fillStyle = '#3a3a3a';
-  ctx.fillRect(boxX + 30, boxY + 55, boxW - 60, 1);
-
-  // Next level name
-  if (nextLevel) {
-    ctx.fillStyle = PAL.white;
-    ctx.font = '11px "Press Start 2P"';
-    ctx.fillText('Now: ' + nextLevel.name.toUpperCase(), W / 2, boxY + 80);
-  }
-
-  // Fun subtitle
-  const subs = [
-    'Same salary, more stress!',
-    'You survived... barely.',
-    'Time to update your CV!',
-    'More committees await!',
-    'The grind continues...',
-  ];
-  ctx.fillStyle = PAL.textDim;
-  ctx.font = '8px "Press Start 2P"';
-  ctx.fillText(subs[levelIndex % subs.length], W / 2, boxY + 110);
-
-  ctx.textAlign = 'left';
-}
-
-function drawGameOverScreen() {
-  ctx.fillStyle = 'rgba(0,0,0,0.75)';
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.textAlign = 'center';
-
-  if (player.alive) {
-    // WON!
-    ctx.fillStyle = '#a89860';
-    ctx.font = '24px "Press Start 2P"';
-    ctx.fillText('🎓 TENURE! 🎓', W / 2, H / 2 - 60);
-
-    ctx.fillStyle = PAL.white;
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText('YOU MADE IT THROUGH ACADEMIA!', W / 2, H / 2 - 20);
-
-    ctx.fillStyle = PAL.text;
+  if (player.won) {
+    ctx.fillStyle = PAL.ink;
+    ctx.font = '22px "Press Start 2P"';
+    ctx.fillText('TENURE!', W / 2, H / 2 - 40);
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText('YOU MADE IT THROUGH ACADEMIA', W / 2, H / 2 - 8);
+    ctx.fillStyle = PAL.inkSoft;
     ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('FINAL SCORE: ' + score, W / 2, H / 2 + 20);
-    ctx.fillText('You now have a nameplate and', W / 2, H / 2 + 50);
-    ctx.fillText('an office with a window.', W / 2, H / 2 + 65);
-
+    ctx.fillText('FINAL SCORE  ' + score, W / 2, H / 2 + 20);
+    ctx.fillText('An office. With a window.', W / 2, H / 2 + 38);
   } else {
-    // LOST
-    ctx.fillStyle = PAL.danger;
-    ctx.font = '18px "Press Start 2P"';
-    ctx.fillText('PUBLISH OR PERISH', W / 2, H / 2 - 60);
-
-    ctx.fillStyle = PAL.white;
-    ctx.font = '10px "Press Start 2P"';
-    ctx.fillText(deathReason, W / 2, H / 2 - 20);
-
-    ctx.fillStyle = PAL.text;
+    ctx.fillStyle = PAL.ink;
+    ctx.font = '16px "Press Start 2P"';
+    ctx.fillText('PUBLISH OR PERISH', W / 2, H / 2 - 40);
+    ctx.font = '9px "Press Start 2P"';
+    ctx.fillText(deathReason, W / 2, H / 2 - 10);
+    ctx.fillStyle = PAL.inkSoft;
     ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('SCORE: ' + score, W / 2, H / 2 + 15);
-    ctx.fillText('h-INDEX: ' + hIndex, W / 2, H / 2 + 35);
-
-    ctx.fillStyle = PAL.textDim;
-    ctx.font = '7px "Press Start 2P"';
-    ctx.fillText('Level: ' + LEVELS[levelIndex].name, W / 2, H / 2 + 60);
+    ctx.fillText('SCORE ' + score + '    h-INDEX ' + hIndex, W / 2, H / 2 + 16);
+    ctx.fillText('Reached: ' + LEVELS[levelIndex].name, W / 2, H / 2 + 34);
   }
 
   if (frameCount % 60 < 40) {
-    ctx.fillStyle = PAL.textDim;
+    ctx.fillStyle = PAL.ink;
     ctx.font = '8px "Press Start 2P"';
-    ctx.fillText('PRESS SPACE OR TAP TO CONTINUE', W / 2, H / 2 + 100);
+    ctx.fillText('PRESS SPACE OR TAP TO CONTINUE', W / 2, H / 2 + 64);
   }
-
   ctx.textAlign = 'left';
 }
 
-// ---------- GAME LOOP ----------
-function gameLoop() {
-  update();
-  draw();
-  requestAnimationFrame(gameLoop);
-}
-
+// ---------- LOOP ----------
+function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 gameLoop();
 </script>
 </body>
