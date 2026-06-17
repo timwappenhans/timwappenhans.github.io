@@ -130,6 +130,10 @@
   .home { font-size: 0.8rem; margin-top: 0.5rem; }
   .home a { color: var(--pred); text-decoration: none; }
   .home a:hover { text-decoration: underline; }
+  .nav { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .nav a { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--muted); padding: 0.3rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--card); }
+  .nav a:hover { color: var(--ink); border-color: var(--muted); }
+  .nav a.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 </style>
 </head>
 <body>
@@ -139,6 +143,12 @@
   <h1>⚽ WM 2026 Dashboard</h1>
   <div class="sub">Group stage, matchday slate June 17&ndash;18 &middot; all kickoffs Berlin time &middot; data pulled Wed June 17, midday</div>
   <div class="home"><a href="https://www.timwappenhans.com">&larr; timwappenhans.com</a></div>
+  <nav class="nav">
+    <a href="predictions.html" class="active">Predictions</a>
+    <a href="results.html">Results</a>
+    <a href="bracket.html">Spielbaum</a>
+    <a href="germany.html">Germany</a>
+  </nav>
 </header>
 
 <div class="recap">

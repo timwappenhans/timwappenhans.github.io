@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="2026 World Cup results and group standings, tracked by Tim Wappenhans.">
+<title>World Cup 2026 Results · Tim Wappenhans</title>
+<style>
+  :root {
+    --ink: #18181b;
+    --muted: #71717a;
+    --line: #e4e4e7;
+    --bg: #f4f4f5;
+    --card: #ffffff;
+    --win: #16a34a;
+    --draw: #a1a1aa;
+    --loss: #dc2626;
+    --pred: #1e3a8a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  h1 { font-size: 1.5rem; margin: 0; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-top: 0.2rem; }
+  .home { font-size: 0.8rem; margin-top: 0.5rem; }
+  .home a { color: var(--pred); text-decoration: none; }
+  .home a:hover { text-decoration: underline; }
+  .nav { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .nav a { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--muted); padding: 0.3rem 0.75rem; border-radius: 999px; border: 1px solid var(--line); background: var(--card); }
+  .nav a:hover { color: var(--ink); border-color: var(--muted); }
+  .nav a.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .daybar { border-bottom: 2px solid var(--ink); padding-bottom: 0.4rem; margin: 2.2rem 0 1rem; }
+  .daybar h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+
+  .rrow { display: flex; align-items: center; gap: 0.6rem; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 0.5rem 0.8rem; margin-bottom: 0.5rem; }
+  .rrow .grp { font-size: 0.62rem; font-weight: 700; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0.1rem 0.4rem; min-width: 1.7rem; text-align: center; }
+  .rrow .h { flex: 1; text-align: right; font-weight: 600; }
+  .rrow .a { flex: 1; text-align: left; font-weight: 600; }
+  .rrow .sc { font-weight: 800; font-variant-numeric: tabular-nums; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 0.15rem 0.55rem; white-space: nowrap; }
+  .pending { color: var(--muted); font-style: italic; font-size: 0.85rem; }
+
+  h2.section { font-size: 1.1rem; margin: 2.6rem 0 0.4rem; }
+  .note { font-size: 0.8rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.5; }
+  .standings { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 1.2rem; }
+  @media (max-width: 560px) { .standings { grid-template-columns: 1fr; } }
+  .grp-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem 0.75rem; }
+  .grp-card h3 { margin: 0 0 0.4rem; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  table.tbl th { text-align: right; color: var(--muted); font-weight: 600; padding: 0.15rem 0.22rem; }
+  table.tbl th.tm, table.tbl td.tm { text-align: left; }
+  table.tbl td { text-align: right; padding: 0.22rem 0.22rem; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  table.tbl tr.q td { border-left: 0; }
+  table.tbl td.pos { color: var(--muted); }
+  table.tbl tr.q td.pos { color: var(--win); font-weight: 800; }
+  table.tbl td.pts { font-weight: 800; }
+
+  footer { margin-top: 2.5rem; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>⚽ WM 2026 Results</h1>
+  <div class="sub">Group stage results and standings &middot; verified through June 16 (Groups K and L play June 17)</div>
+  <div class="home"><a href="https://www.timwappenhans.com">&larr; timwappenhans.com</a></div>
+  <nav class="nav">
+    <a href="predictions.html">Predictions</a>
+    <a href="results.html" class="active">Results</a>
+    <a href="bracket.html">Spielbaum</a>
+    <a href="germany.html">Germany</a>
+  </nav>
+</header>
+
+<div class="daybar"><h2>Thursday, June 11</h2></div>
+<div class="rrow"><span class="grp">A</span><span class="h">Mexico</span><span class="sc">2 : 0</span><span class="a">South Africa</span></div>
+<div class="rrow"><span class="grp">A</span><span class="h">South Korea</span><span class="sc">2 : 1</span><span class="a">Czechia</span></div>
+
+<div class="daybar"><h2>Friday, June 12</h2></div>
+<div class="rrow"><span class="grp">B</span><span class="h">Canada</span><span class="sc">1 : 1</span><span class="a">Bosnia &amp; Herzegovina</span></div>
+<div class="rrow"><span class="grp">D</span><span class="h">United States</span><span class="sc">4 : 1</span><span class="a">Paraguay</span></div>
+
+<div class="daybar"><h2>Saturday, June 13</h2></div>
+<div class="rrow"><span class="grp">B</span><span class="h">Qatar</span><span class="sc">1 : 1</span><span class="a">Switzerland</span></div>
+<div class="rrow"><span class="grp">C</span><span class="h">Brazil</span><span class="sc">1 : 1</span><span class="a">Morocco</span></div>
+<div class="rrow"><span class="grp">C</span><span class="h">Scotland</span><span class="sc">1 : 0</span><span class="a">Haiti</span></div>
+<div class="rrow"><span class="grp">D</span><span class="h">Australia</span><span class="sc">2 : 0</span><span class="a">Türkiye</span></div>
+
+<div class="daybar"><h2>Sunday, June 14</h2></div>
+<div class="rrow"><span class="grp">E</span><span class="h">Germany</span><span class="sc">7 : 1</span><span class="a">Curaçao</span></div>
+<div class="rrow"><span class="grp">E</span><span class="h">Ivory Coast</span><span class="sc">1 : 0</span><span class="a">Ecuador</span></div>
+<div class="rrow"><span class="grp">F</span><span class="h">Netherlands</span><span class="sc">2 : 2</span><span class="a">Japan</span></div>
+<div class="rrow"><span class="grp">F</span><span class="h">Sweden</span><span class="sc">5 : 1</span><span class="a">Tunisia</span></div>
+
+<div class="daybar"><h2>Monday, June 15</h2></div>
+<div class="rrow"><span class="grp">G</span><span class="h">Belgium</span><span class="sc">1 : 1</span><span class="a">Egypt</span></div>
+<div class="rrow"><span class="grp">G</span><span class="h">Iran</span><span class="sc">2 : 2</span><span class="a">New Zealand</span></div>
+<div class="rrow"><span class="grp">H</span><span class="h">Spain</span><span class="sc">0 : 0</span><span class="a">Cape Verde</span></div>
+<div class="rrow"><span class="grp">H</span><span class="h">Saudi Arabia</span><span class="sc">1 : 1</span><span class="a">Uruguay</span></div>
+
+<div class="daybar"><h2>Tuesday, June 16</h2></div>
+<div class="rrow"><span class="grp">I</span><span class="h">France</span><span class="sc">3 : 1</span><span class="a">Senegal</span></div>
+<div class="rrow"><span class="grp">I</span><span class="h">Norway</span><span class="sc">4 : 1</span><span class="a">Iraq</span></div>
+<div class="rrow"><span class="grp">J</span><span class="h">Argentina</span><span class="sc">3 : 0</span><span class="a">Algeria</span></div>
+<div class="rrow"><span class="grp">J</span><span class="h">Austria</span><span class="sc">3 : 1</span><span class="a">Jordan</span></div>
+
+<div class="daybar"><h2>Wednesday, June 17</h2></div>
+<div class="rrow"><span class="grp">K</span><span class="h">Portugal</span><span class="sc">vs</span><span class="a">DR Congo</span></div>
+<div class="rrow"><span class="grp">L</span><span class="h">England</span><span class="sc">vs</span><span class="a">Croatia</span></div>
+<div class="rrow"><span class="grp">L</span><span class="h">Ghana</span><span class="sc">vs</span><span class="a">Panama</span></div>
+<div class="rrow"><span class="grp">K</span><span class="h">Uzbekistan</span><span class="sc">vs</span><span class="a">Colombia</span></div>
+<p class="pending">Groups K and L play their openers tonight; scores update on the next refresh.</p>
+
+<h2 class="section">Group standings</h2>
+<p class="note">Played, won, drawn, lost, goals for, goals against, goal difference, points. Green positions are the current top two (direct qualification); the eight best third-placed teams across all groups also advance. Most groups have played one match.</p>
+
+<div class="standings">
+
+  <div class="grp-card"><h3>Group A</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Mexico</td><td>1</td><td>+2</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">South Korea</td><td>1</td><td>+1</td><td class="pts">3</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Czechia</td><td>1</td><td>-1</td><td class="pts">0</td></tr>
+  <tr><td class="pos">4</td><td class="tm">South Africa</td><td>1</td><td>-2</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group B</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Switzerland</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Canada</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Qatar</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Bosnia &amp; Herzegovina</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group C</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Scotland</td><td>1</td><td>+1</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Morocco</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Brazil</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Haiti</td><td>1</td><td>-1</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group D</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">United States</td><td>1</td><td>+3</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Australia</td><td>1</td><td>+2</td><td class="pts">3</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Türkiye</td><td>1</td><td>-2</td><td class="pts">0</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Paraguay</td><td>1</td><td>-3</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group E</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Germany</td><td>1</td><td>+6</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Ivory Coast</td><td>1</td><td>+1</td><td class="pts">3</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Ecuador</td><td>1</td><td>-1</td><td class="pts">0</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Curaçao</td><td>1</td><td>-6</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group F</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Sweden</td><td>1</td><td>+4</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Japan</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Netherlands</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Tunisia</td><td>1</td><td>-4</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group G</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">New Zealand</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Iran</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Belgium</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Egypt</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group H</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Uruguay</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Saudi Arabia</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Spain</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Cape Verde</td><td>1</td><td>0</td><td class="pts">1</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group I</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Norway</td><td>1</td><td>+3</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">France</td><td>1</td><td>+2</td><td class="pts">3</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Senegal</td><td>1</td><td>-2</td><td class="pts">0</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Iraq</td><td>1</td><td>-3</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group J</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr class="q"><td class="pos">1</td><td class="tm">Argentina</td><td>1</td><td>+3</td><td class="pts">3</td></tr>
+  <tr class="q"><td class="pos">2</td><td class="tm">Austria</td><td>1</td><td>+2</td><td class="pts">3</td></tr>
+  <tr><td class="pos">3</td><td class="tm">Jordan</td><td>1</td><td>-2</td><td class="pts">0</td></tr>
+  <tr><td class="pos">4</td><td class="tm">Algeria</td><td>1</td><td>-3</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group K</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr><td class="pos">-</td><td class="tm">Portugal</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">Colombia</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">DR Congo</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">Uzbekistan</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  </table></div>
+
+  <div class="grp-card"><h3>Group L</h3>
+  <table class="tbl"><tr><th>#</th><th class="tm">Team</th><th>Pld</th><th>GD</th><th>Pts</th></tr>
+  <tr><td class="pos">-</td><td class="tm">England</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">Croatia</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">Ghana</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  <tr><td class="pos">-</td><td class="tm">Panama</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+  </table></div>
+
+</div>
+
+<footer>
+  Scores cross-checked against ESPN, FIFA.com, CBS Sports, and the Wikipedia group pages. Standings show goal difference and points only for compactness; full columns will fill out as the group stage progresses. Groups B, G, and H opened with all four teams drawing, so their order is provisional until matchday 2. Data through June 16, 2026; Groups K and L play June 17.
+</footer>
+
+</div>
+</body>
+</html>
