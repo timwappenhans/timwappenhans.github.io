@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>EPSS 2026 Belfast: Personal Schedule</title>
+<style>
+  :root {
+    --friend: #2563eb;
+    --friend-bg: #eff6ff;
+    --own: #b91c1c;
+    --own-bg: #fef2f2;
+    --pick: #047857;
+    --pick-bg: #ecfdf5;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: #fafafa;
+    margin: 0;
+    padding: 2rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 2rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+  .sub { color: var(--muted); font-size: 0.95rem; }
+  .legend { display: flex; gap: 1.25rem; margin-top: 0.9rem; font-size: 0.8rem; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.f { background: var(--friend); }
+  .dot.o { background: var(--own); }
+  .dot.p { background: var(--pick); }
+  h2 {
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.4rem;
+    margin: 2.5rem 0 1rem;
+  }
+  .slot {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .time { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.85rem; padding-top: 0.85rem; color: var(--muted); }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--muted);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+  }
+  .card.friend { border-left-color: var(--friend); background: var(--friend-bg); }
+  .card.own { border-left-color: var(--own); background: var(--own-bg); }
+  .card.pick { border-left-color: var(--pick); background: var(--pick-bg); }
+  .badge {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    color: #fff;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+  }
+  .badge.f { background: var(--friend); }
+  .badge.o { background: var(--own); }
+  .badge.p { background: var(--pick); }
+  .session { font-weight: 700; font-size: 0.95rem; }
+  .paper { margin: 0.45rem 0 0; font-size: 0.88rem; line-height: 1.45; }
+  .paper .who { font-weight: 600; }
+  .paper .ttl { font-style: italic; }
+  .note { margin-top: 0.5rem; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .note strong { color: var(--own); }
+  .alt { margin-top: 0.4rem; font-size: 0.8rem; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.75rem; background: #fff; }
+  th, td { text-align: left; padding: 0.5rem 0.65rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .ok { color: var(--pick); font-weight: 600; }
+  .miss { color: var(--own); font-weight: 600; }
+  .part { color: #b45309; font-weight: 600; }
+  .hero {
+    margin-top: 1.1rem;
+    background: var(--own-bg);
+    border: 1px solid #fecaca;
+    border-left: 4px solid var(--own);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+  }
+  .hero-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--own);
+    margin-bottom: 0.25rem;
+  }
+  .hero-main { font-weight: 700; font-size: 1rem; }
+  .hero-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.25rem; }
+  footer { margin-top: 2.5rem; font-size: 0.75rem; color: var(--muted); }
+  @media print { body { background: #fff; padding: 0.5rem; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="font-size:0.8rem;margin-bottom:1.1rem;"><a href="https://www.timwappenhans.com" style="color:#2563eb;text-decoration:none;">&larr; timwappenhans.com</a></div>
+
+<header>
+  <h1>EPSS 2026, Belfast</h1>
+  <div class="sub">ICC Belfast, June 18&ndash;20, 2026. Friends&rsquo; talks anchored, open slots filled from the program review.</div>
+  <div class="legend">
+    <span><span class="dot f"></span>Friend presenting</span>
+    <span><span class="dot o"></span>Your paper / your talk</span>
+    <span><span class="dot p"></span>Recommended pick</span>
+  </div>
+  <div class="hero">
+    <div class="hero-label">Your presentation</div>
+    <div class="hero-main">Recruiting the Reluctant: Field-Experimental Evidence on Reducing Participatory Bias in Mini-Publics</div>
+    <div class="hero-sub">CP16, Saturday, June 20, 15:20&ndash;17:00 &middot; submission 1625 &middot; plus CP08 on Friday 13:30, where Luca presents your hate-crimes paper</div>
+  </div>
+</header>
+
+<h2>Thursday, June 18</h2>
+
+<div class="slot">
+  <div class="time">09:00&ndash;10:40</div>
+  <div class="card pick">
+    <span class="badge p">Pick</span>
+    <div class="session">PP07: Strategic Responses of Mainstream Parties to Anti-Establishment Parties</div>
+    <p class="paper">The Brandmauer session: Hunger &amp; Haunss on protesting for the cordon sanitaire (DE/IT/NL), Salo on center-right cooperation trade-offs, Karcic on rhetorical preceding policy accommodation.</p>
+    <div class="alt">Alt: EL01 (Social Cleavage Formation and Political Geography), useful background for your CP16 talk.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">10:50&ndash;12:30</div>
+  <div class="card friend">
+    <span class="badge f">Friends &times;2</span>
+    <div class="session">PE06: Local Power and Political Economy</div>
+    <p class="paper"><span class="who">Vincent Heddesheimer</span>: <span class="ttl">Housing Politics as a Time-Horizon Problem</span> [1380]</p>
+    <p class="paper"><span class="who">Florian Sichart</span>: <span class="ttl">Spatial Spillovers and Silent Stakeholders: The Local Political Economy of Commuting</span> [2006]</p>
+    <div class="note">Two friends, one room. (You miss PO20, where Vicente&rsquo;s chatroom-norms paper runs, but he is not presenting it.)</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">13:30&ndash;15:10</div>
+  <div class="card friend">
+    <span class="badge f">Friend</span>
+    <div class="session">CP01: Countering Democratic Backsliding: Norms, Civil Society, and Resilience (Hall 1A)</div>
+    <p class="paper"><span class="who">Lara T&uuml;rmer</span>: <span class="ttl">Can digital memory politics strengthen democratic resilience? Experimental evidence from Germany</span> [1318]</p>
+    <p class="paper">Bonus in the same session: Frederiksen, Bischof et al., <span class="ttl">Social norm interventions increase resistance to real-world anti-democratic elite behavior</span> [66].</p>
+    <div class="note"><strong>Conflict:</strong> Hanno Hilbig presents <em>Reindustrialization and Political Change: Evidence from the French Rust Belt</em> in PE03 at the same time, and PP10 (Curtis, <em>Neutered or Normalized?</em>; Koenders, <em>Contain or Compete?</em>; Leininger) also runs here. CP01 gets you a friend plus a norms paper, so it wins; catch Hanno at the Thursday reception.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">15:20&ndash;17:00</div>
+  <div class="card friend">
+    <span class="badge f">Friends, split</span>
+    <div class="session">EL05: Lifecourse Trajectories, Socialization and Voting Behaviour &nbsp;+&nbsp; GD06: Gender, Institutions, and Political Leadership</div>
+    <p class="paper"><span class="who">Franziska Veit</span> (EL05): <span class="ttl">The Politics of Inherited Insecurity: How Early-Life Economic Uncertainty Fuels Far-Right Support</span> [2136]</p>
+    <p class="paper"><span class="who">&Dstrok;or&dstrok;e Milosav</span> (GD06): <span class="ttl">Double Standards at the Top? Gendered Voter Evaluations of Senior Politicians</span> [1959]</p>
+    <div class="note"><strong>Conflict:</strong> Franziska and &Dstrok;or&dstrok;e present simultaneously, and this is &Dstrok;or&dstrok;e&rsquo;s only presenter slot. Suggestion: split the slot by running order, as on Friday morning.</div>
+    <div class="alt">Alt: PC03 (Far Right Discourse and Electoral Support). Maurice&rsquo;s football-diversity paper runs in MI10 now, but he is not presenting it.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">17:10&ndash;18:50</div>
+  <div class="card friend">
+    <span class="badge f">Friend</span>
+    <div class="session">GD12: Gender Bias in Politics and Society</div>
+    <p class="paper"><span class="who">Alba Huidobro</span> (with Heike Kl&uuml;ver): <span class="ttl">Do Female Political Leaders Reduce Hate Crimes? Evidence from German Mayoral Elections</span> [965]</p>
+    <div class="note">Friend presenting, hate crimes, and Heike as coauthor: locked in.</div>
+    <div class="alt">Alt: CL12 (Vicente&rsquo;s green-norms paper, presented by Alberdi), PO18 (Democratic Backsliding).</div>
+  </div>
+</div>
+
+<h2>Friday, June 19</h2>
+
+<div class="slot">
+  <div class="time">09:00&ndash;10:40</div>
+  <div class="card friend">
+    <span class="badge f">Friends, split</span>
+    <div class="session">CL01: Climate, Conflict, and Corruption &nbsp;+&nbsp; GD04: The Gender Youth Gap</div>
+    <p class="paper"><span class="who">Maurice Baudet von Gersdorff</span> (CL01): <span class="ttl">Does Climate Change Increase Hate Crimes? Evidence from Germany</span> [825], with Kl&uuml;ver &amp; Thieme</p>
+    <p class="paper"><span class="who">Frederik Thieme</span> (GD04): <span class="ttl">Young, Female, and Resistant: How Gen Z Women Push Left in Europe&rsquo;s Rightward Turn</span> [1695]</p>
+    <div class="note"><strong>Conflict:</strong> two HU friends present simultaneously. Suggestion: start in CL01 for Maurice (it is also your topic), hop to GD04 if the running order allows. MI05 (Far Right Politics and Electoral Consequences of Immigration) also runs now.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">10:50&ndash;12:30</div>
+  <div class="card friend">
+    <span class="badge f">Friend</span>
+    <div class="session">CP07: Polarization, Cleavages, and the Radical Right in Europe</div>
+    <p class="paper"><span class="who">Vicente Valentim</span>: <span class="ttl">The Stigmatization of Political Ideologies</span> [286]</p>
+    <p class="paper">Same session: Leininger et al., <span class="ttl">When the Taboo Weakens: Local Collaboration with Far-Right Parties</span> [1392]; Carstens et al., <span class="ttl">Flipping the Script? Political Trust and Far-Right Voting When the Far-Right Governs</span> [2392].</p>
+    <div class="note">Probably the single best content session of the conference for you: friend plus two normalization papers.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">13:30&ndash;15:10</div>
+  <div class="card own">
+    <span class="badge o">Your paper</span>
+    <div class="session">CP08: Migration, Minorities, and Self-Determination</div>
+    <p class="paper"><span class="who">Luca Schenk</span> presents: <span class="ttl">Normalization of the Radical Right and Anti-Minority Hate Crime</span> [1462], with Jansen, Wappenhans &amp; Kl&uuml;ver</p>
+    <div class="note"><strong>Conflict:</strong> Ant&oacute;nio Valentim&rsquo;s agenda-setting climate panel (CL19) runs at the same time. Supporting Luca wins.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">15:20&ndash;17:00</div>
+  <div class="card friend">
+    <span class="badge f">Friend</span>
+    <div class="session">PC11: Incivility and Political Attacks</div>
+    <p class="paper"><span class="who">Cornelius Erfort</span>: <span class="ttl">Do politicians respond to attacks?</span> [1825]</p>
+    <div class="alt">Also now: &Dstrok;or&dstrok;e&rsquo;s author-only papers in CO04 (state repression in hybrid regimes [832]) and EL09 (masculinity, economic insecurity, and far-right support [1892]); he is not presenting either, so Cornelius wins.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">17:10&ndash;18:50</div>
+  <div class="card pick">
+    <span class="badge p">Pick</span>
+    <div class="session">EL11: Far Right Politics and Democracy</div>
+    <p class="paper">Partheym&uuml;ller &amp; Kritzinger, <span class="ttl">When Populists Win but Are Excluded from Power</span> [2235]; Wenzelburger &amp; Rumpf, <span class="ttl">Far-Right Populists in Power: Electoral and Attitudinal Consequences at the Local Level</span> [697]; Di Leo et al. on amnesties and ideological (de-)legitimization [1402].</p>
+    <div class="alt">Alt: PO03 (Unpacking Anti-Immigrant Sentiment, Hall 2A), CP11 has Harmening &amp; Nyhuis on bias in German police records of political violence [922].</div>
+  </div>
+</div>
+
+<h2>Saturday, June 20</h2>
+
+<div class="slot">
+  <div class="time">09:00&ndash;10:40</div>
+  <div class="card friend">
+    <span class="badge f">Friends &times;2</span>
+    <div class="session">CP12: Memory and Historical Legacies</div>
+    <p class="paper"><span class="who">Simone Cremaschi</span>: <span class="ttl">Shaping Collective Memory: Historical Armed Resistance and Contemporary Anti-Fascist Sentiments in Italy</span> [2092]</p>
+    <p class="paper"><span class="who">Violeta Haas</span>: <span class="ttl">How Good Ancestors Make Good Citizens: Norm Legacies and the Activation of Pro-Social Behavior</span> [692]</p>
+    <div class="note">Two friends, one room.</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">10:50&ndash;12:30</div>
+  <div class="card pick">
+    <span class="badge p">Pick</span>
+    <div class="session">RE13: Representation and Responsiveness in Local Government</div>
+    <p class="paper">Ziaja &amp; May, <span class="ttl">Can local mini-publics invigorate democracy? A field experiment</span> [1337]</p>
+    <div class="note">Direct overlap with Recruiting the Reluctant; worth meeting them before your talk this afternoon.</div>
+    <div class="alt">Alt: CL09 has Khokhlov et al., a global conjoint on citizens&rsquo; assembly design [2096].</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">13:30&ndash;15:10</div>
+  <div class="card pick">
+    <span class="badge p">Pick</span>
+    <div class="session">EL14: Voting to Defend Democracy</div>
+    <p class="paper">Becker &amp; Hager, <span class="ttl">Do Democratic Parties Lose Support By Cooperating with Far-Right Extremists?</span> [320]; Wunsch et al., <span class="ttl">Negotiating Democracy: How Uncommitted Majorities Erode Democracies</span> [277]</p>
+    <div class="alt">Alt: EU10 has van den Hoogen &amp; Gattermann on public backing for a cordon sanitaire in the EP [1689]; DE04 has Badrinathan et al., a field experiment countering anti-minority narratives in India [1598].</div>
+  </div>
+</div>
+
+<div class="slot">
+  <div class="time">15:20&ndash;17:00</div>
+  <div class="card own">
+    <span class="badge o">You present</span>
+    <div class="session">CP16: Cleavage Formation and Consolidation in Realigning Party Systems</div>
+    <p class="paper"><span class="who">Tim Wappenhans</span>: <span class="ttl">Recruiting the Reluctant: Field-Experimental Evidence on Reducing Participatory Bias in Mini-Publics</span> [1625]</p>
+    <div class="note"><strong>You miss:</strong> Annina Hermes (PP06, far-right infiltration of civil society) and Ant&oacute;nio Valentim (CL16, water conflict in Spain) both present in this slot. Give them a heads-up beforehand.</div>
+  </div>
+</div>
+
+<h2>Friend coverage</h2>
+<table>
+  <tr><th>Friend</th><th>Presents</th><th>Slot</th><th>Status</th></tr>
+  <tr><td>Vincent Heddesheimer</td><td>Housing Politics as a Time-Horizon Problem (PE06)</td><td>Thu 10:50</td><td class="ok">Covered</td></tr>
+  <tr><td>Florian Sichart</td><td>Spatial Spillovers and Silent Stakeholders (PE06)</td><td>Thu 10:50</td><td class="ok">Covered</td></tr>
+  <tr><td>Lara T&uuml;rmer</td><td>Digital memory politics (CP01)</td><td>Thu 13:30</td><td class="ok">Covered</td></tr>
+  <tr><td>Hanno Hilbig</td><td>French Rust Belt (PE03)</td><td>Thu 13:30</td><td class="miss">Clashes with Lara</td></tr>
+  <tr><td>Franziska Veit</td><td>Inherited Insecurity (EL05)</td><td>Thu 15:20</td><td class="part">Split with &Dstrok;or&dstrok;e</td></tr>
+  <tr><td>&Dstrok;or&dstrok;e Milosav</td><td>Double Standards at the Top? (GD06)</td><td>Thu 15:20</td><td class="part">Split with Franziska</td></tr>
+  <tr><td>Alba Huidobro</td><td>Do Female Political Leaders Reduce Hate Crimes? (GD12)</td><td>Thu 17:10</td><td class="ok">Covered</td></tr>
+  <tr><td>Maurice Baudet von Gersdorff</td><td>Climate Change and Hate Crimes (CL01)</td><td>Fri 09:00</td><td class="part">Split with Frederik</td></tr>
+  <tr><td>Frederik Thieme</td><td>Young, Female, and Resistant (GD04)</td><td>Fri 09:00</td><td class="part">Split with Maurice</td></tr>
+  <tr><td>Vicente Valentim</td><td>The Stigmatization of Political Ideologies (CP07)</td><td>Fri 10:50</td><td class="ok">Covered</td></tr>
+  <tr><td>Luca Schenk (your paper)</td><td>Normalization of the Radical Right (CP08)</td><td>Fri 13:30</td><td class="ok">Covered</td></tr>
+  <tr><td>Cornelius Erfort</td><td>Do politicians respond to attacks? (PC11)</td><td>Fri 15:20</td><td class="ok">Covered</td></tr>
+  <tr><td>Simone Cremaschi</td><td>Shaping Collective Memory (CP12)</td><td>Sat 09:00</td><td class="ok">Covered</td></tr>
+  <tr><td>Violeta Haas</td><td>How Good Ancestors Make Good Citizens (CP12)</td><td>Sat 09:00</td><td class="ok">Covered</td></tr>
+  <tr><td>Annina Hermes</td><td>From Sports Clubs to Ballot Boxes (PP06)</td><td>Sat 15:20</td><td class="miss">Clashes with your talk</td></tr>
+  <tr><td>Ant&oacute;nio Valentim</td><td>CL19 panel (Fri 13:30); Water Conflict (CL16, Sat 15:20)</td><td>Fri + Sat</td><td class="miss">Both clash (your paper, your talk)</td></tr>
+</table>
+
+<footer>
+  Built from the Oxford Abstracts program for EPSS 2026 (event 75765), pulled June 10, 2026. Rooms largely unassigned in the data at this point; recheck closer to the conference. * marks the presenting author in the source data.
+</footer>
+
+</div>
+</body>
+</html>
