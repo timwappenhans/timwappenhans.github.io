@@ -128,6 +128,12 @@
   .teaminfo li.inj::before { content: "🚑 "; }
   .teaminfo li.triv::before { content: "✨ "; }
 
+  .kt { margin-top: 0.7rem; border-top: 1px dashed var(--line); padding-top: 0.6rem; display: grid; gap: 0.3rem; font-size: 0.78rem; color: #3f3f46; }
+  .ktrow { line-height: 1.5; }
+  .ktlab { display: inline-block; min-width: 6.5rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  .ktpick { color: var(--pred); font-weight: 600; }
+  .ktpick .ktlab { color: var(--pred); }
+
   footer { margin-top: 2.5rem; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
   .home { font-size: 0.8rem; margin-top: 0.5rem; }
   .home a { color: var(--pred); text-decoration: none; }
@@ -143,7 +149,7 @@
 
 <header>
   <h1>⚽ WM 2026 Dashboard</h1>
-  <div class="sub">Round of 32, days 5 and 6 &middot; July 2&ndash;3 &middot; all kickoffs Berlin time &middot; data pulled Thu July 2, morning</div>
+  <div class="sub">Round of 32, days 5 and 6 &middot; July 2&ndash;3 &middot; all kickoffs Berlin time &middot; data pulled Thu July 2, afternoon &middot; fixtures re-verified</div>
   <div class="home"><a href="https://www.timwappenhans.com">&larr; timwappenhans.com</a></div>
   <nav class="nav">
     <a href="predictions.html" class="active">Predictions</a>
@@ -158,50 +164,14 @@
   England 2-0 DR Congo &rarr; <span class="hit">2-1 England, W</span>;
   Belgium 1-2 Senegal &rarr; <span class="miss">2-2, Belgium 3-2 after extra time, X</span>;
   USA 2-1 Bosnia &rarr; <span class="hit">2-0 USA, W</span>.
-  Two correct winners from three. England needed rescuing: Brian Cipenga put DR Congo ahead inside seven minutes and the outsiders led until Harry Kane struck twice in the last fifteen (a 75th-minute header, then an 86th-minute finish) to spare the Three Lions a shock. My miss came in Seattle, where I had backed Senegal: they led Belgium 2-0 into the 86th minute through Habib Diarra and Isma&iuml;la Sarr before Romelu Lukaku and Youri Tielemans levelled in three minutes to force extra time, and Tielemans converted a hotly disputed VAR penalty deep in stoppage time to win it 3-2. The USA came through despite Folarin Balogun's controversial 64th-minute red card, Balogun having opened the scoring on halftime and Malik Tillman curling in a superb free kick to seal a 2-0 win with ten men. Across the tournament my record now stands at <b>48 correct winners from 74</b>.
+  Two correct winners from three. England needed rescuing: Brian Cipenga put DR Congo ahead inside seven minutes and the outsiders led until Harry Kane struck twice in the last fifteen (a 75th-minute header, then an 86th-minute finish) to spare the Three Lions a shock. My miss came in Seattle, where I had backed Senegal: they led Belgium 2-0 into the 86th minute through Habib Diarra and Isma&iuml;la Sarr before Romelu Lukaku and Youri Tielemans levelled in three minutes to force extra time, and Tielemans converted a hotly disputed VAR penalty deep in stoppage time to win it 3-2. The USA came through despite Folarin Balogun's controversial 64th-minute red card, Balogun having opened the scoring on halftime and Malik Tillman curling in a superb free kick to seal a 2-0 win with ten men. Across the tournament my record stands at <b>47 correct winners from 74</b>, revised down from 48 in today's audit (see the correction below).
   <br><br>
-  <b>The Round of 32 closes with six ties over two days.</b> Today the runners-up derby of Colombia and Croatia opens things in Toronto, reigning European champions Spain meet Austria in Los Angeles, and Group B winners Switzerland face Algeria in Vancouver after midnight Berlin time. Friday brings Cristiano Ronaldo's Portugal against Ghana in Kansas City, a genuine toss-up between Australia and Egypt in Dallas, and holders Argentina against the smallest nation ever to reach the knockouts, Cape Verde, in Miami around midnight. The Round of 16 is already taking shape: Germany vs France and Canada vs Netherlands on July 4, Brazil vs Norway and Ecuador vs England on July 5, and USA vs Belgium on July 6. All six cards are below.
+  <b>A correction before the new slate:</b> this morning's edition paired the wrong teams in two of today's cards. Colombia, not Portugal, won Group K, so tonight's Toronto tie is <b>Portugal vs Croatia</b> and the Kansas City tie is <b>Colombia vs Ghana</b>. The same bad data had crept into earlier results: the verified June 27-30 scores are now on the results page, including Paraguay and Morocco eliminating Germany and the Netherlands on penalties, and Mexico, not Ecuador, winning at the Azteca. Re-scored against real results, my tally drops one winner to 47 of 74; the consolation is two exact scores I was never credited for (France 3-0 Sweden, Ivory Coast 1-2 Norway).
+  <br><br>
+  <b>The Round of 32 closes with six ties over two days,</b> and each card now ends with a Kicktipp block: shortest-priced scorelines, the goals markets (over/under 2.5, both teams to score), group-stage xG, rest and travel, and a safe pick vs a value pick. Thursday opens with reigning European champions Spain against Austria in Los Angeles (21:00), then the runners-up derby of Portugal and Croatia in Toronto overnight (01:00) and Switzerland vs Algeria in Vancouver toward dawn (05:00). Friday brings the toss-up between Australia and Egypt in Dallas (20:00), holders Argentina against debutants Cape Verde in Miami (00:00), and Colombia vs Ghana in Kansas City deep in the night (03:30). The Round of 16 is set where the bracket has resolved: Paraguay vs France and Canada vs Morocco on July 4, Brazil vs Norway and Mexico vs England on July 5, and USA vs Belgium on July 6. All six cards are below in kickoff order.
 </div>
 
 <div class="daybar"><h2>Thursday, July 2 → Friday morning · Round of 32</h2></div>
-
-<!-- Colombia vs Croatia -->
-<div class="match">
-  <div class="meta"><span>Round of 32 (M83, Runner-up K vs Runner-up L) &middot; BMO Field, Toronto</span><span>Thu 18:00</span></div>
-  <div class="scoreline">
-    <div class="team home"><span>Colombia</span><span class="flag">🇨🇴</span></div>
-    <div><div class="pred">2 : 1</div><div class="predlabel">My guess</div></div>
-    <div class="team"><span class="flag">🇭🇷</span><span>Croatia</span></div>
-  </div>
-  <div class="odds">Market: Colombia <b>~41%</b> &middot; draw <b>~29%</b> &middot; Croatia <b>~34%</b> (bet365; COL +135, CRO +185) &middot; 90-min line; a draw goes to extra time</div>
-  <div class="rationale">A near-even tie the market barely separates, and the first World Cup knockout match played in Canada. A 2-1 leans to Colombia, whose pace and creativity through Luis Díaz, James Rodríguez and Daniel Muñoz give them the edge, but Croatia's tournament know-how through Modrić and Kovačić, and the draw priced near 30 percent, keep this closer to a coin flip than the scoreline suggests.</div>
-  <div class="teaminfo">
-    <div class="col home">
-      <div class="forms">
-        <span class="chip l" title="1-2 vs Portugal, Jun 27 (World Cup)">L</span><span class="chip w" title="1-0 vs DR Congo, Jun 23 (World Cup)">W</span><span class="chip w" title="3-1 vs Uzbekistan, Jun 17 (World Cup)">W</span><span class="chip w" title="2-0 vs Jordan, Jun 7 (friendly)">W</span><span class="chip w" title="3-1 vs Costa Rica, Jun 1 (friendly)">W</span>
-      </div>
-      <ul>
-        <li>Runners-up in Group K behind Portugal, winning their first two before a 1-2 loss to Portugal with top spot on the line</li>
-        <li class="inj">No fresh injuries reported; James Rodríguez is fit to captain and Néstor Lorenzo has a full squad</li>
-        <li>Coached by Argentine Néstor Lorenzo; Luis Díaz and captain James Rodríguez headline, with Daniel Muñoz a threat from right back</li>
-        <li>Luis Díaz scored in the loss to Portugal after Daniel Muñoz had struck in both earlier wins</li>
-        <li class="triv">Colombia finished third in CONMEBOL qualifying, above both Brazil and Uruguay</li>
-      </ul>
-    </div>
-    <div class="col">
-      <div class="forms">
-        <span class="chip w" title="1-0 vs Ghana, Jun 27 (World Cup)">W</span><span class="chip w" title="1-0 vs Panama, Jun 23 (World Cup)">W</span><span class="chip l" title="2-4 vs England, Jun 15 (World Cup)">L</span><span class="chip w" title="2-1 vs Slovenia, Jun 7 (friendly)">W</span><span class="chip l" title="0-2 vs Belgium, Jun 2 (friendly)">L</span>
-      </div>
-      <ul>
-        <li>Runners-up in Group L behind England, sneaking through with back-to-back 1-0 wins over Panama and Ghana</li>
-        <li class="inj">No injuries or suspensions reported; Zlatko Dalić can field a full side</li>
-        <li>Coached by Zlatko Dalić; 40-year-old captain Luka Modrić leads with Mateo Kovačić and striker Ante Budimir</li>
-        <li>Ante Budimir's headers settled both knockout-clinching wins, over Panama and Ghana</li>
-        <li class="triv">Croatia reached the 2018 final and finished third in 2022; this is expected to be Modrić's last World Cup</li>
-      </ul>
-    </div>
-  </div>
-</div>
 
 <!-- Spain vs Austria -->
 <div class="match">
@@ -211,7 +181,7 @@
     <div><div class="pred">2 : 0</div><div class="predlabel">My guess</div></div>
     <div class="team"><span class="flag">🇦🇹</span><span>Austria</span></div>
   </div>
-  <div class="odds">Market: Spain <b>~74%</b> &middot; draw <b>~18%</b> &middot; Austria <b>~9%</b> (FanDuel; ESP -320, AUT +1000) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="odds">Market: Spain <b>~76%</b> &middot; draw <b>~19%</b> &middot; Austria <b>~9%</b> (FanDuel, seen Jul 2; ESP -320, AUT +1000) &middot; 90-min line; a draw goes to extra time</div>
   <div class="rationale">Reigning European champions Spain won Group H with three clean sheets and are heavy favorites against an Austria side that scraped through in second. A 2-0 backs Spanish control through Pedri, Lamine Yamal and Oyarzabal against Rangnick's pressing; with the market this lopsided the question is the margin, though Arnautović and a set piece or two are Austria's upset thread.</div>
   <div class="teaminfo">
     <div class="col home">
@@ -220,7 +190,7 @@
       </div>
       <ul>
         <li>Won Group H on seven points with three clean sheets, a 1-0 win over Uruguay sending the two-time champions home</li>
-        <li class="inj">Lamine Yamal shook off a scare and is fit to start; Pedri is fit, though right back Dani Carvajal remains a long-term absentee</li>
+        <li class="inj">Nico Williams (adductor) and Yeremy Pino (shoulder) are doubts, with Alex Baena set to start on the left; Lamine Yamal and Pedri are fit, Dani Carvajal a long-term absentee</li>
         <li>Coached by Luis de la Fuente; Lamine Yamal, Pedri, Mikel Merino and Mikel Oyarzabal lead the European champions</li>
         <li>Mikel Oyarzabal scored twice in the 4-0 rout of Saudi Arabia after a goalless opener with Cape Verde</li>
         <li class="triv">Spain are the reigning European champions, having won Euro 2024, and lifted their only World Cup in 2010</li>
@@ -228,29 +198,81 @@
     </div>
     <div class="col">
       <div class="forms">
-        <span class="chip d" title="1-1 vs Algeria, Jun 27 (World Cup)">D</span><span class="chip l" title="0-2 vs Argentina, Jun 22 (World Cup)">L</span><span class="chip w" title="3-1 vs Jordan, Jun 16 (World Cup)">W</span><span class="chip w" title="1-0 vs Tunisia, Jun 1 (friendly)">W</span><span class="chip w" title="5-1 vs Ghana, Mar 27 (friendly)">W</span>
+        <span class="chip d" title="3-3 vs Algeria, Jun 27 (World Cup)">D</span><span class="chip l" title="0-2 vs Argentina, Jun 22 (World Cup)">L</span><span class="chip w" title="3-1 vs Jordan, Jun 16 (World Cup)">W</span><span class="chip w" title="1-0 vs Tunisia, Jun 1 (friendly)">W</span><span class="chip w" title="5-1 vs Ghana, Mar 27 (friendly)">W</span>
       </div>
       <ul>
-        <li>Runners-up in Group J behind Argentina on goal difference, a 1-1 draw with Algeria enough to edge through</li>
-        <li class="inj">No new injuries reported; Marko Arnautović and David Alaba shook off minor group-stage knocks and are available</li>
+        <li>Runners-up in Group J behind Argentina on goal difference, through on Kalajdžić's 96th-minute equalizer in a wild 3-3 with Algeria</li>
+        <li class="inj">Marko Arnautović and David Alaba are both carrying minor knee discomfort but expected to play</li>
         <li>Coached by Ralf Rangnick; captain David Alaba leads with Marcel Sabitzer and record scorer Marko Arnautović</li>
-        <li>Marko Arnautović's goal against Algeria secured the point that sent Austria through</li>
+        <li>Arnautović and Sabitzer both scored in the 3-3 with Algeria before Kalajdžić's stoppage-time rescue</li>
         <li class="triv">This is Austria's first World Cup since France 1998 and their first knockout appearance since 1982</li>
       </ul>
     </div>
+  </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>2-0 +500 &middot; 1-0 +550 &middot; 3-0 +700 &middot; 2-1 +750 (FanDuel)</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 -134 / Under +110 &middot; BTTS: Yes +128 / No -164 (FanDuel)</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Spain 5.5 for / 0.7 against, 5-0 actual &middot; Austria 3.6 for / 4.8 against, 6-6 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Spain 6 days' rest, ~2,100 km from Guadalajara &middot; Austria 5 days, ~2,200 km from Kansas City - near even</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 2-0, the modal score and my guess &middot; Value: 3-0 at +700 - the largest xG gap on the slate, and Austria have to chase</div>
+  </div>
+</div>
+
+<!-- Portugal vs Croatia -->
+<div class="match">
+  <div class="meta"><span>Round of 32 (M83, Runner-up K vs Runner-up L) &middot; BMO Field, Toronto</span><span>Fri 01:00</span></div>
+  <div class="scoreline">
+    <div class="team home"><span>Portugal</span><span class="flag">🇵🇹</span></div>
+    <div><div class="pred">2 : 1</div><div class="predlabel">My guess</div></div>
+    <div class="team"><span class="flag">🇭🇷</span><span>Croatia</span></div>
+  </div>
+  <div class="odds">Market: Portugal <b>~58%</b> &middot; draw <b>~26%</b> &middot; Croatia <b>~20%</b> (DraftKings, seen Jul 2; POR -140, CRO +400) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="rationale">The runners-up derby, and the first World Cup knockout match on Canadian soil. A 2-1 backs Portugal's unbeaten group stage (six scored, one conceded) and the extra class in midfield, but Croatia have made a career of outlasting better sides in knockouts, and mid-90s heat with a thunderstorm risk in Toronto is the kind of leveler that drags a tie toward the draw the market prices at one in four.</div>
+  <div class="teaminfo">
+    <div class="col home">
+      <div class="forms">
+        <span class="chip d" title="0-0 vs Colombia, Jun 27 (World Cup)">D</span><span class="chip w" title="5-0 vs Uzbekistan, Jun 23 (World Cup)">W</span><span class="chip d" title="1-1 vs DR Congo, Jun 17 (World Cup)">D</span><span class="chip w" title="2-1 vs Nigeria, Jun 10 (friendly)">W</span><span class="chip w" title="2-1 vs Chile, Jun 6 (friendly)">W</span>
+      </div>
+      <ul>
+        <li>Runners-up in Group K unbeaten on five points, the 0-0 with Colombia costing top spot after the 5-0 rout of Uzbekistan</li>
+        <li class="inj">No injuries or suspensions; Roberto Martínez has a full squad and Diogo Costa is coming off a six-save game</li>
+        <li>Coached by Roberto Martínez; Bruno Fernandes, Vitinha and João Neves run the midfield, with Cancelo and Nuno Mendes providing width</li>
+        <li>Outscoring their xG (6 goals from 4.2) while conceding once, level with Colombia for the group stage's meanest defense</li>
+        <li class="triv">Ronaldo, 41, became the first player to score at six different World Cups; only Roger Milla scored at an older age</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="forms">
+        <span class="chip w" title="2-1 vs Ghana, Jun 27 (World Cup)">W</span><span class="chip w" title="1-0 vs Panama, Jun 23 (World Cup)">W</span><span class="chip l" title="2-4 vs England, Jun 17 (World Cup)">L</span><span class="chip w" title="2-1 vs Slovenia, Jun 7 (friendly)">W</span><span class="chip l" title="0-2 vs Belgium, Jun 2 (friendly)">L</span>
+      </div>
+      <ul>
+        <li>Runners-up in Group L behind England, recovering from the 4-2 opening loss with wins over Panama and Ghana</li>
+        <li class="inj">No injuries or suspensions; Gvardiol is pushing for a recall at left back after his surprise omission against Ghana</li>
+        <li>Coached by Zlatko Dalić; Modrić, 40, is minute-managed but still running the show, with Kovačić, Sučić and Baturina around him</li>
+        <li>Outperforming at both ends: 5 scored from 2.8 xG, 5 conceded from 4.4 xG against, so the results flatter the underlying play</li>
+        <li class="triv">Modrić just became the oldest player on record with a World Cup assist, a corner headed in by Vlašić to beat Ghana; Croatia also know BMO Field, having beaten Panama there</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>Only 1-1 found priced, around +575 (Betano); US books are not publishing a correct-score board for this one</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 -135 / Under +110 &middot; BTTS: Yes -145 / No +115 (DraftKings) - the market expects goals at both ends</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Portugal 4.2 for, 6-1 actual &middot; Croatia 2.8 for / 4.4 against, 5-5 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Both on 4 days' rest &middot; Croatia ~540 km from Philadelphia and know the venue &middot; Portugal ~2,000 km up from Miami</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 2-1 Portugal, the shape the goals markets point to &middot; Value: 1-1 - a one-in-four draw, brutal heat, and Croatia's extra-time pedigree</div>
   </div>
 </div>
 
 <!-- Switzerland vs Algeria -->
 <div class="match">
-  <div class="meta"><span>Round of 32 (M85, Winner B vs 3rd J) &middot; BC Place, Vancouver</span><span>Fri 01:00</span></div>
+  <div class="meta"><span>Round of 32 (M85, Winner B vs 3rd J) &middot; BC Place, Vancouver</span><span>Fri 05:00</span></div>
   <div class="scoreline">
     <div class="team home"><span>Switzerland</span><span class="flag">🇨🇭</span></div>
     <div><div class="pred">2 : 1</div><div class="predlabel">My guess</div></div>
     <div class="team"><span class="flag">🇩🇿</span><span>Algeria</span></div>
   </div>
-  <div class="odds">Market: Switzerland <b>~50%</b> &middot; draw <b>~32%</b> &middot; Algeria <b>~25%</b> (FanDuel; SUI +102, ALG +294) &middot; 90-min line; a draw goes to extra time</div>
-  <div class="rationale">Switzerland won Group B unbeaten and are modest favorites over an Algeria side through as a best third. A 2-1 backs Swiss solidity and the threat of Ndoye, Vargas and Embolo, but Algeria, dangerous through Mahrez even without the injured Amoura, and the draw make this a genuine contest rather than a comfortable one, so both underdog and stalemate carry value.</div>
+  <div class="odds">Market: Switzerland <b>~49%</b> &middot; draw <b>~31%</b> &middot; Algeria <b>~24%</b> (FanDuel, seen Jul 2; SUI +105, ALG +310) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="rationale">Switzerland won Group B unbeaten and are modest favorites over an Algeria side through as a best third. A 2-1 backs Swiss solidity and the threat of Ndoye, Vargas and Embolo, but Algeria arrive on a Mahrez heater with Amoura possibly back, and in a market this tight with the under favored, both the underdog and the stalemate carry real value.</div>
   <div class="teaminfo">
     <div class="col home">
       <div class="forms">
@@ -258,7 +280,7 @@
       </div>
       <ul>
         <li>Won Group B unbeaten on seven points, a 2-1 comeback over Canada sealing top spot</li>
-        <li class="inj">No fresh injuries or suspensions reported; Murat Yakin has a full squad with Granit Xhaka captaining</li>
+        <li class="inj">A clean bill of health apart from right back Silvan Widmer (questionable); Granit Xhaka captains a full squad</li>
         <li>Coached by Murat Yakin; Granit Xhaka anchors, with Dan Ndoye, Ruben Vargas and Breel Embolo the attacking threats</li>
         <li>Ruben Vargas and teenager Johan Manzambi scored in the comeback win over Canada</li>
         <li class="triv">Switzerland have not won a World Cup knockout tie since reaching the quarterfinals as hosts in 1954</li>
@@ -266,68 +288,37 @@
     </div>
     <div class="col">
       <div class="forms">
-        <span class="chip d" title="1-1 vs Austria, Jun 27 (World Cup)">D</span><span class="chip w" title="2-1 vs Jordan, Jun 22 (World Cup)">W</span><span class="chip l" title="0-3 vs Argentina, Jun 16 (World Cup)">L</span><span class="chip w" title="1-0 vs Netherlands, Jun 3 (friendly)">W</span><span class="chip d" title="0-0 vs Uruguay, Mar 31 (friendly)">D</span>
+        <span class="chip d" title="3-3 vs Austria, Jun 27 (World Cup)">D</span><span class="chip w" title="2-1 vs Jordan, Jun 22 (World Cup)">W</span><span class="chip l" title="0-3 vs Argentina, Jun 16 (World Cup)">L</span><span class="chip w" title="1-0 vs Netherlands, Jun 3 (friendly)">W</span><span class="chip d" title="0-0 vs Uruguay, Mar 31 (friendly)">D</span>
       </div>
       <ul>
-        <li>Qualified as one of the eight best thirds from Group J on four points, holding Austria to a 1-1 draw</li>
-        <li class="inj">Top scorer Mohamed Amoura remains out with a hamstring injury, a significant blow to the attack</li>
+        <li>Qualified as one of the eight best thirds from Group J on four points after a wild 3-3 with Austria</li>
+        <li class="inj">Mohamed Amoura (thigh) is questionable and may yet feature; Luca Zidane comes in for Benbot in goal</li>
         <li>Coached by Vladimir Petković; captain Riyad Mahrez leads with Amine Gouiri and Manchester City's Rayan Aït-Nouri</li>
-        <li>Amine Gouiri's goals have carried them, including the leveler against Austria that clinched a best-third place</li>
-        <li class="triv">Backup goalkeeper Luca Zidane, son of Zinedine Zidane, is in Algeria's squad; this is their first World Cup knockout appearance</li>
+        <li>Mahrez caught fire in the finale, scoring twice against Austria including a 90+3' strike that nearly stole the game</li>
+        <li class="triv">Luca Zidane, son of Zinedine, is set to start in goal; this is Algeria's first World Cup knockout appearance</li>
       </ul>
     </div>
+  </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>No book publishes a board for this one; Dimers' model makes 1-1 the single most likely score (~11.5%)</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 +118 / Under -127 &middot; BTTS: Yes -105 / No -110 (best lines via Dimers/RotoWire) - under lean, BTTS a coin flip</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Switzerland 6.4 for / 2.7 against, 7-3 actual &middot; Algeria 3.9 for / 3.3 against, 6-7 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Switzerland 8 days' rest and the same stadium where they beat Canada &middot; Algeria 5 days plus ~2,850 km from Kansas City</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 2-1 Switzerland, my guess &middot; Value: 1-1 - the model's modal score in an under-leaning, near-even market</div>
   </div>
 </div>
 
 <div class="daybar"><h2>Friday, July 3 → Saturday morning · Round of 32</h2></div>
 
-<!-- Portugal vs Ghana -->
-<div class="match">
-  <div class="meta"><span>Round of 32 (M87, Winner K vs 3rd L) &middot; Arrowhead Stadium, Kansas City</span><span>Fri 18:00</span></div>
-  <div class="scoreline">
-    <div class="team home"><span>Portugal</span><span class="flag">🇵🇹</span></div>
-    <div><div class="pred">2 : 0</div><div class="predlabel">My guess</div></div>
-    <div class="team"><span class="flag">🇬🇭</span><span>Ghana</span></div>
-  </div>
-  <div class="odds">Market: Portugal <b>~72%</b> &middot; draw <b>~20%</b> &middot; Ghana <b>~12%</b> (FanDuel; POR -280, GHA +750) &middot; 90-min line; a draw goes to extra time</div>
-  <div class="rationale">Group K winners Portugal are heavy favorites against a Ghana side that reached the knockouts on defensive organization and just two group goals. A 2-0 backs Portugal's quality through Ronaldo, Bruno Fernandes and Leão; with the market this lopsided the margin is the real question, though a resilient, low-blocking Ghana and the value in the draw are the upset threads.</div>
-  <div class="teaminfo">
-    <div class="col home">
-      <div class="forms">
-        <span class="chip w" title="2-1 vs Colombia, Jun 27 (World Cup)">W</span><span class="chip w" title="5-0 vs Uzbekistan, Jun 23 (World Cup)">W</span><span class="chip d" title="1-1 vs DR Congo, Jun 17 (World Cup)">D</span><span class="chip w" title="2-1 vs Nigeria, Jun 10 (friendly)">W</span><span class="chip w" title="2-1 vs Chile, Jun 6 (friendly)">W</span>
-      </div>
-      <ul>
-        <li>Won Group K on seven points, beating Colombia 2-1 with top spot on the line after routing Uzbekistan 5-0</li>
-        <li class="inj">No fresh injuries reported; Roberto Martínez has a full squad with Cristiano Ronaldo leading the line</li>
-        <li>Coached by Roberto Martínez; Cristiano Ronaldo, 41, spearheads with Bruno Fernandes, Vitinha and Rafael Leão</li>
-        <li>Ronaldo scored twice against Uzbekistan, becoming the first man to score at six different World Cups</li>
-        <li class="triv">Portugal's best World Cup finish was third in 1966; this is expected to be Ronaldo's fifth and final World Cup</li>
-      </ul>
-    </div>
-    <div class="col">
-      <div class="forms">
-        <span class="chip l" title="0-1 vs Croatia, Jun 27 (World Cup)">L</span><span class="chip d" title="0-0 vs England, Jun 23 (World Cup)">D</span><span class="chip w" title="1-0 vs Panama, Jun 17 (World Cup)">W</span><span class="chip l" title="1-2 vs Japan, Jun 9 (friendly)">L</span><span class="chip w" title="2-1 vs Jamaica, Jun 5 (friendly)">W</span>
-      </div>
-      <ul>
-        <li>Qualified as a best third from Group L on four points, drawing with England and beating Panama before a 0-1 loss to Croatia</li>
-        <li class="inj">No fresh injuries reported; Carlos Queiroz can call on captain Jordan Ayew, Thomas Partey and Antoine Semenyo</li>
-        <li>Coached by Carlos Queiroz, who replaced Otto Addo; Jordan Ayew captains, with Antoine Semenyo and Thomas Partey key</li>
-        <li>Ghana scored only twice in the group stage, reaching the knockouts on defensive organization rather than flair</li>
-        <li class="triv">Ghana's run to the 2010 quarterfinals, denied by Luis Suárez's handball, is still Africa's joint-best World Cup finish</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
 <!-- Australia vs Egypt -->
 <div class="match">
-  <div class="meta"><span>Round of 32 (M88, Runner-up D vs Runner-up G) &middot; AT&amp;T Stadium, Dallas</span><span>Fri 21:00</span></div>
+  <div class="meta"><span>Round of 32 (M88, Runner-up D vs Runner-up G) &middot; AT&amp;T Stadium, Dallas</span><span>Fri 20:00</span></div>
   <div class="scoreline">
     <div class="team home"><span>Australia</span><span class="flag">🇦🇺</span></div>
     <div><div class="pred">0 : 1</div><div class="predlabel">My guess</div></div>
     <div class="team"><span class="flag">🇪🇬</span><span>Egypt</span></div>
   </div>
-  <div class="odds">Market: Egypt <b>~40%</b> &middot; draw <b>~35%</b> &middot; Australia <b>~31%</b> (bet365; EGY +150, AUS +225) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="odds">Market: Egypt <b>~40%</b> &middot; draw <b>~34%</b> &middot; Australia <b>~30%</b> (DraftKings, seen Jul 2; EGY +150, AUS +230) &middot; 90-min line; a draw goes to extra time</div>
   <div class="rationale">A genuine three-way toss-up between two organized, low-scoring sides separated by two FIFA ranking places. A 0-1 backs marginal favorites Egypt through Marmoush and, if fit, Salah against a defensive Australia, but this leans on a near-even market: the draw is priced around a third and an Australia win nearly so, and Mohamed Salah's hamstring is the tie's biggest swing factor.</div>
   <div class="teaminfo">
     <div class="col home">
@@ -348,12 +339,19 @@
       </div>
       <ul>
         <li>Reached the knockouts for the first time in five World Cups, second in Group G on five points behind Belgium</li>
-        <li class="inj">Captain Mohamed Salah is a doubt with a hamstring strain; Hossam Hassan has downplayed it but his fitness is the swing</li>
+        <li class="inj">Salah rejoined full training and is a genuine game-time decision; Fattouh (hamstring) is likely out and Abdelmonem faces a late check</li>
         <li>Coached by Hossam Hassan; Mohamed Salah and Manchester City's Omar Marmoush carry the attack</li>
         <li>Salah scored in the win over New Zealand and is Egypt's all-time World Cup top scorer</li>
         <li class="triv">This is Egypt's first appearance in the World Cup knockout rounds, at their fifth finals dating back to 1934</li>
       </ul>
     </div>
+  </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>1-1 at +450 &middot; 0-1 Egypt at +510 &middot; 0-0 at +540 (Betano) - all three shortest prices are low-scoring</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 +175 / Under -227 (Betano) &middot; BTTS: Yes +115 / No -145 (DraftKings) - a heavy under</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Australia 1.7 for / 2.7 against, 2-2 actual &middot; Egypt 3.8 for / 4.6 against, 5-3 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Australia 8 days' rest, ~2,300 km from Santa Clara &middot; Egypt 7 days, ~2,700 km from Seattle, their first trip out of the Northwest</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 0-1 Egypt, my guess and the second-shortest scoreline &middot; Value: 1-1, the modal score in a three-way market - and Salah's late fitness call can move all of it</div>
   </div>
 </div>
 
@@ -365,18 +363,18 @@
     <div><div class="pred">3 : 0</div><div class="predlabel">My guess</div></div>
     <div class="team"><span class="flag">🇨🇻</span><span>Cape Verde</span></div>
   </div>
-  <div class="odds">Market: Argentina <b>~86%</b> &middot; draw <b>~12%</b> &middot; Cape Verde <b>~7%</b> (bet365; ARG -600, CPV +1400) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="odds">Market: Argentina <b>~87%</b> &middot; draw <b>~13%</b> &middot; Cape Verde <b>~5%</b> (DraftKings, seen Jul 2; ARG -650, CPV +1800) &middot; 90-min line; a draw goes to extra time</div>
   <div class="rationale">Holders Argentina, perfect winners of Group J, are overwhelming favorites against a Cape Verde side making history on debut. A 3-0 backs Messi and Argentina's depth against the tournament's smallest nation; with the market this lopsided the question is only the margin, though Cape Verde's disciplined defense, which kept three group clean-sheet-or-better performances, is the reason to expect a contest before quality tells.</div>
   <div class="teaminfo">
     <div class="col home">
       <div class="forms">
-        <span class="chip d" title="1-1 vs Jordan, Jun 27 (World Cup)">D</span><span class="chip w" title="2-0 vs Austria, Jun 22 (World Cup)">W</span><span class="chip w" title="3-0 vs Algeria, Jun 16 (World Cup)">W</span><span class="chip w" title="3-0 vs Iceland, Jun 7 (friendly)">W</span><span class="chip w" title="2-0 vs Honduras, Jun 3 (friendly)">W</span>
+        <span class="chip w" title="3-1 vs Jordan, Jun 27 (World Cup)">W</span><span class="chip w" title="2-0 vs Austria, Jun 22 (World Cup)">W</span><span class="chip w" title="3-0 vs Algeria, Jun 16 (World Cup)">W</span><span class="chip w" title="3-0 vs Iceland, Jun 7 (friendly)">W</span><span class="chip w" title="2-0 vs Honduras, Jun 3 (friendly)">W</span>
       </div>
       <ul>
-        <li>Won Group J with a perfect nine points, resting Messi and others in a 1-1 draw with Jordan once top spot was secure</li>
-        <li class="inj">No injuries of note; Lionel Scaloni rotated heavily against Jordan, so the squad is fresh, and Cristian Romero shook off a knock</li>
+        <li>Won Group J with a perfect nine points and an 8-1 goal record, beating Jordan 3-1 with a heavily rotated side</li>
+        <li class="inj">No injuries of note; Scaloni rotated nine spots against Jordan so the squad is fresh, and Cristian Romero is expected back from a knock</li>
         <li>Coached by Lionel Scaloni; Lionel Messi leads with Julián Álvarez, Lautaro Martínez and Enzo Fernández</li>
-        <li>Messi scored twice against Austria to move clear as the all-time men's World Cup top scorer</li>
+        <li>Messi came off the bench against Jordan and curled in a free kick, a record seventh consecutive World Cup match with a goal</li>
         <li class="triv">Argentina are the defending champions; a fourth title would move them level with Germany and Italy on four, behind only Brazil</li>
       </ul>
     </div>
@@ -386,17 +384,69 @@
       </div>
       <ul>
         <li>Qualified as Group H runners-up on three points, drawing all three games to finish above Uruguay and Saudi Arabia</li>
-        <li class="inj">No injuries or suspensions reported; coach Bubista has a full squad, goalkeeper Vozinha and winger Ryan Mendes available</li>
+        <li class="inj">Telmo Arcanjo (hamstring) is out and Jovane Cabral doubtful; left back Sidny Cabral returns from suspension</li>
         <li>Coached by Bubista (Pedro Leitão Brito); Ryan Mendes, Roberto "Pico" Lopes and striker Dailon Livramento lead a diaspora-built side</li>
         <li>Cape Verde conceded only twice in the group stage, both in the draw with Uruguay, on a resilient defensive base</li>
         <li class="triv">With a population near 525,000, Cape Verde are the smallest nation ever to reach the World Cup knockout stage</li>
       </ul>
     </div>
   </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>No priced board found (US books hide the market); the pundit-consensus score is 3-0, and Polymarket has Argentina at 85%</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 -155 / Under +135 &middot; BTTS: Yes +185 / No -240 (DraftKings) - over lean with a strong Argentina clean-sheet lean</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Argentina 6.0 for / 1.6 against, 8-1 actual &middot; Cape Verde 2.7 for / 5.0 against, 2-2 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Argentina 6 days' rest, ~1,800 km from Arlington &middot; Cape Verde 7 days, ~1,550 km from Houston, and they have already played at Hard Rock</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 2-0 - the clean sheet is the strongest signal here &middot; Value: 3-0, my guess and the consensus score, backed by the over lean</div>
+  </div>
+</div>
+
+<!-- Colombia vs Ghana -->
+<div class="match">
+  <div class="meta"><span>Round of 32 (M87, Winner K vs 3rd L) &middot; Arrowhead Stadium, Kansas City</span><span>Sat 03:30</span></div>
+  <div class="scoreline">
+    <div class="team home"><span>Colombia</span><span class="flag">🇨🇴</span></div>
+    <div><div class="pred">2 : 0</div><div class="predlabel">My guess</div></div>
+    <div class="team"><span class="flag">🇬🇭</span><span>Ghana</span></div>
+  </div>
+  <div class="odds">Market: Colombia <b>~56%</b> &middot; draw <b>~28%</b> &middot; Ghana <b>~14%</b> (DraftKings, seen Jul 2; COL -125, GHA +600; FanDuel is steamier at COL -195) &middot; 90-min line; a draw goes to extra time</div>
+  <div class="rationale">Group K winners against the lowest-ranked side left in the tournament, and a first-ever meeting between the two. A 2-0 backs Colombia's control through Díaz, James and Muñoz against a Ghana team that has scored twice all tournament and lost Kudus before it started; the books make this the slate's cleanest-sheet game, with the under and no-BTTS both strong favorites, so the risk to Colombia is frustration, not firepower.</div>
+  <div class="teaminfo">
+    <div class="col home">
+      <div class="forms">
+        <span class="chip d" title="0-0 vs Portugal, Jun 27 (World Cup)">D</span><span class="chip w" title="1-0 vs DR Congo, Jun 23 (World Cup)">W</span><span class="chip w" title="3-1 vs Uzbekistan, Jun 17 (World Cup)">W</span><span class="chip w" title="2-0 vs Jordan, Jun 8 (friendly)">W</span><span class="chip w" title="3-1 vs Costa Rica, Jun 2 (friendly)">W</span>
+      </div>
+      <ul>
+        <li>Won Group K on seven points with one goal conceded, sealing top spot in the 0-0 with Portugal</li>
+        <li class="inj">Full squad; Luis Suárez, the Colombian striker, shook off a fitness doubt and James Rodríguez is fit to captain</li>
+        <li>Coached by Néstor Lorenzo; Luis Díaz and James headline, and Davinson Sánchez had a stoppage-time winner against Portugal chalked off by VAR, offside by a toe</li>
+        <li>Unbeaten in 2026 and out-shot Portugal 14-7 in the finale; the market question is only how many they score</li>
+        <li class="triv">Right back Daniel Muñoz is Colombia's joint-top scorer at this World Cup with two goals</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="forms">
+        <span class="chip l" title="1-2 vs Croatia, Jun 27 (World Cup)">L</span><span class="chip d" title="0-0 vs England, Jun 23 (World Cup)">D</span><span class="chip w" title="1-0 vs Panama, Jun 17 (World Cup)">W</span><span class="chip d" title="1-1 vs Wales, Jun 2 (friendly)">D</span><span class="chip l" title="1-2 vs Germany, Mar 30 (friendly)">L</span>
+      </div>
+      <ul>
+        <li>Through as a best third from Group L on defense: a 95th-minute winner over Panama, a 0-0 with England, then 1-2 to Croatia</li>
+        <li class="inj">Kudus is out of the tournament; Semenyo is expected to play through an ankle knock, Ati-Zigi's doubt keeps Asare in goal, and Partey's fitness is being monitored</li>
+        <li>Coached by Carlos Queiroz, appointed in April; Jordan Ayew captains, with Semenyo, Iñaki Williams and Sulemana the outlets</li>
+        <li>Two scored and two conceded across three games, the tournament's most defense-first survivor</li>
+        <li class="triv">At No. 65, Ghana are the lowest-FIFA-ranked team in the entire round of 32</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kt">
+    <div class="ktrow"><span class="ktlab">Scorelines</span>1-0 at 5/1 and 2-0 at 6/1 the shortest prices seen (indicative, unattributed board); no full correct-score market published</div>
+    <div class="ktrow"><span class="ktlab">Goals</span>Over 2.5 +125 / Under -160 &middot; BTTS: Yes +135 / No -170 (DraftKings) - the strongest under lean on the slate</div>
+    <div class="ktrow"><span class="ktlab">xG (group)</span>Colombia 4.6 for / 2.5 against, 4-1 actual &middot; Ghana 2.0 for / 2.9 against, 2-2 actual</div>
+    <div class="ktrow"><span class="ktlab">Rest &amp; travel</span>Both on 5 days' rest &middot; Colombia ~1,970 km from Miami, Ghana ~1,660 km from Philadelphia - a wash</div>
+    <div class="ktrow ktpick"><span class="ktlab">Kicktipp</span>Safe: 1-0 Colombia, the market's modal score &middot; Value: 2-0 - my guess; Colombia create plenty and Ghana carry no counterpunch</div>
+  </div>
 </div>
 
 <footer>
-  Predictions are mine, sanity-checked against the quoted 1X2 markets (implied probabilities include the bookmaker margin, so they sum to over 100%). Form strips: hover a chip for opponent and score; friendlies count, penalty-shootout results count as regulation draws, and World Cup matchday games are marked in the tooltips. We are in the knockouts: a draw after 90 minutes goes to extra time and, if needed, penalties, so the quoted three-way odds are for the 90-minute result only; Wednesday's Belgium vs Senegal was settled in extra time, my Senegal pick undone by a late Belgium comeback. Two guesses lean against near-even markets to the pick shown: Colombia vs Croatia (July 2) and Australia vs Egypt (July 3) are both closer to coin flips than their scorelines imply, the latter hinging on Mohamed Salah's fitness. Team news worth a matchday check: Egypt's Mohamed Salah a hamstring doubt; Algeria without the injured Mohamed Amoura; Spain's Lamine Yamal fit after a scare, with Dani Carvajal a long-term absentee; Austria's Arnautović and Alaba over minor knocks; Australia's Popovic having dropped goalkeeper Mathew Ryan. Kickoff notes (Berlin time): Thursday's ties run 18:00 (Colombia, Toronto) and 21:00 (Spain, Los Angeles), with Switzerland vs Algeria in Vancouver at 01:00 Friday; Friday's run 18:00 (Portugal, Kansas City) and 21:00 (Australia, Dallas), with Argentina vs Cape Verde in Miami at 00:00 Saturday. The two post-midnight West Coast slots (Vancouver, and to a lesser extent Miami) are taken from the current broadcast schedule and may shift by an hour or more; if your source differs, trust the broadcast slot. A few spring 2026 warm-up friendlies in the last-five strips are best-available from results databases. Sources: ESPN, CBS Sports, FOX Sports, FanDuel, BetMGM, DraftKings, bet365, OddsShark, Oddschecker, FotMob, FIFA.com, Sky Sports, kicker. Data pulled July 2, 2026 (morning, Berlin); all six cards above are still to be played. Say "update the WC dashboard" to refresh.
+  Predictions are mine, sanity-checked against the quoted 1X2 markets (implied probabilities include the bookmaker margin, so they can sum to over 100%). Form strips: hover a chip for opponent and score; friendlies count, penalty-shootout results count as regulation draws, and World Cup matchday games are marked in the tooltips. We are in the knockouts: a draw after 90 minutes goes to extra time and, if needed, penalties, so all quoted markets are for the 90-minute result only. New in this edition: the Kicktipp block on every card - the shortest-priced correct scorelines where a book publishes them (several US books hide that market, so some cards carry model or consensus scores, marked as such), over/under 2.5 goals and both-teams-to-score, group-stage xG (providers disagree by a few tenths, treat as approximate), and rest and travel (great-circle distances, not actual charters). Team news worth a matchday check: Egypt's Salah is a genuine game-time decision after rejoining full training; Algeria's Amoura questionable, with Luca Zidane starting in goal; Spain's Nico Williams and Yeremy Pino doubts; Ghana's Semenyo expected to play through an ankle knock. Kickoff notes (Berlin time): Thursday runs Spain 21:00 (Los Angeles), then Portugal vs Croatia at 01:00 Friday (Toronto, where mid-90s heat and a thunderstorm risk could delay things) and Switzerland vs Algeria at 05:00 Friday (Vancouver); Friday runs Australia vs Egypt 20:00 (Dallas), Argentina vs Cape Verde 00:00 Saturday (Miami) and Colombia vs Ghana 03:30 Saturday (Kansas City). <b>Correction, July 2:</b> the morning edition of this page paired Colombia with Croatia and Portugal with Ghana - the wrong way around - and several earlier results it relied on were wrong; fixtures, results and kickoff times have been re-verified against FIFA.com, ESPN and the Wikipedia match pages, and the running tally re-scored (47 correct winners from 74). Sources: ESPN, FIFA.com, DraftKings, FanDuel, bet365 via Racing Post, Betano via SportsGambler, RotoWire, Dimers, Covers, VegasInsider, xGscore, RealGM xG tracker, Sports Mole, Sky Sports. Data pulled July 2, 2026 (afternoon, Berlin); all six cards above are still to be played. Say "update the WC dashboard" to refresh.
 </footer>
 
 </div>
