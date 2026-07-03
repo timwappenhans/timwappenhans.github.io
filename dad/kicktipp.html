@@ -86,8 +86,8 @@
 <div class="masthead">
   <!-- Pixel Dad: The Angler. Bucket hat, utility vest, infinite patience. -->
   <svg class="dad" width="130" height="122" viewBox="0 0 30 28" shape-rendering="crispEdges" aria-label="Pixel Dad">
-    <g class="flagL"><rect x="2" y="3" width="5" height="2" fill="#0e7c7b"/><rect x="2" y="5" width="5" height="1" fill="#fff"/><rect x="4" y="6" width="1" height="7" fill="#8a5a2b"/></g>
-    <g class="flagR"><rect x="23" y="3" width="5" height="1" fill="#ffd400"/><rect x="23" y="4" width="5" height="2" fill="#008fd5"/><rect x="25" y="6" width="1" height="7" fill="#8a5a2b"/></g>
+    <g class="flagL" id="slotL"></g>
+    <g class="flagR" id="slotR"></g>
     <rect x="11" y="1" width="8" height="1" fill="#6e7a5a"/><rect x="10" y="2" width="10" height="1" fill="#6e7a5a"/><rect x="8" y="3" width="14" height="1" fill="#5c684a"/>
     <rect x="10" y="4" width="10" height="6" fill="#dba576"/>
     <rect x="12" y="5" width="2" height="1" fill="#5a5a5a"/><rect x="16" y="5" width="2" height="1" fill="#5a5a5a"/>
@@ -169,8 +169,8 @@
 
 <footer>
   A VERY SERIOUS PROJECT &middot; <a href="https://www.timwappenhans.com">TIMWAPPENHANS.COM</a> &middot;
-  RESULTS VERIFIED AGAINST FIFA &amp; ESPN &middot; DAD UPDATES DAILY &middot; NO FOOTBALL WAS WATCHED
-  IN THE MAKING OF THIS FORECAST
+  RESULTS VERIFIED AGAINST FIFA &amp; ESPN &middot; DAD UPDATES DAILY &middot; HIS FLAGS ROTATE DAILY AMONG
+  THE TEAMS STILL ALIVE &middot; NO FOOTBALL WAS WATCHED IN THE MAKING OF THIS FORECAST
 </footer>
 
 <script>
@@ -386,6 +386,79 @@ for (const m of MATCHES) {
 
 document.getElementById("updatedLine").textContent =
   document.getElementById("updatedLine").textContent.replace(/\d+ of \d+ matches tipped/, played.length + " of 104 matches tipped");
+
+// ============ dad's flags: a fresh daily pair from the teams still alive ============
+// 5x3 pixel flags at dad-hand scale, row-major.
+const FLAGS = {
+  "France":        [["#0055a4","#0055a4","#ffffff","#ef4135","#ef4135"],["#0055a4","#0055a4","#ffffff","#ef4135","#ef4135"],["#0055a4","#0055a4","#ffffff","#ef4135","#ef4135"]],
+  "Argentina":     [["#74acdf","#74acdf","#74acdf","#74acdf","#74acdf"],["#ffffff","#ffffff","#f6b40e","#ffffff","#ffffff"],["#74acdf","#74acdf","#74acdf","#74acdf","#74acdf"]],
+  "Brazil":        [["#009c3b","#009c3b","#009c3b","#009c3b","#009c3b"],["#009c3b","#ffdf00","#002776","#ffdf00","#009c3b"],["#009c3b","#009c3b","#009c3b","#009c3b","#009c3b"]],
+  "England":       [["#ffffff","#ffffff","#ce1124","#ffffff","#ffffff"],["#ce1124","#ce1124","#ce1124","#ce1124","#ce1124"],["#ffffff","#ffffff","#ce1124","#ffffff","#ffffff"]],
+  "Spain":         [["#aa151b","#aa151b","#aa151b","#aa151b","#aa151b"],["#f1bf00","#f1bf00","#f1bf00","#f1bf00","#f1bf00"],["#aa151b","#aa151b","#aa151b","#aa151b","#aa151b"]],
+  "Portugal":      [["#046a38","#046a38","#da291c","#da291c","#da291c"],["#046a38","#ffe900","#da291c","#da291c","#da291c"],["#046a38","#046a38","#da291c","#da291c","#da291c"]],
+  "Mexico":        [["#006847","#006847","#ffffff","#ce1126","#ce1126"],["#006847","#006847","#8a5a2b","#ce1126","#ce1126"],["#006847","#006847","#ffffff","#ce1126","#ce1126"]],
+  "Canada":        [["#d80621","#ffffff","#ffffff","#ffffff","#d80621"],["#d80621","#ffffff","#d80621","#ffffff","#d80621"],["#d80621","#ffffff","#ffffff","#ffffff","#d80621"]],
+  "United States": [["#3c3b6e","#3c3b6e","#b22234","#ffffff","#b22234"],["#3c3b6e","#3c3b6e","#ffffff","#b22234","#ffffff"],["#b22234","#ffffff","#b22234","#ffffff","#b22234"]],
+  "Belgium":       [["#1a1a1a","#1a1a1a","#fae042","#ed2939","#ed2939"],["#1a1a1a","#1a1a1a","#fae042","#ed2939","#ed2939"],["#1a1a1a","#1a1a1a","#fae042","#ed2939","#ed2939"]],
+  "Morocco":       [["#c1272d","#c1272d","#c1272d","#c1272d","#c1272d"],["#c1272d","#c1272d","#006233","#c1272d","#c1272d"],["#c1272d","#c1272d","#c1272d","#c1272d","#c1272d"]],
+  "Paraguay":      [["#d52b1e","#d52b1e","#d52b1e","#d52b1e","#d52b1e"],["#ffffff","#ffffff","#f6b40e","#ffffff","#ffffff"],["#0038a8","#0038a8","#0038a8","#0038a8","#0038a8"]],
+  "Norway":        [["#ba0c2f","#00205b","#ba0c2f","#ba0c2f","#ba0c2f"],["#00205b","#00205b","#00205b","#00205b","#00205b"],["#ba0c2f","#00205b","#ba0c2f","#ba0c2f","#ba0c2f"]],
+  "Switzerland":   [["#da291c","#da291c","#ffffff","#da291c","#da291c"],["#da291c","#ffffff","#ffffff","#ffffff","#da291c"],["#da291c","#da291c","#ffffff","#da291c","#da291c"]],
+  "Colombia":      [["#fcd116","#fcd116","#fcd116","#fcd116","#fcd116"],["#003893","#003893","#003893","#003893","#003893"],["#ce1126","#ce1126","#ce1126","#ce1126","#ce1126"]],
+  "Ghana":         [["#ce1126","#ce1126","#ce1126","#ce1126","#ce1126"],["#fcd116","#fcd116","#1a1a1a","#fcd116","#fcd116"],["#006b3f","#006b3f","#006b3f","#006b3f","#006b3f"]],
+  "Egypt":         [["#ce1126","#ce1126","#ce1126","#ce1126","#ce1126"],["#ffffff","#ffffff","#c09300","#ffffff","#ffffff"],["#1a1a1a","#1a1a1a","#1a1a1a","#1a1a1a","#1a1a1a"]],
+  "Australia":     [["#cf142b","#ffffff","#00247d","#00247d","#ffffff"],["#ffffff","#00247d","#00247d","#00247d","#00247d"],["#00247d","#00247d","#ffffff","#00247d","#ffffff"]],
+  "Cape Verde":    [["#003893","#003893","#003893","#003893","#003893"],["#003893","#f7d116","#003893","#003893","#003893"],["#ffffff","#ffffff","#cf2027","#ffffff","#ffffff"]]
+};
+(function () {
+  // alive = appeared in a knockout match and has not lost one
+  const koLosers = new Set(), koTeams = new Set();
+  let lastDecided = null;
+  for (const m of MATCHES) {
+    if (m.id[0] !== "M") continue;
+    koTeams.add(m.h); koTeams.add(m.a);
+    if (m.result) {
+      koLosers.add(m.result[0] > m.result[1] ? m.a : m.h);
+      lastDecided = m;
+    }
+  }
+  const alive = [...koTeams].filter(t => !koLosers.has(t) && FLAGS[t]);
+  if (!alive.length) return;
+  // deterministic daily pick: same pair for everyone, changes at Berlin midnight
+  const dayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Berlin" });
+  const frng = mulberry32(hashSeed("dadflags-" + dayStr));
+  const i = Math.floor(frng() * alive.length);
+  let left = alive[i], right;
+  if (alive.length >= 2) {
+    let j = Math.floor(frng() * (alive.length - 1));
+    if (j >= i) j++;
+    right = alive[j];
+  } else {
+    // after the final: champion in one hand, the beaten finalist in the other
+    right = lastDecided ? (lastDecided.result[0] > lastDecided.result[1] ? lastDecided.a : lastDecided.h) : left;
+  }
+  const NS = "http://www.w3.org/2000/svg";
+  function fillSlot(slotId, team, x0, poleX) {
+    const g = document.getElementById(slotId);
+    while (g.firstChild) g.removeChild(g.firstChild);
+    const px = FLAGS[team];
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) {
+      const rc = document.createElementNS(NS, "rect");
+      rc.setAttribute("x", x0 + c); rc.setAttribute("y", 3 + r);
+      rc.setAttribute("width", 1); rc.setAttribute("height", 1);
+      rc.setAttribute("fill", px[r][c]);
+      g.appendChild(rc);
+    }
+    const pole = document.createElementNS(NS, "rect");
+    pole.setAttribute("x", poleX); pole.setAttribute("y", 6);
+    pole.setAttribute("width", 1); pole.setAttribute("height", 7);
+    pole.setAttribute("fill", "#8a5a2b");
+    g.appendChild(pole);
+  }
+  fillSlot("slotL", left, 2, 4);
+  fillSlot("slotR", right, 23, 25);
+  document.getElementById("updatedLine").textContent += " · today dad carries " + left + " and " + right;
+})();
 
 function oneDad() {
   let total = 0;
