@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tim's dad has tipped the entire 2026 World Cup ten thousand times. Are you better than him?">
+<title>Are you better than Tim's dad? · World Cup 2026</title>
+<style>
+  :root {
+    --bg: #f7f7f4;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --navy: #1c2733;
+    --gray: #8a8a8a;
+    --line: #e0e0dc;
+    --red: #ff2700;
+    --blue: #008fd5;
+    --green: #77ab43;
+    --gold: #f2b830;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); margin: 0; padding-bottom: 5rem; }
+  .mono { font-family: Menlo, Consolas, "Courier New", monospace; }
+
+  .masthead { background: var(--navy); color: #fff; text-align: center; padding: 2.2rem 1rem 2.6rem; }
+  .masthead h1 { font-size: 3.1rem; font-weight: 900; letter-spacing: 0.01em; text-transform: uppercase; margin: 0.7rem 0 0; line-height: 1.0; }
+  @media (max-width: 560px) { .masthead h1 { font-size: 2.2rem; } }
+  .masthead .dek { font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; line-height: 1.6; color: #cfd6dd; max-width: 620px; margin: 1.1rem auto 0; }
+  .masthead .dek b { color: #fff; font-style: normal; }
+  .updated { font-family: Menlo, monospace; font-size: 0.63rem; letter-spacing: 0.1em; text-transform: uppercase; color: #7f8b96; margin-top: 1.2rem; }
+  svg.dad { image-rendering: pixelated; margin-top: 0.5rem; }
+  .flagL, .flagR { transform-origin: center; }
+  @keyframes waveL { 0%,49% { transform: rotate(0deg);} 50%,100% { transform: rotate(-6deg);} }
+  @keyframes waveR { 0%,49% { transform: rotate(0deg);} 50%,100% { transform: rotate(6deg);} }
+  .flagL { animation: waveL 1.2s steps(1) infinite; }
+  .flagR { animation: waveR 1.2s steps(1) infinite 0.6s; }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 1rem; display: grid; grid-template-columns: 1fr 240px; gap: 2rem; }
+  @media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } }
+  .main { min-width: 0; }
+
+  .card { background: var(--card); border: 1px solid var(--line); margin-top: 1.8rem; padding: 1.2rem 1.4rem; }
+  .cardhead { font-family: Menlo, monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; border-bottom: 2px solid var(--ink); padding-bottom: 0.45rem; margin-bottom: 1rem; }
+
+  .inputrow { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+  .field label { display: block; font-family: Menlo, monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.3rem; }
+  .field input { font-family: Menlo, monospace; font-size: 1.4rem; font-weight: 700; width: 6.6rem; padding: 0.35rem 0.5rem; border: 2px solid var(--ink); }
+  .gobtn { font-family: Menlo, monospace; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: #fff; border: none; padding: 0.8rem 1.3rem; cursor: pointer; }
+  .gobtn:hover { background: var(--red); }
+  .inputnote { font-family: Menlo, monospace; font-size: 0.62rem; color: var(--gray); margin-top: 0.7rem; letter-spacing: 0.03em; }
+
+  .verdictline { margin-top: 1.3rem; font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.5; }
+  .verdictline .pct { font-family: Menlo, monospace; font-weight: 700; font-size: 1.6rem; }
+  .verdictline .pct.good { color: var(--green); }
+  .verdictline .pct.mid { color: var(--gold); }
+  .verdictline .pct.bad { color: var(--red); }
+  .verdictline .joke { display: block; font-size: 0.95rem; color: #666; font-style: italic; margin-top: 0.4rem; }
+
+  .chart { position: relative; margin-top: 0.4rem; }
+  canvas { width: 100%; height: 320px; display: block; }
+  .chartmeta { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.9rem; margin-top: 0.8rem; }
+  .rollbtn { font-family: Menlo, monospace; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: none; border: 2px solid var(--ink); padding: 0.5rem 0.9rem; cursor: pointer; }
+  .rollbtn:hover { background: var(--ink); color: #fff; }
+  .dotlegend { font-family: Menlo, monospace; font-size: 0.64rem; color: var(--gray); }
+  .dotlegend .d { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 0.3rem; }
+  .simcount { font-family: Menlo, monospace; font-size: 0.64rem; color: var(--gray); margin-left: auto; }
+
+  .method { font-family: Georgia, serif; font-size: 0.8rem; line-height: 1.65; color: #555; }
+  .method .mono { font-size: 0.72rem; color: var(--ink); }
+
+  .rail { padding-top: 0.2rem; }
+  .railhead { font-family: Menlo, monospace; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin: 2rem 0 0.7rem; }
+  .note { background: #fffdf2; border: 1px solid #ece5c7; padding: 0.65rem 0.8rem; font-family: Georgia, serif; font-size: 0.82rem; line-height: 1.5; margin-bottom: 0.7rem; box-shadow: 2px 2px 0 rgba(0,0,0,0.06); }
+  .note .date { font-family: Menlo, monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); display: block; margin-bottom: 0.2rem; }
+  .up { color: var(--green); font-weight: 700; }
+  .down { color: var(--red); font-weight: 700; }
+  .strike { text-decoration: line-through; color: #999; }
+
+  footer { max-width: 900px; margin: 2.5rem auto 0; padding: 0.9rem 1rem 0; border-top: 1px solid var(--line); font-family: Menlo, monospace; font-size: 0.62rem; line-height: 1.7; color: var(--gray); }
+  footer a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <!-- Pixel Dad: The Angler. Bucket hat, utility vest, infinite patience. -->
+  <svg class="dad" width="130" height="122" viewBox="0 0 30 28" shape-rendering="crispEdges" aria-label="Pixel Dad">
+    <g class="flagL"><rect x="2" y="3" width="5" height="2" fill="#0e7c7b"/><rect x="2" y="5" width="5" height="1" fill="#fff"/><rect x="4" y="6" width="1" height="7" fill="#8a5a2b"/></g>
+    <g class="flagR"><rect x="23" y="3" width="5" height="1" fill="#ffd400"/><rect x="23" y="4" width="5" height="2" fill="#008fd5"/><rect x="25" y="6" width="1" height="7" fill="#8a5a2b"/></g>
+    <rect x="11" y="1" width="8" height="1" fill="#6e7a5a"/><rect x="10" y="2" width="10" height="1" fill="#6e7a5a"/><rect x="8" y="3" width="14" height="1" fill="#5c684a"/>
+    <rect x="10" y="4" width="10" height="6" fill="#dba576"/>
+    <rect x="12" y="5" width="2" height="1" fill="#5a5a5a"/><rect x="16" y="5" width="2" height="1" fill="#5a5a5a"/>
+    <rect x="12" y="6" width="1" height="1" fill="#1a1a1a"/><rect x="17" y="6" width="1" height="1" fill="#1a1a1a"/>
+    <rect x="14" y="7" width="2" height="1" fill="#c08b58"/>
+    <rect x="11" y="8" width="8" height="1" fill="#9a9a92"/><rect x="12" y="9" width="6" height="1" fill="#9a9a92"/>
+    <rect x="13" y="10" width="4" height="1" fill="#dba576"/>
+    <rect x="9" y="11" width="12" height="8" fill="#2e5e50"/>
+    <rect x="10" y="11" width="3" height="8" fill="#b3a077"/><rect x="17" y="11" width="3" height="8" fill="#b3a077"/>
+    <rect x="11" y="13" width="1" height="1" fill="#8f7d55"/><rect x="18" y="13" width="1" height="1" fill="#8f7d55"/>
+    <rect x="11" y="16" width="1" height="1" fill="#8f7d55"/><rect x="18" y="16" width="1" height="1" fill="#8f7d55"/>
+    <rect x="5" y="12" width="4" height="2" fill="#b3a077"/><rect x="21" y="12" width="4" height="2" fill="#b3a077"/>
+    <rect x="4" y="12" width="1" height="2" fill="#dba576"/><rect x="25" y="12" width="1" height="2" fill="#dba576"/>
+    <rect x="10" y="19" width="4" height="5" fill="#5a5348"/><rect x="16" y="19" width="4" height="5" fill="#5a5348"/>
+    <rect x="9" y="24" width="5" height="2" fill="#3a352c"/><rect x="16" y="24" width="5" height="2" fill="#3a352c"/>
+  </svg>
+  <h1>Are you better<br>than Tim&rsquo;s dad?</h1>
+  <div class="dek">
+    He doesn&rsquo;t know much about soccer. He knows the <b>FIFA table</b>, he updates his beliefs
+    after every match like the diligent <b>Bayesian</b> he is, and some days he simply <b>likes one
+    flag more</b> than the other and nudges the scoreline. He has tipped this World Cup ten
+    thousand times. He is very hard to beat, and he is very sorry about that.
+  </div>
+  <div class="updated" id="updatedLine">Updated July 3, 2026 &middot; 85 of 104 matches tipped</div>
+</div>
+
+<div class="wrap">
+  <div class="main">
+    <div class="card">
+      <div class="cardhead">Enter your Kicktipp numbers</div>
+      <div class="inputrow">
+        <div class="field"><label>Gesamt (G)</label><input type="number" id="yourG" min="0" max="900" step="1"></div>
+        <div class="field"><label>Bonus (B)</label><input type="number" id="yourB" min="0" max="200" step="1" placeholder="0"></div>
+        <button class="gobtn" id="compareBtn">Face the dads</button>
+      </div>
+      <div class="inputnote">Type both numbers exactly as the Kicktipp table shows them. Dad skips the bonus questions, so the fair fight is your match points: G minus B. The page does the subtraction.</div>
+      <div class="verdictline" id="verdict">Enter your score. Dad has already tipped.</div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead">One dot = one dad</div>
+      <div class="chart"><canvas id="hist"></canvas></div>
+      <div class="chartmeta">
+        <button class="rollbtn" id="rerollBtn">&#8635; Summon 10,000 fresh dads</button>
+        <span class="dotlegend"><span class="d"></span>a dad who scored worse than you turns green &middot; the swarm shows 500 of the 10,000</span>
+        <span class="simcount" id="runCounter">0 dads</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardhead">The method, honestly</div>
+      <div class="method">
+        Dad&rsquo;s ratings start at the FIFA points of <span class="mono">June 11, 2026</span> (the
+        final pre-tournament release) and are updated after every result (<span class="mono">Elo,
+        K=50</span>, strictly walk-forward: dad never peeks at the future, he only reads
+        yesterday&rsquo;s scores over breakfast). The rating gap gives a win probability; scorelines
+        follow two Poissons splitting a <span class="mono">2.7</span>-goal budget; knockout draws run
+        into extra time and penalties, where our Kicktipp counts every goal, so a 1-1 decided 4-3 from
+        the spot is booked as <span class="mono">5:4</span> and dad never tips a knockout draw. He
+        knows the expected Kicktipp points of every scoreline under our <span class="mono">2-4</span>
+        rule and usually submits the best one &mdash; unless he likes a flag, in which case the
+        scoreline drifts: tip <span class="mono">t</span> with probability &prop;
+        <span class="mono">exp(5&middot;EP(t))</span>. Each of the 10,000 dads below tips every played
+        match that way and is scored against the verified results. Bonus questions are excluded on
+        both sides. Dad is fictional. The mustache is not.
+      </div>
+    </div>
+  </div>
+
+  <div class="rail">
+    <div class="railhead">Dad&rsquo;s notebook</div>
+    <div class="note"><span class="date">Jul 3</span>Portugal <span class="up">&uarr;</span> beat Croatia 2:1, precisely as the table foretold. A quiet nod. Nothing more.</div>
+    <div class="note"><span class="date">Jul 3</span>Switzerland <span class="up">&uarr;</span> 2:0, first knockout win in 88 years, says the radio. Dad remarks that patience is a strategy.</div>
+    <div class="note"><span class="date">Jul 2</span>Spain <span class="up">&uarr;</span> 1:0. &ldquo;The correct amount of goals,&rdquo; dad writes, underlining nothing.</div>
+    <div class="note"><span class="date">Jun 30</span>Mexico <span class="up">&uarr;&uarr;</span> 2:0 over Ecuador at the Azteca. Dad admits the flag is growing on him.</div>
+    <div class="note"><span class="date">Jun 29</span><span class="strike">Germany</span> <span class="down">&darr;&darr;</span> The entry is crossed out. Dad has written, in small letters: &ldquo;we do not discuss the penalties.&rdquo;</div>
+  </div>
+</div>
+
+<footer>
+  A VERY SERIOUS PROJECT &middot; <a href="https://www.timwappenhans.com">TIMWAPPENHANS.COM</a> &middot;
+  RESULTS VERIFIED AGAINST FIFA &amp; ESPN &middot; DAD UPDATES DAILY &middot; NO FOOTBALL WAS WATCHED
+  IN THE MAKING OF THIS FORECAST
+</footer>
+
+<script>
+"use strict";
+// ============ frozen data ============
+// FIFA Men's World Ranking, June 11, 2026 release (final pre-tournament).
+// Dad's starting beliefs. Never edit these.
+const RATINGS = {
+  "Argentina": 1877.27, "Spain": 1874.71, "France": 1870.70, "England": 1828.02,
+  "Portugal": 1767.85, "Brazil": 1765.86, "Morocco": 1755.10, "Netherlands": 1753.57,
+  "Belgium": 1742.24, "Germany": 1735.77, "Croatia": 1714.87, "Colombia": 1698.35,
+  "Mexico": 1687.48, "Senegal": 1684.07, "Uruguay": 1673.07, "United States": 1671.23,
+  "Japan": 1661.58, "Switzerland": 1650.06, "Iran": 1619.58, "Türkiye": 1605.73,
+  "Ecuador": 1598.52, "Austria": 1597.40, "South Korea": 1591.63, "Australia": 1579.34,
+  "Algeria": 1571.03, "Egypt": 1562.37, "Canada": 1559.48, "Norway": 1557.44,
+  "Ivory Coast": 1540.87, "Panama": 1539.16, "Sweden": 1509.79, "Czechia": 1505.74,
+  "Paraguay": 1505.35, "Scotland": 1503.34, "Tunisia": 1476.41, "DR Congo": 1474.43,
+  "Uzbekistan": 1458.73, "Qatar": 1450.31, "Iraq": 1446.28, "South Africa": 1428.38,
+  "Saudi Arabia": 1423.88, "Jordan": 1387.74, "Bosnia & Herzegovina": 1387.22,
+  "Ghana": 1346.88, "Cape Verde": 1371.11, "Haiti": 1293.10, "Curaçao": 1294.77,
+  "New Zealand": 1275.58
+};
+// Matches in chronological order. ko=false: group game, result = 90-minute
+// score. ko=true: knockout, result = Kicktipp "nach Elfmeterschießen" score
+// (regulation + extra time + converted shootout penalties; e.g. Germany 1-1
+// Paraguay, pens 3-4 -> [4,5]). result: null = pending. The daily update
+// appends results and new knockout pairings here; NOTHING else changes.
+const MATCHES = [
+  {id:"G01",ko:false,h:"Mexico",a:"South Africa",result:[2,0]},
+  {id:"G02",ko:false,h:"South Korea",a:"Czechia",result:[2,1]},
+  {id:"G03",ko:false,h:"Canada",a:"Bosnia & Herzegovina",result:[1,1]},
+  {id:"G04",ko:false,h:"United States",a:"Paraguay",result:[4,1]},
+  {id:"G05",ko:false,h:"Qatar",a:"Switzerland",result:[1,1]},
+  {id:"G06",ko:false,h:"Brazil",a:"Morocco",result:[1,1]},
+  {id:"G07",ko:false,h:"Scotland",a:"Haiti",result:[1,0]},
+  {id:"G08",ko:false,h:"Australia",a:"Türkiye",result:[2,0]},
+  {id:"G09",ko:false,h:"Germany",a:"Curaçao",result:[7,1]},
+  {id:"G10",ko:false,h:"Ivory Coast",a:"Ecuador",result:[1,0]},
+  {id:"G11",ko:false,h:"Netherlands",a:"Japan",result:[2,2]},
+  {id:"G12",ko:false,h:"Sweden",a:"Tunisia",result:[5,1]},
+  {id:"G13",ko:false,h:"Belgium",a:"Egypt",result:[1,1]},
+  {id:"G14",ko:false,h:"Iran",a:"New Zealand",result:[2,2]},
+  {id:"G15",ko:false,h:"Spain",a:"Cape Verde",result:[0,0]},
+  {id:"G16",ko:false,h:"Saudi Arabia",a:"Uruguay",result:[1,1]},
+  {id:"G17",ko:false,h:"France",a:"Senegal",result:[3,1]},
+  {id:"G18",ko:false,h:"Norway",a:"Iraq",result:[4,1]},
+  {id:"G19",ko:false,h:"Argentina",a:"Algeria",result:[3,0]},
+  {id:"G20",ko:false,h:"Austria",a:"Jordan",result:[3,1]},
+  {id:"G21",ko:false,h:"Portugal",a:"DR Congo",result:[1,1]},
+  {id:"G22",ko:false,h:"England",a:"Croatia",result:[4,2]},
+  {id:"G23",ko:false,h:"Ghana",a:"Panama",result:[1,0]},
+  {id:"G24",ko:false,h:"Uzbekistan",a:"Colombia",result:[1,3]},
+  {id:"G25",ko:false,h:"Czechia",a:"South Africa",result:[1,1]},
+  {id:"G26",ko:false,h:"Switzerland",a:"Bosnia & Herzegovina",result:[4,1]},
+  {id:"G27",ko:false,h:"Canada",a:"Qatar",result:[6,0]},
+  {id:"G28",ko:false,h:"Mexico",a:"South Korea",result:[1,0]},
+  {id:"G29",ko:false,h:"United States",a:"Australia",result:[2,0]},
+  {id:"G30",ko:false,h:"Scotland",a:"Morocco",result:[0,1]},
+  {id:"G31",ko:false,h:"Brazil",a:"Haiti",result:[3,0]},
+  {id:"G32",ko:false,h:"Türkiye",a:"Paraguay",result:[0,1]},
+  {id:"G33",ko:false,h:"Netherlands",a:"Sweden",result:[5,1]},
+  {id:"G34",ko:false,h:"Germany",a:"Ivory Coast",result:[2,1]},
+  {id:"G35",ko:false,h:"Ecuador",a:"Curaçao",result:[0,0]},
+  {id:"G36",ko:false,h:"Tunisia",a:"Japan",result:[0,4]},
+  {id:"G37",ko:false,h:"Spain",a:"Saudi Arabia",result:[4,0]},
+  {id:"G38",ko:false,h:"Belgium",a:"Iran",result:[0,0]},
+  {id:"G39",ko:false,h:"Uruguay",a:"Cape Verde",result:[2,2]},
+  {id:"G40",ko:false,h:"New Zealand",a:"Egypt",result:[1,3]},
+  {id:"G41",ko:false,h:"Argentina",a:"Austria",result:[2,0]},
+  {id:"G42",ko:false,h:"France",a:"Iraq",result:[3,0]},
+  {id:"G43",ko:false,h:"Norway",a:"Senegal",result:[3,2]},
+  {id:"G44",ko:false,h:"Jordan",a:"Algeria",result:[1,2]},
+  {id:"G45",ko:false,h:"Portugal",a:"Uzbekistan",result:[5,0]},
+  {id:"G46",ko:false,h:"England",a:"Ghana",result:[0,0]},
+  {id:"G47",ko:false,h:"Panama",a:"Croatia",result:[0,1]},
+  {id:"G48",ko:false,h:"Colombia",a:"DR Congo",result:[1,0]},
+  {id:"G49",ko:false,h:"Switzerland",a:"Canada",result:[2,1]},
+  {id:"G50",ko:false,h:"Bosnia & Herzegovina",a:"Qatar",result:[3,1]},
+  {id:"G51",ko:false,h:"Scotland",a:"Brazil",result:[0,3]},
+  {id:"G52",ko:false,h:"Morocco",a:"Haiti",result:[4,2]},
+  {id:"G53",ko:false,h:"Czechia",a:"Mexico",result:[0,3]},
+  {id:"G54",ko:false,h:"South Africa",a:"South Korea",result:[1,0]},
+  {id:"G55",ko:false,h:"Ecuador",a:"Germany",result:[2,1]},
+  {id:"G56",ko:false,h:"Curaçao",a:"Ivory Coast",result:[0,2]},
+  {id:"G57",ko:false,h:"Japan",a:"Sweden",result:[1,1]},
+  {id:"G58",ko:false,h:"Tunisia",a:"Netherlands",result:[1,3]},
+  {id:"G59",ko:false,h:"Türkiye",a:"United States",result:[3,2]},
+  {id:"G60",ko:false,h:"Paraguay",a:"Australia",result:[0,0]},
+  {id:"G61",ko:false,h:"Norway",a:"France",result:[1,4]},
+  {id:"G62",ko:false,h:"Senegal",a:"Iraq",result:[5,0]},
+  {id:"G63",ko:false,h:"Uruguay",a:"Spain",result:[0,1]},
+  {id:"G64",ko:false,h:"Cape Verde",a:"Saudi Arabia",result:[0,0]},
+  {id:"G65",ko:false,h:"Egypt",a:"Iran",result:[1,1]},
+  {id:"G66",ko:false,h:"New Zealand",a:"Belgium",result:[1,5]},
+  {id:"G67",ko:false,h:"Panama",a:"England",result:[0,2]},
+  {id:"G68",ko:false,h:"Croatia",a:"Ghana",result:[2,1]},
+  {id:"G69",ko:false,h:"Colombia",a:"Portugal",result:[0,0]},
+  {id:"G70",ko:false,h:"DR Congo",a:"Uzbekistan",result:[3,1]},
+  {id:"G71",ko:false,h:"Jordan",a:"Argentina",result:[1,3]},
+  {id:"G72",ko:false,h:"Algeria",a:"Austria",result:[3,3]},
+  {id:"M73",ko:true,h:"South Africa",a:"Canada",result:[0,1]},
+  {id:"M74",ko:true,h:"Germany",a:"Paraguay",result:[4,5]},
+  {id:"M75",ko:true,h:"Netherlands",a:"Morocco",result:[3,4]},
+  {id:"M76",ko:true,h:"Brazil",a:"Japan",result:[2,1]},
+  {id:"M77",ko:true,h:"France",a:"Sweden",result:[3,0]},
+  {id:"M78",ko:true,h:"Ivory Coast",a:"Norway",result:[1,2]},
+  {id:"M79",ko:true,h:"Mexico",a:"Ecuador",result:[2,0]},
+  {id:"M80",ko:true,h:"England",a:"DR Congo",result:[2,1]},
+  {id:"M81",ko:true,h:"United States",a:"Bosnia & Herzegovina",result:[2,0]},
+  {id:"M82",ko:true,h:"Belgium",a:"Senegal",result:[3,2]},
+  {id:"M84",ko:true,h:"Spain",a:"Austria",result:[1,0]},
+  {id:"M83",ko:true,h:"Portugal",a:"Croatia",result:[2,1]},
+  {id:"M85",ko:true,h:"Switzerland",a:"Algeria",result:[2,0]},
+  {id:"M88",ko:true,h:"Australia",a:"Egypt",result:null},
+  {id:"M86",ko:true,h:"Argentina",a:"Cape Verde",result:null},
+  {id:"M87",ko:true,h:"Colombia",a:"Ghana",result:null},
+  {id:"M89",ko:true,h:"Paraguay",a:"France",result:null},
+  {id:"M90",ko:true,h:"Canada",a:"Morocco",result:null},
+  {id:"M91",ko:true,h:"Brazil",a:"Norway",result:null},
+  {id:"M92",ko:true,h:"Mexico",a:"England",result:null},
+  {id:"M94",ko:true,h:"United States",a:"Belgium",result:null}
+];
+
+// ============ dad's brain ============
+// Ratings walk forward via Elo; tips are drawn softmax over expected
+// Kicktipp points (discipline BETA); knockout results use the
+// all-goals-count convention.
+const MU_TOTAL = 2.7, ELO_SCALE = 600, ET_FACTOR = 1/3, PEN_CONV = 0.75;
+const K_ELO = 50, BETA = 5, TIP_MAX = 6, KO_SAMPLES = 8000;
+const NUM_RUNS = 10000;
+
+function winProb(rH, rA) { return 1 / (1 + Math.pow(10, -(rH - rA) / ELO_SCALE)); }
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashSeed(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function poisson(lambda, rng) {
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  do { k++; p *= rng(); } while (p > L);
+  return k - 1;
+}
+function pmfTable(lambda, n) {
+  const out = [Math.exp(-lambda)];
+  for (let k = 1; k <= n; k++) out.push(out[k - 1] * lambda / k);
+  return out;
+}
+function points(tip, res) {
+  if (tip[0] === res[0] && tip[1] === res[1]) return 4;
+  const ts = Math.sign(tip[0] - tip[1]), rs = Math.sign(res[0] - res[1]);
+  if (ts !== rs) return 0;
+  if (rs === 0) return 2;
+  return (tip[0] - tip[1]) === (res[0] - res[1]) ? 3 : 2;
+}
+function sampleOutcome(lamH, lamA, ko, rng) {
+  let h = poisson(lamH, rng), a = poisson(lamA, rng);
+  if (!ko || h !== a) return [h, a];
+  h += poisson(lamH * ET_FACTOR, rng); a += poisson(lamA * ET_FACTOR, rng);
+  if (h !== a) return [h, a];
+  let ph = 0, pa = 0;
+  for (let r = 0; r < 5; r++) {
+    if (rng() < PEN_CONV) ph++;
+    if (rng() < PEN_CONV) pa++;
+    const remain = 4 - r;
+    if (ph > pa + remain || pa > ph + remain) break;
+  }
+  while (ph === pa) { if (rng() < PEN_CONV) ph++; if (rng() < PEN_CONV) pa++; }
+  return [h + ph, a + pa];
+}
+
+// Walk-forward pass over played matches.
+const R = { ...RATINGS };
+const played = [];
+for (const m of MATCHES) {
+  if (!m.result) continue;
+  const p = winProb(R[m.h], R[m.a]);
+  const lamH = MU_TOTAL * p, lamA = MU_TOTAL * (1 - p);
+  const cands = [], eps = [];
+  if (!m.ko) {
+    const pH = pmfTable(lamH, 10), pA = pmfTable(lamA, 10);
+    for (let th = 0; th <= TIP_MAX; th++) for (let ta = 0; ta <= TIP_MAX; ta++) {
+      let ep = 0;
+      for (let rh = 0; rh <= 10; rh++) for (let ra = 0; ra <= 10; ra++) ep += pH[rh] * pA[ra] * points([th, ta], [rh, ra]);
+      cands.push([th, ta]); eps.push(ep);
+    }
+  } else {
+    const rng = mulberry32(hashSeed(m.id));
+    const S = [];
+    for (let i = 0; i < KO_SAMPLES; i++) S.push(sampleOutcome(lamH, lamA, true, rng));
+    for (let th = 0; th <= TIP_MAX; th++) for (let ta = 0; ta <= TIP_MAX; ta++) {
+      if (th === ta) continue;
+      let s = 0;
+      for (const r of S) s += points([th, ta], r);
+      cands.push([th, ta]); eps.push(s / S.length);
+    }
+  }
+  let c = 0;
+  const cum = eps.map(e => c += Math.exp(BETA * e));
+  played.push({ result: m.result, cands, cum, sum: c });
+  const rs = Math.sign(m.result[0] - m.result[1]);
+  const W = rs > 0 ? 1 : rs < 0 ? 0 : 0.5;
+  R[m.h] += K_ELO * (W - p); R[m.a] += K_ELO * ((1 - W) - (1 - p));
+}
+
+document.getElementById("updatedLine").textContent =
+  document.getElementById("updatedLine").textContent.replace(/\d+ of \d+ matches tipped/, played.length + " of 104 matches tipped");
+
+function oneDad() {
+  let total = 0;
+  for (const g of played) {
+    const u = Math.random() * g.sum;
+    let lo = 0, hi = g.cum.length - 1;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (g.cum[mid] < u) lo = mid + 1; else hi = mid; }
+    total += points(g.cands[lo], g.result);
+  }
+  return total;
+}
+
+// ============ the dot swarm ============
+const canvas = document.getElementById("hist");
+const ctx = canvas.getContext("2d");
+let totals = [];
+let bins = {};
+let dotBins = {};   // the drawn sample: every dot is one real dad
+let nDads = 0;
+let maxBin = 1;
+let yourScore = null;
+let animId = null;
+const SAMPLE_EVERY = 20; // draw every 20th dad so the dots stay dots
+
+const savedG = localStorage.getItem("dadG"), savedB = localStorage.getItem("dadB");
+if (savedG !== null && savedG !== "") {
+  document.getElementById("yourG").value = savedG;
+  document.getElementById("yourB").value = savedB || "";
+  yourScore = +savedG - (+savedB || 0);
+}
+
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = 320 * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function draw() {
+  const W = canvas.clientWidth, H = 320;
+  ctx.clearRect(0, 0, W, H);
+  const padB = 30, padT = 30; // top row: YOU label; second row: MEDIAN; dots start below both
+  const n = played.length;
+  let lo = Math.floor(1.15 * n), hi = Math.ceil(1.95 * n);
+  if (totals.length) { lo = Math.min(lo, totals[0] - 4); hi = Math.max(hi, totals[totals.length - 1] + 4); }
+  if (yourScore != null && !isNaN(yourScore)) { lo = Math.min(lo, yourScore - 5); hi = Math.max(hi, yourScore + 5); }
+  const x = v => 8 + (v - lo) / (hi - lo) * (W - 16);
+
+  // axis
+  ctx.strokeStyle = "#c9c9c4"; ctx.beginPath(); ctx.moveTo(0, H - padB + 0.5); ctx.lineTo(W, H - padB + 0.5); ctx.stroke();
+  ctx.fillStyle = "#8a8a8a"; ctx.font = "11px Menlo, monospace"; ctx.textAlign = "center";
+  const step = (hi - lo) > 90 ? 30 : 15;
+  for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ctx.fillText(t, x(t), H - padB + 18);
+
+  // dots, stacked per bin; dot size adapts as columns grow
+  const plotH = H - padB - padT;
+  const rBase = Math.min(3.2, Math.max(1.1, plotH / (maxBin * 2.3)));
+  const dy = Math.max(2 * rBase + 0.6, plotH / Math.max(maxBin, 1));
+  const dyEff = Math.min(2.3 * rBase, plotH / Math.max(maxBin, 1));
+  for (const k in dotBins) {
+    const v = +k, count = dotBins[k];
+    const cx = x(v);
+    ctx.fillStyle = (yourScore != null && !isNaN(yourScore) && v < yourScore) ? "#77ab43" : "#b9c3ba";
+    for (let i = 0; i < count; i++) {
+      const cy = H - padB - rBase - i * dyEff;
+      ctx.beginPath(); ctx.arc(cx, cy, rBase, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  // median marker once the swarm is meaningful
+  if (totals.length > 500) {
+    const med = totals[totals.length >> 1];
+    ctx.fillStyle = "#8a8a8a"; ctx.font = "10px Menlo, monospace";
+    ctx.fillText("MEDIAN " + med, x(med), 27);
+  }
+
+  // your line
+  if (yourScore != null && !isNaN(yourScore)) {
+    ctx.strokeStyle = "#1a1a1a"; ctx.setLineDash([5, 3]); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x(yourScore), 17); ctx.lineTo(x(yourScore), H - padB); ctx.stroke();
+    ctx.setLineDash([]); ctx.lineWidth = 1;
+    ctx.fillStyle = "#1a1a1a"; ctx.font = "bold 12px Menlo, monospace";
+    ctx.fillText("YOU · " + yourScore, Math.min(Math.max(x(yourScore), 44), W - 48), 13);
+  }
+}
+
+function jokeFor(pct) {
+  if (pct >= 99.9) return "Statistically indistinguishable from insider trading. Dad demands an investigation.";
+  if (pct >= 97) return "Outstanding. Ten thousand dads just updated their priors about you.";
+  if (pct >= 85) return "Comfortably ahead of the dads. Your football opinions are, for once, backed by data.";
+  if (pct >= 60) return "Solid. You beat most dads, and the dads have been studying since June 11.";
+  if (pct >= 40) return "Dead average dad performance. You have achieved fatherhood, statistically.";
+  if (pct >= 15) return "Below average. Dad has never seen a football. He has never seen anything.";
+  if (pct >= 1) return "A mustached spreadsheet is beating you. He did not even watch the Germany game. He says nobody should have.";
+  return "Have you considered tipping the exact opposite of your instincts? Dad says the math now formally supports it.";
+}
+
+function updateVerdict() {
+  const el = document.getElementById("verdict");
+  if (yourScore == null || isNaN(yourScore)) { el.textContent = "Enter your score. Dad has already tipped."; return; }
+  if (!totals.length) return;
+  const pct = totals.filter(t => t < yourScore).length / totals.length * 100;
+  const cls = pct >= 60 ? "good" : pct >= 40 ? "mid" : "bad";
+  const pctStr = pct > 99 && pct < 100 ? pct.toFixed(2) : pct.toFixed(1);
+  el.innerHTML = `With <span class="mono"><b>${yourScore}</b></span> match points you beat ` +
+    `<span class="pct ${cls}">${pctStr}%</span> of ${totals.length.toLocaleString("en-US")} dads. ` +
+    `<span class="joke">&ldquo;${jokeFor(pct)}&rdquo;</span>`;
+}
+
+function startSim() {
+  if (animId) cancelAnimationFrame(animId);
+  totals = []; bins = {}; dotBins = {}; nDads = 0; maxBin = 1;
+  const SLOW_RUNS = 25;
+  const BATCH = 120;
+  const counter = document.getElementById("runCounter");
+  function step() {
+    const count = totals.length < SLOW_RUNS ? 1 : BATCH;
+    let last = null;
+    for (let i = 0; i < count && totals.length < NUM_RUNS; i++) {
+      last = oneDad();
+      nDads++;
+      totals.push(last);
+      bins[last] = (bins[last] || 0) + 1;
+      if (nDads <= SLOW_RUNS || nDads % SAMPLE_EVERY === 0) {
+        dotBins[last] = (dotBins[last] || 0) + 1;
+        if (dotBins[last] > maxBin) maxBin = dotBins[last];
+      }
+    }
+    totals.sort((a, b) => a - b);
+    if (last != null && totals.length <= SLOW_RUNS) {
+      counter.textContent = "dad #" + totals.length.toLocaleString("en-US") + " landed on " + last + " points";
+    } else if (totals.length >= NUM_RUNS) {
+      counter.textContent = totals.length.toLocaleString("en-US") + " dads have tipped";
+    } else {
+      counter.textContent = totals.length.toLocaleString("en-US") + " dads";
+    }
+    draw(); updateVerdict();
+    if (totals.length < NUM_RUNS) animId = requestAnimationFrame(step);
+  }
+  animId = requestAnimationFrame(step);
+}
+
+document.getElementById("compareBtn").addEventListener("click", () => {
+  const g = document.getElementById("yourG").value, b = document.getElementById("yourB").value;
+  yourScore = g === "" ? null : +g - (+b || 0);
+  localStorage.setItem("dadG", g); localStorage.setItem("dadB", b);
+  draw(); updateVerdict();
+});
+["yourG", "yourB"].forEach(id => document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("compareBtn").click(); }));
+document.getElementById("rerollBtn").addEventListener("click", startSim);
+window.addEventListener("resize", () => { resizeCanvas(); draw(); });
+
+resizeCanvas();
+startSim();
+</script>
+</body>
+</html>
